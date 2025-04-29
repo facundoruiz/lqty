@@ -1,0 +1,10 @@
+node_modules/
+.firebaserc
+firebase.json
+public
+dist
+src/uploads
+testing/
+.env
+.env.local
+.env.*.local
