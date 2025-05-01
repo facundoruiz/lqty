@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+<<<<<<< HEAD
 const { GenerateSW } = require('workbox-webpack-plugin');
 const fs = require('fs');
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
@@ -60,11 +61,17 @@ if (fs.existsSync(manifestPath)) {
     noErrorOnMissing: true
   });
 }
+=======
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+>>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
 
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
+<<<<<<< HEAD
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'public'),
     clean: true,
@@ -92,12 +99,18 @@ module.exports = {
   devServer: {
     static: './public',
     hot: true,
+=======
+    filename: 'bundle.[contenthash].js',
+    path: path.resolve(__dirname, 'public'),
+    clean: true,
+    assetModuleFilename: 'asset/[name].[hash][ext]'
+>>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
   },
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
@@ -140,12 +153,27 @@ module.exports = {
       }
     ],
   },
+  optimization: {
+    minimizer: [
+      new TerserPlugin(),
+      new CssMinimizerPlugin(),
+    ],
+  },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'styles/[name].[contenthash].css',
+    }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       favicon: './src/img/favicon-32x32.png',
+      minify: {
+        removeAttributeQuotes: true,
+        collapseWhitespace: true,
+        removeComments: true
+      }
     }),
     new CopyWebpackPlugin({
+<<<<<<< HEAD
       patterns: copyPatterns
     }),
     new ImageMinimizerPlugin({
@@ -167,6 +195,12 @@ module.exports = {
           options: {
             plugins: ['imagemin-webp'],
           },
+=======
+      patterns: [
+        { 
+          from: './src/img', 
+          to: 'asset/img' 
+>>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
         },
         {
           type: 'asset',

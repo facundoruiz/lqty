@@ -109,7 +109,7 @@ nav ul li a.active::after {
 
 /* Hero Section */
 #hero {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-L3dRFROCrTlU79Dq8Q4pjjuFQ70npG.png');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('./img/logo.png');
     background-size: cover;
     background-position: center;
     color: white;
@@ -187,6 +187,7 @@ nav ul li a.active::after {
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: var(--transition);
+    cursor: pointer;
 }
 
 .product-card:hover {
@@ -246,6 +247,10 @@ nav ul li a.active::after {
     font-size: 0.9rem;
 }
 
+.product-info a {
+    cursor: pointer;
+}
+
 .btn-add {
     width: 100%;
     background-color: var(--secondary-color);
@@ -268,6 +273,7 @@ nav ul li a.active::after {
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition);
+    cursor: pointer;
 }
 
 .read-more:hover {
@@ -411,27 +417,6 @@ nav ul li a.active::after {
     gap: 30px;
 }
 
-/* Estilos para el contenedor del botón Cargar Más */
-.load-more-container {
-    text-align: center;
-    margin-top: 30px;
-    padding: 20px 0;
-}
-
-/* Estilos para el botón Cargar Más */
-#load-more-blogs {
-    /* Estilos heredados de .btn, se pueden añadir más específicos si es necesario */
-    padding: 10px 25px;
-    font-size: 1rem;
-}
-
-/* Estilos para el indicador de fin de contenido */
-#end-of-blogs {
-    margin-top: 20px;
-    color: var(--light-text);
-    font-style: italic;
-}
-
 .blog-card {
     background-color: white;
     border-radius: var(--border-radius);
@@ -441,6 +426,7 @@ nav ul li a.active::after {
     height: 100%;
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
     box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    cursor: pointer;
 }
 
 .blog-card:hover {
@@ -471,6 +457,10 @@ nav ul li a.active::after {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+}
+
+.blog-info a {
+    cursor: pointer;
 }
 
 .blog-date {
@@ -506,6 +496,7 @@ nav ul li a.active::after {
     padding: 5px 0;
     position: relative;
     align-self: flex-start;
+    cursor: pointer;
 }
 
 .read-more:after {
@@ -625,28 +616,47 @@ nav ul li a.active::after {
     background-repeat: no-repeat;
     background-position: center;
     position: absolute;
+    z-index: 2;
 }
 
 .loading::after {
-    content: "La que tomo Yo!";
-    font-size: 1.5rem;
-    color: var(--primary-color);
-    font-weight: bold;
+    content: "";
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    position: absolute;
+    animation: rotate 8s linear infinite;
+    background: conic-gradient(
+        rgba(0,0,0,0) 0deg, 
+        rgba(0,0,0,0) 300deg, 
+        var(--primary-color) 300deg, 
+        var(--secondary-color) 360deg
+    );
+}
+
+/* Texto que gira alrededor del círculo */
+.loading-text {
     position: absolute;
     width: 200px;
     height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: textRotate 3s linear infinite;
+    animation: rotate 8s linear infinite;
 }
 
-@keyframes textRotate {
+.loading-text span {
+    position: absolute;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    left: 50%;
+    transform-origin: 0 100px;
+}
+
+@keyframes rotate {
     0% {
-        transform: rotate(0deg) translateY(-100px) rotate(0deg);
+        transform: rotate(0deg);
     }
     100% {
-        transform: rotate(360deg) translateY(-100px) rotate(-360deg);
+        transform: rotate(360deg);
     }
 }
 

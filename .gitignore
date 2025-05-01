@@ -1,9 +1,10 @@
 node_modules/
 .firebaserc
 firebase.json
-public
 dist
-src/uploads
+logs/
+temp/
+cache/
 testing/
 .env
 .env.local

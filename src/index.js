@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, orderBy, limit, startAfter } from 'firebase/firestore';
+import { db } from './firebase-config';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { renderProducts } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
@@ -37,11 +39,59 @@ window.allBlogs = [];
 window.currentBlogIndex = 0;
 let lastVisibleBlog = null;
 const BLOGS_PER_PAGE = 4;
+// Variable global para almacenar blogs (o pasarla a través de funciones)
+let allBlogs = []; 
+
+// Función para crear el texto circular animado en los elementos de carga
+function createCircularText() {
+  const loadingElements = document.querySelectorAll('.loading');
+  
+  if (loadingElements.length) {
+    loadingElements.forEach(loadingElement => {
+      // Eliminar texto existente si lo hubiera
+      const existingText = loadingElement.querySelector('.loading-text');
+      if (existingText) {
+        existingText.remove();
+      }
+      
+      // Crear el contenedor para el texto circular
+      const textContainer = document.createElement('div');
+      textContainer.className = 'loading-text';
+      
+      // El texto que queremos mostrar de forma circular
+      const text = 'La que tomo Yo! • Bienestar Natural • ';
+      
+      // Calcular el ángulo para cada letra para distribuirlas uniformemente
+      const anglePerLetter = 360 / text.length;
+      
+      // Crear cada letra como un elemento span independiente
+      for (let i = 0; i < text.length; i++) {
+        const charSpan = document.createElement('span');
+        charSpan.innerText = text[i];
+        
+        // Calcular el ángulo para esta letra
+        const angle = anglePerLetter * i;
+        
+        // Aplicar transformación para posicionar la letra
+        charSpan.style.transform = `rotate(${angle}deg) translate(0, -100px)`;
+        
+        // Añadir al contenedor
+        textContainer.appendChild(charSpan);
+      }
+      
+      // Añadir el contenedor de texto al elemento de carga
+      loadingElement.appendChild(textContainer);
+    });
+  }
+}
 
 // Cargar datos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('Iniciando carga de datos...');
+    
+    // Inicializar texto circular en elementos de carga
+    createCircularText();
     
     // Cargar productos
     console.log('Cargando productos...');
@@ -104,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Verificar si hay un ID en la URL
     const path = window.location.pathname;
     console.log('Current path:', path); // Para debugging
-    const match = path.match(/\/mezcla\/([^\/]+)/);
+    const match = path.match(/\/#mezclas\/([^\/]+)/);
     if (match) {
       const productId = match[1];
       console.log('Product ID from URL:', productId); // Para debugging
@@ -273,4 +323,11 @@ window.loadMoreBlogs = async function() {
     }
   }
 };
+  renderProducts(filtered, blogs); // Pasar blogs al renderizar filtrados
+}
+
+// Función auxiliar para regenerar el texto circular cuando se actualizan los elementos DOM
+export function refreshCircularText() {
+  setTimeout(createCircularText, 100);
+}
 
