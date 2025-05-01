@@ -3,24 +3,24 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>La que tomo Yo! - Catálogo de hierbas</title>
     <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="./img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16x16.png">
-    <link rel="icon" href="./img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./asset/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./asset/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./asset/favicon-16x16.png">
+    <link rel="icon" href="./asset/favicon-16x16.png">
     
     <meta property="og:title" content="La que tomo Yo! - Catálogo de hierbas">
     <meta property="og:description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
-    <meta property="og:image" content="https://laquetomoyo.web.app/img/android-chrome-512x512.png">
+    <meta property="og:image" content="https://laquetomoyo.web.app/asset/android-chrome-512x512.png">
     <meta property="og:url" content="https://laquetomoyo.web.app">
     <meta property="og:type" content="website" />
-    <meta property="og:logo" content="https://laquetomoyo.web.app/img/logo.png" />
+    <meta property="og:logo" content="https://laquetomoyo.web.app/asset/logo.png" />
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="La que tomo Yo! - Catálogo de hierbas">
     <meta name="twitter:description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
-    <meta name="twitter:image" content="https://laquetomoyo.web.app/img/android-chrome-512x512.png">
+    <meta name="twitter:image" content="https://laquetomoyo.web.app/asset/android-chrome-512x512.png">
     <meta name="theme-color" content="#fcf0e3">
     <meta name="description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
     <!-- Fuentes -->
@@ -38,7 +38,7 @@
     <header>
         <div class="container">
             <div class="logo">
-                <img src="./img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
+                <asset src="./asset/logo.png" alt="Logo La que tomo Yo!" class="logo-asset">
                 <h1>La que tomo <span> Yo!</span></h1>
             </div>
             <nav>
@@ -73,9 +73,14 @@
                     <!-- Los blogs se cargarán desde Firebase -->
                     <div class="loading"></div>
                 </div>
-                <!-- Contenedor para el botón Cargar Más y el indicador de fin -->
-                <div class="load-more-container">
-                    <button id="load-more-blogs" class="btn" style="display: none;">Cargar Más Fichas</button>
+                <!-- Contenedor para los botones de paginación y el indicador de fin -->
+                <div class="pagination-controls">
+                  <!--   <button id="prev-page-blogs" class="btn btn-secondary" style="display: none;">
+                        <i class="bi bi-arrow-left"></i> Página Anterior
+                    </button> -->
+                    <button id="load-more-blogs" class="btn" style="display: none;">
+                        Cargar Más Fichas 
+                    </button>
                     <p id="end-of-blogs" style="display: none;">Has llegado al final.</p>
                 </div>
             </div>
@@ -93,9 +98,9 @@
         <div class="container">
             <div class="disclaimer-content">
                 <i class="bi bi-info-circle"></i>
-                <p>La información proporcionada en este sitio web es solo para fines informativos y educativos. No
-                    pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un
-                    profesional de la salud calificado antes de usar cualquier producto o tratamiento.</p>
+                <span><small>La información proporcionada en este sitio web es solo para fines informativos y educativos.<br/> 
+                    No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad.<br/>
+                Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.</small></span>
             </div>
         </div>
     </div>
@@ -127,7 +132,7 @@
             <div class="footer-content">
                 <div class="footer-logo">
                     <div class="logo">
-                        <img src="./img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
+                        <asset src="./asset/logo.png" alt="Logo La que tomo Yo!" class="logo-asset">
                         <h1>La que tomo <span> Yo!</span></h1>
                     </div>
                     <p>¡Bienestar Natural en Cada Sorbo!</p>

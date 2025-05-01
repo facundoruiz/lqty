@@ -40,7 +40,7 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
           return `
             <div class="product-card" data-id="${product.id}" data-category="${category}">
               <div class="product-image">
-                <img src="./${product.image_path || 'img/logo_gris.jpeg'}" alt="${product.title}" />
+                <img src="./${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
                 <div class="product-tag">${category}</div> 
               </div>
               <div class="product-info">
@@ -161,7 +161,7 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     <div class="modal-product-header">
         <h2>${product.title}</h2>
     </div>
-     <img src="${product.image_path|| './img/logo_gris.jpeg'}" alt="${product.title}" >
+     <img src="${product.image_path|| './asset/img/logo_gris.jpeg'}" alt="${product.title}" >
     
     <p>${product.description || 'Descripción no disponible.'}</p> 
     <button class="disclaimer-btn" title="Declinación de responsabilidad">

@@ -1,25 +1,24 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
-    filename: 'bundle.js',
+    filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'public'),
     clean: true,
-    assetModuleFilename: 'assets/[name][ext]'
-  },
-  devServer: {
-    static: './public',
-    hot: true,
+    assetModuleFilename: 'asset/[name].[hash][ext]'
   },
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
@@ -38,16 +37,30 @@ module.exports = {
       }
     ],
   },
+  optimization: {
+    minimizer: [
+      new TerserPlugin(),
+      new CssMinimizerPlugin(),
+    ],
+  },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'styles/[name].[contenthash].css',
+    }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       favicon: './src/img/favicon-32x32.png',
+      minify: {
+        removeAttributeQuotes: true,
+        collapseWhitespace: true,
+        removeComments: true
+      }
     }),
     new CopyWebpackPlugin({
       patterns: [
         { 
           from: './src/img', 
-          to: 'img' 
+          to: 'asset/img' 
         },
         {
           from: './src/uploads/images',

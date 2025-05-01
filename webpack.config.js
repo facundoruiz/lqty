@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',
@@ -10,7 +11,7 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
-    assetModuleFilename: 'assets/[name][ext]'
+    assetModuleFilename: 'asset/[name][ext]'
   },
   devServer: {
     static: './dist',
@@ -20,7 +21,7 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
@@ -41,6 +42,9 @@ module.exports = {
   },
   plugins: [
     new Dotenv(),
+    new MiniCssExtractPlugin({
+      filename: 'styles/[name].css',
+    }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       favicon: './src/img/favicon-32x32.png',
@@ -49,7 +53,7 @@ module.exports = {
       patterns: [
         { 
           from: './src/img', 
-          to: 'img' 
+          to: 'asset/img' 
         },
         {
           from: './src/uploads/images',

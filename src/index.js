@@ -1,31 +1,62 @@
-import { initializeApp } from 'firebase/app';
+import { db } from './firebase-config';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { renderProducts } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
 import './styles.css';
 
-
-// Configuración de Firebase (deberás reemplazar esto con tus propias credenciales)
-const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID
-};
-
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 // Variable global para almacenar blogs (o pasarla a través de funciones)
 let allBlogs = []; 
+
+// Función para crear el texto circular animado en los elementos de carga
+function createCircularText() {
+  const loadingElements = document.querySelectorAll('.loading');
+  
+  if (loadingElements.length) {
+    loadingElements.forEach(loadingElement => {
+      // Eliminar texto existente si lo hubiera
+      const existingText = loadingElement.querySelector('.loading-text');
+      if (existingText) {
+        existingText.remove();
+      }
+      
+      // Crear el contenedor para el texto circular
+      const textContainer = document.createElement('div');
+      textContainer.className = 'loading-text';
+      
+      // El texto que queremos mostrar de forma circular
+      const text = 'La que tomo Yo! • Bienestar Natural • ';
+      
+      // Calcular el ángulo para cada letra para distribuirlas uniformemente
+      const anglePerLetter = 360 / text.length;
+      
+      // Crear cada letra como un elemento span independiente
+      for (let i = 0; i < text.length; i++) {
+        const charSpan = document.createElement('span');
+        charSpan.innerText = text[i];
+        
+        // Calcular el ángulo para esta letra
+        const angle = anglePerLetter * i;
+        
+        // Aplicar transformación para posicionar la letra
+        charSpan.style.transform = `rotate(${angle}deg) translate(0, -100px)`;
+        
+        // Añadir al contenedor
+        textContainer.appendChild(charSpan);
+      }
+      
+      // Añadir el contenedor de texto al elemento de carga
+      loadingElement.appendChild(textContainer);
+    });
+  }
+}
 
 // Cargar datos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
   try {
+    // Inicializar texto circular en elementos de carga
+    createCircularText();
+    
     // Cargar productos
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = productsSnapshot.docs.map(doc => ({
@@ -50,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Verificar si hay un ID en la URL
     const path = window.location.pathname;
     console.log('Current path:', path); // Para debugging
-    const match = path.match(/\/mezcla\/([^\/]+)/);
+    const match = path.match(/\/#mezclas\/([^\/]+)/);
     if (match) {
       const productId = match[1];
       console.log('Product ID from URL:', productId); // Para debugging
@@ -104,5 +135,10 @@ function filterProducts(products, blogs, category, searchTerm) { // Aceptar blog
   }
   
   renderProducts(filtered, blogs); // Pasar blogs al renderizar filtrados
+}
+
+// Función auxiliar para regenerar el texto circular cuando se actualizan los elementos DOM
+export function refreshCircularText() {
+  setTimeout(createCircularText, 100);
 }
 
