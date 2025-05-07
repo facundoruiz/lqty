@@ -51,6 +51,59 @@ function createCircularText() {
   }
 }
 
+// Código para manejar el menú móvil
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del menú móvil
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileMenuClose = document.querySelector('.mobile-menu-close');
+    const nav = document.querySelector('nav');
+    const body = document.body;
+
+    // Crear el overlay para cuando el menú está abierto
+    const menuOverlay = document.createElement('div');
+    menuOverlay.className = 'menu-overlay';
+    body.appendChild(menuOverlay);
+
+    // Función para abrir el menú
+    function openMenu() {
+        nav.classList.add('active');
+        menuOverlay.classList.add('active');
+        body.style.overflow = 'hidden'; // Prevenir scroll
+    }
+
+    // Función para cerrar el menú
+    function closeMenu() {
+        nav.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        body.style.overflow = ''; // Restaurar scroll
+    }
+
+    // Evento para abrir menú
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', openMenu);
+    }
+
+    // Eventos para cerrar menú
+    if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', closeMenu);
+    }
+
+    menuOverlay.addEventListener('click', closeMenu);
+
+    // Cerrar menú al seleccionar un enlace
+    const navLinks = document.querySelectorAll('nav ul li a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+
+    // Cerrar menú al redimensionar la ventana a tamaño desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            closeMenu();
+        }
+    });
+});
+
 // Cargar datos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
   try {

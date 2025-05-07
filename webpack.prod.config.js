@@ -4,6 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   mode: 'production',
@@ -44,6 +45,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv(),
     new MiniCssExtractPlugin({
       filename: 'styles/[name].[contenthash].css',
     }),
@@ -77,10 +79,14 @@ module.exports = {
         {
           from: './src/uploads/index.html',
           to: 'uploads'
-        }, {
+        },
+        {
           from: "./src/site.webmanifest",
           to: "manifest.json",
-         
+        },
+        {
+          from: "./src/offline.html",
+          to: "offline.html",
         }
       ],
     }),
