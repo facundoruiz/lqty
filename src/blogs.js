@@ -352,8 +352,14 @@ function addReadMoreListeners(container, blogs) {
             const blogId = newLink.dataset.id;
             
             // Mostrar indicador de carga
-            const modal = document.getElementById('blog-modal');
+            const modal = document.getElementById('generic-modal'); // Actualizado para usar el modal genérico
             const modalBody = document.getElementById('modal-body');
+            
+            // Verificar que los elementos existan antes de usarlos
+            if (!modal || !modalBody) {
+                console.error("Elementos del modal no encontrados en el DOM");
+                return;
+            }
             
             // Mostrar el modal con un indicador de carga
             modal.style.display = 'flex';
@@ -380,12 +386,14 @@ function addReadMoreListeners(container, blogs) {
                 }
             } catch (error) {
                 console.error(error);
-                modalBody.innerHTML = `
-                    <div class="error-message">
-                        <h3>Error al cargar el blog</h3>
-                        <p>Lo sentimos, no pudimos cargar el contenido del blog. Por favor, inténtalo de nuevo más tarde.</p>
-                    </div>
-                `;
+                if (modalBody) {
+                    modalBody.innerHTML = `
+                        <div class="error-message">
+                            <h3>Error al cargar el blog</h3>
+                            <p>Lo sentimos, no pudimos cargar el contenido del blog. Por favor, inténtalo de nuevo más tarde.</p>
+                        </div>
+                    `;
+                }
             }
         });
     });
@@ -393,11 +401,12 @@ function addReadMoreListeners(container, blogs) {
 
 // Mostrar detalle del blog
 export function showBlogDetail(blog) {
-  const modal = document.getElementById('blog-modal');
+  const modal = document.getElementById('generic-modal');
   const modalBody = document.getElementById('modal-body');
-  const closeModal = document.getElementById('close-modal');
+  const closeModalX = document.getElementById('close-modal');
+  const closeModalBtn = document.getElementById('close-modal-btn');
   
-  if (!modal || !modalBody || !closeModal) {
+  if (!modal || !modalBody || !closeModalX || !closeModalBtn) {
     console.error("Elementos del modal no encontrados en el DOM.");
     return;
   }
@@ -413,14 +422,6 @@ export function showBlogDetail(blog) {
   const disclaimerText = mainDisclaimer ? mainDisclaimer.innerHTML : 
       '<p>Información solo con fines informativos. Consulta con un profesional de la salud antes de cualquier uso.</p>';
   
-/*   // Formatear fecha si está disponible
-  let formattedDate = '';
-  if (blog.created_at) {
-    const date = blog.created_at.toDate ? blog.created_at.toDate() : new Date(blog.created_at);
-    formattedDate = `<div class="blog-date">Publicado: ${date.toLocaleDateString('es-ES')}</div>`;
-  }
-      ${formattedDate}
-   */
   modalBody.innerHTML = `
     <div class="modal-product-header">
         <h2>${blog.title}  <button class="disclaimer-btn" title="Declinación de responsabilidad">
@@ -447,7 +448,8 @@ export function showBlogDetail(blog) {
     }, 300); // Debe coincidir con la duración de la transición en CSS
     
     // Remover los event listeners para evitar duplicados
-    closeModal.removeEventListener('click', close);
+    closeModalX.removeEventListener('click', close);
+    closeModalBtn.removeEventListener('click', close);
     window.removeEventListener('click', closeOutside);
   };
   
@@ -457,14 +459,18 @@ export function showBlogDetail(blog) {
       close();
     }
   };
+  
   // Agregar evento para el declinador de responsabilidad
   const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
   const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
   
-  disclaimerBtn.addEventListener('click', () => {
-      disclaimerContainer.style.display = 
-          disclaimerContainer.style.display === 'none' ? 'block' : 'none';
-  });
+  if (disclaimerBtn && disclaimerContainer) {
+    disclaimerBtn.addEventListener('click', () => {
+        disclaimerContainer.style.display = 
+            disclaimerContainer.style.display === 'none' ? 'block' : 'none';
+    });
+  }
+  
   // Mostrar el modal y agregar clase visible para la animación
   modal.style.display = 'flex';
   // Usar setTimeout para asegurar que se aplique la transición
@@ -473,6 +479,7 @@ export function showBlogDetail(blog) {
   }, 10);
   
   // Agregar event listeners para cerrar
-  closeModal.addEventListener('click', close);
+  closeModalX.addEventListener('click', close);
+  closeModalBtn.addEventListener('click', close);
   window.addEventListener('click', closeOutside);
 }
