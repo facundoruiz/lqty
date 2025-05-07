@@ -122,11 +122,12 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
   
   // Mostrar detalle del producto en un modal
   export function showProductDetail(product, blogs) { // Aceptar blogs como argumento
-    const modal = document.getElementById('blog-modal');
+    const modal = document.getElementById('generic-modal');
     const modalBody = document.getElementById('modal-body');
-    const closeModal = document.getElementById('close-modal');
+    const closeModalX = document.getElementById('close-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
   
-    if (!modal || !modalBody || !closeModal) {
+    if (!modal || !modalBody || !closeModalX || !closeModalBtn) {
       console.error("Elementos del modal no encontrados en el DOM.");
       return;
     }
@@ -152,10 +153,11 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
         </div>
       ` 
       : '';
-  // Obtener el contenido del disclaimer principal
-  const mainDisclaimer = document.querySelector('.disclaimer-content-hierbas span');
-  const disclaimerText = mainDisclaimer ? mainDisclaimer.innerHTML : 
-      'La información proporcionada en este sitio web es solo para fines informativos y educativos. No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.';
+    
+    // Obtener el contenido del disclaimer principal
+    const mainDisclaimer = document.querySelector('.disclaimer-content-hierbas span');
+    const disclaimerText = mainDisclaimer ? mainDisclaimer.innerHTML : 
+        'La información proporcionada en este sitio web es solo para fines informativos y educativos. No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.';
 
     modalBody.innerHTML = `
     <div class="modal-product-header">
@@ -182,10 +184,12 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
     const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
     
-    disclaimerBtn.addEventListener('click', () => {
-        disclaimerContainer.style.display = 
-            disclaimerContainer.style.display === 'none' ? 'block' : 'none';
-    });
+    if (disclaimerBtn && disclaimerContainer) {
+      disclaimerBtn.addEventListener('click', () => {
+          disclaimerContainer.style.display = 
+              disclaimerContainer.style.display === 'none' ? 'block' : 'none';
+      });
+    }
   
     // Función para cerrar el modal
     const close = () => {
@@ -202,7 +206,8 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
       }, 300); // Debe coincidir con la duración de la transición en CSS
       
       // Remover los event listeners para evitar duplicados
-      closeModal.removeEventListener('click', close);
+      closeModalX.removeEventListener('click', close);
+      closeModalBtn.removeEventListener('click', close);
       window.removeEventListener('click', closeOutside);
     };
   
@@ -283,9 +288,8 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     }, 10);
   
     // Agregar listeners para cerrar
-    closeModal.removeEventListener('click', close); // Remover listener previo si existe
-    window.removeEventListener('click', closeOutside); // Remover listener previo si existe
-    closeModal.addEventListener('click', close);
+    closeModalX.addEventListener('click', close);
+    closeModalBtn.addEventListener('click', close);
     window.addEventListener('click', closeOutside);
   }
 

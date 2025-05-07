@@ -461,8 +461,14 @@ function addReadMoreListeners(container, blogs) {
             const blogId = newLink.dataset.id;
             
             // Mostrar indicador de carga
-            const modal = document.getElementById('blog-modal');
+            const modal = document.getElementById('generic-modal'); // Actualizado para usar el modal genérico
             const modalBody = document.getElementById('modal-body');
+            
+            // Verificar que los elementos existan antes de usarlos
+            if (!modal || !modalBody) {
+                console.error("Elementos del modal no encontrados en el DOM");
+                return;
+            }
             
             // Mostrar el modal con un indicador de carga
             modal.style.display = 'flex';
@@ -489,12 +495,14 @@ function addReadMoreListeners(container, blogs) {
                 }
             } catch (error) {
                 console.error(error);
-                modalBody.innerHTML = `
-                    <div class="error-message">
-                        <h3>Error al cargar el blog</h3>
-                        <p>Lo sentimos, no pudimos cargar el contenido del blog. Por favor, inténtalo de nuevo más tarde.</p>
-                    </div>
-                `;
+                if (modalBody) {
+                    modalBody.innerHTML = `
+                        <div class="error-message">
+                            <h3>Error al cargar el blog</h3>
+                            <p>Lo sentimos, no pudimos cargar el contenido del blog. Por favor, inténtalo de nuevo más tarde.</p>
+                        </div>
+                    `;
+                }
             }
         });
     });
@@ -503,15 +511,20 @@ function addReadMoreListeners(container, blogs) {
 // Mostrar detalle del blog
 export function showBlogDetail(blog) {
 <<<<<<< HEAD
+<<<<<<< HEAD
     const modal = document.getElementById('blog-modal');
     const modalBody = document.getElementById('modal-body');
     const closeModal = document.getElementById('close-modal');
 =======
   const modal = document.getElementById('blog-modal');
+=======
+  const modal = document.getElementById('generic-modal');
+>>>>>>> eb6e1e0 (FIX: mejora en modal, scroll)
   const modalBody = document.getElementById('modal-body');
-  const closeModal = document.getElementById('close-modal');
+  const closeModalX = document.getElementById('close-modal');
+  const closeModalBtn = document.getElementById('close-modal-btn');
   
-  if (!modal || !modalBody || !closeModal) {
+  if (!modal || !modalBody || !closeModalX || !closeModalBtn) {
     console.error("Elementos del modal no encontrados en el DOM.");
     return;
   }
@@ -527,14 +540,6 @@ export function showBlogDetail(blog) {
   const disclaimerText = mainDisclaimer ? mainDisclaimer.innerHTML : 
       '<p>Información solo con fines informativos. Consulta con un profesional de la salud antes de cualquier uso.</p>';
   
-/*   // Formatear fecha si está disponible
-  let formattedDate = '';
-  if (blog.created_at) {
-    const date = blog.created_at.toDate ? blog.created_at.toDate() : new Date(blog.created_at);
-    formattedDate = `<div class="blog-date">Publicado: ${date.toLocaleDateString('es-ES')}</div>`;
-  }
-      ${formattedDate}
-   */
   modalBody.innerHTML = `
     <div class="modal-product-header">
         <h2>${blog.title}  <button class="disclaimer-btn" title="Declinación de responsabilidad">
@@ -561,6 +566,7 @@ export function showBlogDetail(blog) {
     }, 300); // Debe coincidir con la duración de la transición en CSS
 >>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
     
+<<<<<<< HEAD
     if (!modal || !modalBody || !closeModal) {
         console.error("Elementos del modal no encontrados en el DOM.");
         return;
@@ -609,10 +615,31 @@ export function showBlogDetail(blog) {
     const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
     const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
     
+=======
+    // Remover los event listeners para evitar duplicados
+    closeModalX.removeEventListener('click', close);
+    closeModalBtn.removeEventListener('click', close);
+    window.removeEventListener('click', closeOutside);
+  };
+  
+  // Función para cerrar al hacer clic fuera
+  const closeOutside = (event) => {
+    if (event.target === modal) {
+      close();
+    }
+  };
+  
+  // Agregar evento para el declinador de responsabilidad
+  const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
+  const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
+  
+  if (disclaimerBtn && disclaimerContainer) {
+>>>>>>> eb6e1e0 (FIX: mejora en modal, scroll)
     disclaimerBtn.addEventListener('click', () => {
         disclaimerContainer.style.display = 
             disclaimerContainer.style.display === 'none' ? 'block' : 'none';
     });
+<<<<<<< HEAD
     
     // Mostrar el modal y agregar clase visible para la animación
     modal.style.display = 'flex';
@@ -624,4 +651,19 @@ export function showBlogDetail(blog) {
     // Agregar event listeners para cerrar
     closeModal.addEventListener('click', close);
     window.addEventListener('click', closeOutside);
+=======
+  }
+  
+  // Mostrar el modal y agregar clase visible para la animación
+  modal.style.display = 'flex';
+  // Usar setTimeout para asegurar que se aplique la transición
+  setTimeout(() => {
+    modal.classList.add('visible');
+  }, 10);
+  
+  // Agregar event listeners para cerrar
+  closeModalX.addEventListener('click', close);
+  closeModalBtn.addEventListener('click', close);
+  window.addEventListener('click', closeOutside);
+>>>>>>> eb6e1e0 (FIX: mejora en modal, scroll)
 }
