@@ -115,7 +115,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const products = productsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
+    }))
+    // Filtrar solo productos con publish_web = 1
+    .filter(product => product.publish_web === "1");
     
     // Cargar blogs
     const blogsSnapshot = await getDocs(collection(db, 'blogs'));
