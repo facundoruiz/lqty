@@ -65,7 +65,11 @@ if (fs.existsSync(manifestPath)) {
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+<<<<<<< HEAD
 >>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
+=======
+const Dotenv = require('dotenv-webpack');
+>>>>>>> c9cd8f5 (Add offline page, styles, and license information)
 
 module.exports = {
   mode: 'production',
@@ -160,6 +164,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv(),
     new MiniCssExtractPlugin({
       filename: 'styles/[name].[contenthash].css',
     }),
@@ -244,6 +249,21 @@ module.exports = {
             networkTimeoutSeconds: 10,
           },
         },
+<<<<<<< HEAD
+=======
+        {
+          from: './src/uploads/index.html',
+          to: 'uploads'
+        },
+        {
+          from: "./src/site.webmanifest",
+          to: "manifest.json",
+        },
+        {
+          from: "./src/offline.html",
+          to: "offline.html",
+        }
+>>>>>>> c9cd8f5 (Add offline page, styles, and license information)
       ],
     }),
   ],
