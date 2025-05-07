@@ -152,8 +152,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const products = productsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
+<<<<<<< HEAD
     }));
     console.log('Productos cargados:', products.length);
+=======
+    }))
+    // Filtrar solo productos con publish_web = 1
+    .filter(product => product.publish_web === "1");
+>>>>>>> 57fc9f8 (Add img y filtro de publish_web)
     
     // Cargar primera página de blogs
     console.log('Cargando blogs...');
