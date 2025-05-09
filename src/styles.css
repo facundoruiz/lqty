@@ -583,8 +583,6 @@ nav ul li a.active::after {
     padding: 0 25px;
 }
 
-
-
 /* Loading Indicator - Animación mejorada */
 .modal-content {
     padding: var(--base-spacing);
@@ -1068,7 +1066,6 @@ footer {
     text-align: justify;
 }
 
-
 /* Botón de cierre mejorado para accesibilidad */
 .close {
     position: absolute;
@@ -1284,8 +1281,6 @@ footer {
     transform: scale(1.1);
 }
 
-
-
 .modal-disclaimer-container {
     background-color: #fff3f3;
     border-left: 4px solid #ff6b6b;
@@ -1315,8 +1310,6 @@ footer {
     gap: 15px;
     color: #000;
 }
-
-
 
 .disclaimer-content i {
     font-size: 1.5em;
@@ -1360,4 +1353,45 @@ footer {
     .footer-logo h1 {
         font-size: 1.3rem;
     }
+}
+
+/* Estilos para filtros de blogs */
+.blog-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.blog-filters .search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.blog-filters .search-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(193, 126, 62, 0.1);
+}
+
+.blog-filters .category-filter {
+    min-width: 200px;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.blog-filters .category-filter:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(193, 126, 62, 0.1);
 }
