@@ -75,7 +75,79 @@ export async function fetchBlogs(options = {}) {
     } = options;
 
     let blogsQuery;
+// Renderizar blogs en la página con paginación
+export function renderBlogs(blogs, hasMore = false, append = false) {
+    console.log('Renderizando blogs...');
+    console.log('Blogs recibidos:', blogs.length);
     
+    const container = document.getElementById('blogs-container');
+    const loadMoreBtn = document.getElementById('load-more-blogs');
+    const endOfBlogsMsg = document.getElementById('end-of-blogs');
+    
+    if (!container) {
+        console.error("Contenedor de blogs no encontrado");
+        return;
+    }
+    
+    if (!blogs || !blogs.length) {
+        console.log('No se encontraron blogs para renderizar');
+        // Si es primera carga, mostrar mensaje de no resultados
+        if (!append) {
+            container.innerHTML = '<div class="no-results">No se encontraron fichas. Por favor, intente más tarde.</div>';
+        }
+        if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+        if (endOfBlogsMsg) endOfBlogsMsg.style.display = !append ? 'none' : 'block';
+        return;
+    }
+    
+    console.log(`Renderizando ${blogs.length} blogs, modo: ${append ? 'append' : 'replace'}`);
+    
+    // Si no es append (es primera carga), reemplazar todo el contenido
+    if (!append) {
+        container.innerHTML = blogs.map(blog => createBlogCard(blog)).join('');
+    } else {
+        // Si es append (paginación), añadir al final
+        const newBlogsHTML = blogs.map(blog => createBlogCard(blog)).join('');
+        container.insertAdjacentHTML('beforeend', newBlogsHTML);
+    }
+    
+    // Agregar event listeners a los enlaces "Leer más"
+    addReadMoreListeners(container, blogs);
+    
+    // Mostrar u ocultar el botón "Cargar Más" según corresponda
+    if (loadMoreBtn) {
+        loadMoreBtn.style.display = hasMore ? 'inline-block' : 'none';
+        console.log('Estado del botón Cargar Más:', hasMore ? 'visible' : 'oculto');
+    }
+    
+    if (endOfBlogsMsg) {
+        endOfBlogsMsg.style.display = hasMore ? 'none' : 'block';
+        console.log('Estado del mensaje de fin:', hasMore ? 'oculto' : 'visible');
+    }
+       
+    console.log('Renderizado de blogs completado');
+}
+
+// Función auxiliar para crear el HTML de una tarjeta de blog
+function createBlogCard(blog) {
+    if (!blog) return '';
+    
+    return `
+        <div class="blog-card" data-id="${blog.id || ''}">
+            <div class="blog-image">
+                <img src="${blog.image_path || './img/logo_gris.jpeg'}" alt="${blog.title || 'Blog sin título'}" />
+            </div>
+            <div class="blog-info">
+                <h3 class="blog-post-title">${blog.title || 'Blog sin título'}</h3>
+                <p class="blog-excerpt">${blog.excerpt || 'No hay extracto disponible'}</p>
+                <a href="#" class="read-more" data-id="${blog.id || ''}">Leer más</a>
+            </div>
+        </div>
+    `;
+}
+
+// Función para cargar más blogs
+export function loadMoreBlogs() {
     // Intentar usar caché si existe para la página solicitada
     const cacheKey = lastVisible?.id || firstVisible?.id || 'first';
     if (paginationCache.pages.has(cacheKey) && !loadPrevious) {
@@ -235,6 +307,9 @@ export async function renderBlogs(options = {}) {
     const endOfBlogsMsg = document.getElementById('end-of-blogs');
     
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
     if (!window.allBlogs) {
         console.error('allBlogs no está definido');
         return;
@@ -247,6 +322,7 @@ export async function renderBlogs(options = {}) {
     if (nextBlogsCount <= 0) {
         loadMoreBtn.style.display = 'none';
         endOfBlogsMsg.style.display = 'block';
+<<<<<<< HEAD
         return;
     }
     
@@ -266,12 +342,29 @@ export async function renderBlogs(options = {}) {
     // Actualizar la visibilidad del botón "Cargar Más"
     if ((window.currentBlogIndex || 0) >= window.allBlogs.length) {
 =======
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
     // Si estamos cargando, evita llamadas duplicadas
     if (paginationState.isLoading) {
         console.log("Carga en progreso, evitando petición duplicada");
         return;
     }
     
+    // Obtener los siguientes blogs
+    const nextBlogs = window.allBlogs.slice(window.currentBlogIndex || 0, (window.currentBlogIndex || 0) + nextBlogsCount);
+    window.currentBlogIndex = (window.currentBlogIndex || 0) + nextBlogsCount;
+    
+    // Crear elementos HTML para los nuevos blogs
+    const newBlogsHTML = nextBlogs.map(blog => createBlogCard(blog)).join('');
+    
+    // Agregar los nuevos blogs al final del contenedor
+    container.insertAdjacentHTML('beforeend', newBlogsHTML);
+    
+    // Agregar event listeners a los nuevos enlaces "Leer más"
+    addReadMoreListeners(container, window.allBlogs);
+    
+    // Actualizar la visibilidad del botón "Cargar Más"
+    if ((window.currentBlogIndex || 0) >= window.allBlogs.length) {
     paginationState.isLoading = true;
 
     // Si reset es true, reiniciamos la paginación
@@ -512,6 +605,7 @@ function addReadMoreListeners(container, blogs) {
 export function showBlogDetail(blog) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     const modal = document.getElementById('blog-modal');
     const modalBody = document.getElementById('modal-body');
     const closeModal = document.getElementById('close-modal');
@@ -635,11 +729,68 @@ export function showBlogDetail(blog) {
   
   if (disclaimerBtn && disclaimerContainer) {
 >>>>>>> eb6e1e0 (FIX: mejora en modal, scroll)
+=======
+    const modal = document.getElementById('blog-modal');
+    const modalBody = document.getElementById('modal-body');
+    const closeModal = document.getElementById('close-modal');
+    
+    if (!modal || !modalBody || !closeModal) {
+        console.error("Elementos del modal no encontrados en el DOM.");
+        return;
+    }
+    
+    // Obtener el contenido del disclaimer principal
+    const mainDisclaimer = document.querySelector('.disclaimer-content p');
+    const disclaimerText = mainDisclaimer ? mainDisclaimer.textContent : 
+        'La información proporcionada en este sitio web es solo para fines informativos y educativos. No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.';
+    
+    modalBody.innerHTML = `
+        <div class="modal-product-header">
+            <h2>${blog.title}  <button class="disclaimer-btn" title="Declinación de responsabilidad">
+                <i class="bi bi-exclamation-triangle"></i>
+            </button></h2>
+        </div>
+        <div class="modal-disclaimer-container" style="display: none;">
+            <p>${disclaimerText}</p>
+        </div>
+        <p>${blog.excerpt}</p>
+        <img src="${blog.image_path || './img/logo_gris.jpeg'}" alt="${blog.title}" />
+        <p>${blog.content || 'Contenido no disponible'}</p>
+    `;
+    
+    // Función para cerrar el modal
+    const close = () => {
+        modal.classList.remove('visible');
+        // Esperar a que termine la animación antes de ocultar completamente
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300); // Debe coincidir con la duración de la transición en CSS
+        
+        // Remover los event listeners para evitar duplicados
+        closeModal.removeEventListener('click', close);
+        window.removeEventListener('click', closeOutside);
+    };
+    
+    // Función para cerrar al hacer clic fuera
+    const closeOutside = (event) => {
+        if (event.target === modal) {
+            close();
+        }
+    };
+    
+    // Agregar evento para el declinador de responsabilidad
+    const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
+    const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
+    
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
     disclaimerBtn.addEventListener('click', () => {
         disclaimerContainer.style.display = 
             disclaimerContainer.style.display === 'none' ? 'block' : 'none';
     });
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
     
     // Mostrar el modal y agregar clase visible para la animación
     modal.style.display = 'flex';
@@ -651,6 +802,7 @@ export function showBlogDetail(blog) {
     // Agregar event listeners para cerrar
     closeModal.addEventListener('click', close);
     window.addEventListener('click', closeOutside);
+<<<<<<< HEAD
 =======
   }
   
@@ -666,4 +818,6 @@ export function showBlogDetail(blog) {
   closeModalBtn.addEventListener('click', close);
   window.addEventListener('click', closeOutside);
 >>>>>>> eb6e1e0 (FIX: mejora en modal, scroll)
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 }

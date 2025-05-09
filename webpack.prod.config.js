@@ -2,6 +2,9 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 const { GenerateSW } = require('workbox-webpack-plugin');
 const fs = require('fs');
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
@@ -61,7 +64,10 @@ if (fs.existsSync(manifestPath)) {
     noErrorOnMissing: true
   });
 }
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -75,6 +81,7 @@ module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
+<<<<<<< HEAD
 <<<<<<< HEAD
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'public'),
@@ -104,11 +111,41 @@ module.exports = {
     static: './public',
     hot: true,
 =======
+=======
+    filename: '[name].[contenthash].js',
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
     filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'public'),
     clean: true,
     assetModuleFilename: 'asset/[name].[hash][ext]'
+<<<<<<< HEAD
 >>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
+=======
+    assetModuleFilename: 'assets/[name][ext]'
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+        firebase: {
+          test: /[\\/]node_modules[\\/](firebase)[\\/]/,
+          name: 'firebase',
+          chunks: 'all',
+          priority: 10,
+        },
+      },
+    },
+    runtimeChunk: 'single',
+  },
+  devServer: {
+    static: './public',
+    hot: true,
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
   },
   module: {
     rules: [
@@ -179,6 +216,9 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
       patterns: copyPatterns
     }),
     new ImageMinimizerPlugin({
@@ -200,7 +240,10 @@ module.exports = {
           options: {
             plugins: ['imagemin-webp'],
           },
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
       patterns: [
         { 
           from: './src/img', 
@@ -235,6 +278,7 @@ module.exports = {
           },
         },
         {
+<<<<<<< HEAD
           urlPattern: /\.(?:js|css)$/,
           handler: 'StaleWhileRevalidate',
           options: {
@@ -247,14 +291,52 @@ module.exports = {
           options: {
             cacheName: 'api-cache',
             networkTimeoutSeconds: 10,
+=======
+          type: 'asset',
+          implementation: ImageMinimizerPlugin.imageminGenerate,
+          options: {
+            plugins: [
+              ['jpegtran', { progressive: true }],
+              ['mozjpeg', { quality: 65 }],
+            ],
+          },
+        },
+      ],
+    }),
+    new GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
+      runtimeCaching: [
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'images',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 30 * 24 * 60 * 60, // 30 días
+            },
+          },
+        },
+        {
+          urlPattern: /\.(?:js|css)$/,
+          handler: 'StaleWhileRevalidate',
+          options: {
+            cacheName: 'static-resources',
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
           },
         },
 <<<<<<< HEAD
 =======
         {
-          from: './src/uploads/index.html',
-          to: 'uploads'
+          urlPattern: /^https:\/\/firestore\.googleapis\.com/,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'api-cache',
+            networkTimeoutSeconds: 10,
+          },
         },
+<<<<<<< HEAD
         {
           from: "./src/site.webmanifest",
           to: "manifest.json",
@@ -264,6 +346,8 @@ module.exports = {
           to: "offline.html",
         }
 >>>>>>> c9cd8f5 (Add offline page, styles, and license information)
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
       ],
     }),
   ],

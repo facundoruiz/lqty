@@ -1,7 +1,10 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, query, orderBy, limit, startAfter } from 'firebase/firestore';
+<<<<<<< HEAD
 import { db } from './firebase-config';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 import { renderProducts } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
@@ -34,11 +37,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+<<<<<<< HEAD
 // Variable global para almacenar blogs y el último documento
 window.allBlogs = [];
 window.currentBlogIndex = 0;
 let lastVisibleBlog = null;
 const BLOGS_PER_PAGE = 4;
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 // Variable global para almacenar blogs (o pasarla a través de funciones)
 let allBlogs = []; 
 
@@ -137,14 +143,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+// Variable global para almacenar blogs y el último documento
+window.allBlogs = [];
+window.currentBlogIndex = 0;
+let lastVisibleBlog = null;
+const BLOGS_PER_PAGE = 4;
 
 // Cargar datos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('Iniciando carga de datos...');
+<<<<<<< HEAD
     
     // Inicializar texto circular en elementos de carga
     createCircularText();
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
     
     // Cargar productos
     console.log('Cargando productos...');
@@ -161,6 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .filter(product => product.publish_web === "1");
 >>>>>>> 57fc9f8 (Add img y filtro de publish_web)
     
+<<<<<<< HEAD
     // Cargar primera página de blogs
     console.log('Cargando blogs...');
     const blogsQuery = query(
@@ -174,6 +189,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Resultado de la consulta:', blogsSnapshot.empty ? 'vacío' : 'con datos');
     console.log('Número de documentos:', blogsSnapshot.docs.length);
     
+=======
+    // Cargar blogs
+    const blogsSnapshot = await getDocs(collection(db, 'blogs'));
+    allBlogs = blogsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    }));
+    console.log('Productos cargados:', products.length);
+    
+    // Cargar primera página de blogs
+    console.log('Cargando blogs...');
+    const blogsQuery = query(
+      collection(db, 'blogs'),
+      orderBy('createdAt', 'desc'),
+      limit(BLOGS_PER_PAGE)
+    );
+    
+    console.log('Ejecutando consulta de blogs...');
+    const blogsSnapshot = await getDocs(blogsQuery);
+    console.log('Resultado de la consulta:', blogsSnapshot.empty ? 'vacío' : 'con datos');
+    console.log('Número de documentos:', blogsSnapshot.docs.length);
+    
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
     if (blogsSnapshot.empty) {
       console.log('No se encontraron blogs en la colección');
       renderBlogs([], false);

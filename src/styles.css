@@ -1627,6 +1627,9 @@ footer {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 /* Estilos para filtros de blogs */
 .blog-filters {
     display: flex;
@@ -1666,7 +1669,12 @@ footer {
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 0 2px rgba(193, 126, 62, 0.1);
+<<<<<<< HEAD
 =======
+=======
+}
+
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 /* Estilos para los controles de paginación */
 .pagination-controls {
     display: flex;

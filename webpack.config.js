@@ -63,7 +63,68 @@ if (fs.existsSync(manifestPath)) {
 }
 =======
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+<<<<<<< HEAD
 >>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
+=======
+const fs = require('fs');
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+
+// Función para verificar si un directorio existe
+function directoryExists(dir) {
+  try {
+    return fs.existsSync(dir) && fs.statSync(dir).isDirectory();
+  } catch (err) {
+    return false;
+  }
+}
+
+// Configurar patrones de copia basados en directorios existentes
+const copyPatterns = [
+  { 
+    from: './src/img', 
+    to: 'img',
+    noErrorOnMissing: true
+  }
+];
+
+// Verificar y agregar patrones de copia para directorios de uploads si existen
+const uploadDirs = [
+  'images',
+  'blogs',
+  'products'
+];
+
+uploadDirs.forEach(dir => {
+  const uploadPath = `./src/uploads/${dir}`;
+  if (directoryExists(uploadPath)) {
+    copyPatterns.push({
+      from: uploadPath,
+      to: `uploads/${dir}`,
+      noErrorOnMissing: true
+    });
+  }
+});
+
+// Verificar y agregar index.html de uploads si existe
+const uploadIndexPath = './src/uploads/index.html';
+if (directoryExists(path.dirname(uploadIndexPath))) {
+  copyPatterns.push({
+    from: uploadIndexPath,
+    to: 'uploads',
+    noErrorOnMissing: true
+  });
+}
+
+// Verificar y agregar manifest.json si existe
+const manifestPath = './src/site.webmanifest';
+if (fs.existsSync(manifestPath)) {
+  copyPatterns.push({
+    from: manifestPath,
+    to: 'manifest.json',
+    noErrorOnMissing: true
+  });
+}
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
 
 module.exports = {
   mode: 'development',
@@ -169,8 +230,12 @@ module.exports = {
       patterns: [
         { 
           from: './src/img', 
+<<<<<<< HEAD
           to: 'asset/img' 
 >>>>>>> 923eb31 (feat: Add Firebase configuration and initialize Firestore)
+=======
+          to: 'img' 
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
         },
         {
           type: 'asset',
@@ -184,6 +249,21 @@ module.exports = {
             ],
           },
         },
+<<<<<<< HEAD
+=======
+        {
+          type: 'asset',
+          implementation: ImageMinimizerPlugin.imageminGenerate,
+          options: {
+            plugins: [
+              ['mozjpeg', { quality: 65 }],
+              ['optipng', { optimizationLevel: 5 }],
+              ['gifsicle', { interlaced: true }],
+              ['svgo', { plugins: [{ removeViewBox: false }] }],
+            ],
+          },
+        },
+>>>>>>> 35dae78 (Agregada configuración de Firebase y mejoras en la carga de blogs. Se implementaron filtros para la búsqueda de blogs y se optimizó la carga de imágenes. Se añadió un archivo de entorno para las credenciales de Firebase y se actualizaron las dependencias en package.json y package-lock.json.)
       ],
     }),
   ],
