@@ -458,40 +458,10 @@ nav ul li a.active::after {
 }
 
 /* Ajustes responsivos para los filtros de categoría */
-@media (max-width: 575.98px) {
-    .category-filters {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .category-filter-item {
-        width: 100%;
-        text-align: center;
-        max-width: 250px;
-    }
-}
 
-@media (min-width: 576px) {
-    .category-filters {
-        padding: 20px;
-        margin: 0 auto 35px;
-        max-width: 90%;
-    }
-    
-    .category-filter-item {
-        padding: 12px 22px;
-        min-width: 120px;
-        text-align: center;
-    }
-}
 
-@media (min-width: 992px) {
-    .category-filters {
-        max-width: 80%;
-        border-radius: 50px;
-        padding: 15px 30px;
-    }
-}
+
+
 
 /* BLOGS */
 
@@ -1188,9 +1158,12 @@ footer {
     font-size: 1.4rem;
   }
   
-  .product-grid,
+  .product-grid {
+    grid-template-columns:  1fr;
+    gap: 20px;
+  }
   .blog-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns:  repeat(2, 1fr);
     gap: 20px;
   }
   
@@ -1227,7 +1200,9 @@ footer {
     width: 90%;
   }
   
-  .product-grid,
+  .product-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
   .blog-grid {
     grid-template-columns: repeat(3, 1fr);
   }
