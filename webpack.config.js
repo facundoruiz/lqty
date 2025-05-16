@@ -6,9 +6,14 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js',
+    login: './src/js/auth/login.js',
+    register: './src/js/auth/register.js',
+    dashboard: './src/js/dashboard/dashboard.js',
+  },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
     assetModuleFilename: 'asset/[name][ext]'
@@ -47,6 +52,26 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
+      filename: 'index.html',
+      chunks: ['main'],
+      favicon: './src/img/favicon-32x32.png',
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/login.html',
+      filename: 'login.html',
+      chunks: ['login'],
+      favicon: './src/img/favicon-32x32.png',
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/register.html',
+      filename: 'register.html',
+      chunks: ['register'],
+      favicon: './src/img/favicon-32x32.png',
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/dashboard.html',
+      filename: 'dashboard.html',
+      chunks: ['dashboard'],
       favicon: './src/img/favicon-32x32.png',
     }),
     new CopyWebpackPlugin({

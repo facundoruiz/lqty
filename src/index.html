@@ -46,14 +46,18 @@
             </button>
             <nav>
                 <ul>
-                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#inicio" class="active">Inicio</a></li>
                     <li><a href="#mezclas">Mezclas/Hierbas</a></li>
                     <li><a href="#fichas">Fichas</a></li>
+                    <li><a href="login.html" id="login-link">Iniciar Sesión</a></li>
+                    <li><a href="dashboard.html" id="dashboard-link" style="display: none;">Mi Perfil</a></li>
+                    <li><a href="#" id="logout-link" style="display: none;">Cerrar Sesión</a></li>
                 </ul>
                 <button class="mobile-menu-close" aria-label="Cerrar menú">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </nav>
+            <div class="menu-overlay"></div>
         </div>
     </header>
     <main>
@@ -151,7 +155,8 @@
                         <li><a href="#">Inicio</a></li>
                         <li><a href="#mezclas">Mezclas/Hierbas</a></li>
                         <li><a href="#fichas">Fichas</a></li>
-
+                        <li><a href="login.html" id="footer-login-link">Iniciar Sesión</a></li>
+                        <li><a href="dashboard.html" id="footer-dashboard-link" style="display: none;">Mi Perfil</a></li>
                     </ul>
                 </div>
                 <div class="footer-links">
@@ -170,7 +175,7 @@
         </div>
     </footer>
 
-
+    <!-- Scripts -->
 </body>
 
 </html>
