@@ -6,7 +6,7 @@ import { showProductDetail } from './products';
 import './styles.css';
 
 // Variable global para almacenar blogs (o pasarla a través de funciones)
-let allBlogs = []; 
+window.allBlogs = [];
 
 // Función para crear el texto circular animado en los elementos de carga
 function createCircularText() {
@@ -104,6 +104,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Función para verificar parámetros de URL al cargar la página
+function checkURLParameters(products, blogs) {
+  // Obtener los parámetros de la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const mezclaId = urlParams.get('mezcla');
+  
+  if (mezclaId) {
+    // Buscar la mezcla con ese ID
+    const product = products.find(p => p.id === mezclaId);
+    
+    if (product) {
+      // Mostrar el modal con la mezcla encontrada
+      showProductDetail(product, blogs);
+    } else {
+      console.error('Mezcla no encontrada con ID:', mezclaId);
+    }
+  }
+}
+
 // Cargar datos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -118,20 +137,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }))
     // Filtrar solo productos con publish_web = 1
     .filter(product => product.publish_web === "1");
-    
-    // Cargar blogs
+      // Cargar blogs
     const blogsSnapshot = await getDocs(collection(db, 'blogs'));
-    allBlogs = blogsSnapshot.docs.map(doc => ({
+    window.allBlogs = blogsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
-    
-    // Renderizar inicialmente pasando ambos arrays
-    renderProducts(products, allBlogs); 
-    renderBlogs(allBlogs);
+      // Renderizar inicialmente pasando ambos arrays
+    renderProducts(products, window.allBlogs); 
+    renderBlogs(window.allBlogs);
     
     // Configurar filtrado pasando ambos arrays
-    setupFilters(products, allBlogs);
+    setupFilters(products, window.allBlogs);
+    
+    // Verificar parámetros en la URL
+    checkURLParameters(products, allBlogs);
 
     // Verificar si hay un ID en la URL
     const path = window.location.pathname;

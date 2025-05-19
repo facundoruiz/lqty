@@ -157,11 +157,14 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     // Obtener el contenido del disclaimer principal
     const mainDisclaimer = document.querySelector('.disclaimer-content-hierbas span');
     const disclaimerText = mainDisclaimer ? mainDisclaimer.innerHTML : 
-        'La información proporcionada en este sitio web es solo para fines informativos y educativos. No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.';
-
-    modalBody.innerHTML = `
+        'La información proporcionada en este sitio web es solo para fines informativos y educativos. No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.';    modalBody.innerHTML = `
     <div class="modal-product-header">
         <h2>${product.title}</h2>
+        <div class="modal-actions">
+            <button class="btn-share" data-product-id="${product.id}">
+                <i class="bi bi-share"></i> Compartir
+            </button>
+        </div>
     </div>
      <img src="${product.image_path|| './asset/img/logo_gris.jpeg'}" alt="${product.title}" >
     
@@ -179,7 +182,6 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
         <button class="btn" id="close-blog-content">Cerrar detalle</button>
     </div>
     `;
-  
     // Agregar evento para el declinador de responsabilidad
     const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
     const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
@@ -188,6 +190,16 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
       disclaimerBtn.addEventListener('click', () => {
           disclaimerContainer.style.display = 
               disclaimerContainer.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+      // Agregar evento para el botón de compartir
+    const shareBtn = modalBody.querySelector('.btn-share');
+    if (shareBtn) {
+      // Guardar el producto actual en una variable global para poder accederlo al volver
+      window._currentSharedProduct = product;
+      
+      shareBtn.addEventListener('click', () => {
+        shareProduct(product);
       });
     }
   
@@ -291,23 +303,243 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     closeModalX.addEventListener('click', close);
     closeModalBtn.addEventListener('click', close);
     window.addEventListener('click', closeOutside);
-  }
-
-  // Función para compartir producto
+  }  // Función para compartir producto
   function shareProduct(product) {
     const shareData = {
       title: product.title,
-      text: `¡Mira este producto de La que tomo Yo!: ${product.title}`,
-      url: `${window.location.origin}${window.location.pathname}#productos/${product.id}`
+      text: `¡Mira esta mezcla de La que tomo Yo!: ${product.title}`,
+      url: `${window.location.origin}${window.location.pathname}?mezcla=${product.id}`
     };
 
+    // Verificar si el dispositivo soporta la API Web Share
     if (navigator.share) {
       // API de Web Share (dispositivos móviles)
       navigator.share(shareData)
-        .catch(error => console.log('Error al compartir:', error));
+        .catch(error => {
+          console.log('Error al compartir:', error);
+          // Si hay un error con la API Web Share, mostrar una notificación o fallback
+          showShareFallback(shareData);
+        });
     } else {
       // Fallback para navegadores de escritorio
-      const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}`;
-      window.open(shareUrl, '_blank', 'width=600,height=400');
+      showShareFallback(shareData);
     }
+  }
+  // Función de fallback para compartir en dispositivos que no soporten la API Web Share
+  function showShareFallback(shareData) {
+    // Crear un menú de compartir personalizado con opciones comunes
+    const modal = document.getElementById('generic-modal');
+    const modalBody = document.getElementById('modal-body');
+    
+    // Guardar el producto actual del modal
+    const productId = shareData.url.split('mezcla=')[1];
+    
+    // Intentar obtener el objeto producto completo de varias formas
+    let currentProduct;
+    
+    // 1. Buscar en los productos renderizados en el DOM
+    const productCard = document.querySelector(`.product-card[data-id="${productId}"]`);
+    if (productCard) {
+      // Crear un objeto básico si encontramos la tarjeta
+      currentProduct = { id: productId, title: shareData.title };
+    } 
+    // 2. Si no se encuentra, crear un objeto básico con la información que tenemos
+    else {
+      currentProduct = { id: productId, title: shareData.title };
+    }
+    
+    // Guardar una referencia global al producto para poder usarla al volver
+    window._currentSharedProduct = currentProduct;
+    
+    // Guardar el contenido actual del modal para restaurarlo después
+    const originalContent = modalBody.innerHTML;
+    
+    // Crear el contenido del menú de compartir
+    modalBody.innerHTML = `
+      <div class="share-menu">
+        <h3>Compartir Mezcla</h3>
+        <p>Elige una opción para compartir:</p>
+        <div class="share-options">
+          <button class="share-option" data-platform="facebook">
+            <i class="bi bi-facebook"></i>
+            Facebook
+          </button>
+          <button class="share-option" data-platform="whatsapp">
+            <i class="bi bi-whatsapp"></i>
+            WhatsApp
+          </button>
+          <button class="share-option" data-platform="twitter">
+            <i class="bi bi-twitter-x"></i>
+            Twitter
+          </button>
+          <button class="share-option" data-platform="telegram">
+            <i class="bi bi-telegram"></i>
+            Telegram
+          </button>
+          <button class="share-option" data-platform="copy">
+            <i class="bi bi-clipboard"></i>
+            Copiar enlace
+          </button>
+        </div>
+        <div class="copy-feedback" style="display: none;">
+          ¡Enlace copiado al portapapeles!
+        </div>
+        <input type="hidden" id="current-product-id" value="${productId || ''}">
+      </div>
+    `;
+    
+    // Añadir event listeners a los botones de compartir
+    const shareOptions = modalBody.querySelectorAll('.share-option');
+    shareOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const platform = option.dataset.platform;
+        let shareUrl;
+        
+        switch(platform) {
+          case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}`;
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+            break;
+          case 'whatsapp':
+            shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`;
+            window.open(shareUrl, '_blank');
+            break;
+          case 'twitter':
+            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+            break;
+          case 'telegram':
+            shareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareData.url)}&text=${encodeURIComponent(shareData.text)}`;
+            window.open(shareUrl, '_blank');
+            break;          case 'copy':
+            // Copiar al portapapeles usando una solución más compatible
+            try {
+              // Crear un elemento de texto temporal
+              const textArea = document.createElement('textarea');
+              textArea.value = shareData.url;
+              textArea.style.position = 'fixed'; // Evita afectar el diseño
+              textArea.style.opacity = '0';
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+
+              // Ejecutar el comando de copia
+              const successful = document.execCommand('copy');
+              
+              // Mostrar feedback
+              const feedback = modalBody.querySelector('.copy-feedback');
+              if (feedback) {
+                feedback.style.display = 'block';
+                setTimeout(() => {
+                  feedback.style.display = 'none';
+                }, 2000);
+              }
+              
+              // Limpiar
+              document.body.removeChild(textArea);
+            } catch(err) {
+              console.error('Error al copiar: ', err);
+              // Intentar con la API moderna como respaldo
+              navigator.clipboard.writeText(shareData.url)
+                .then(() => {
+                  const feedback = modalBody.querySelector('.copy-feedback');
+                  if (feedback) {
+                    feedback.style.display = 'block';
+                    setTimeout(() => {
+                      feedback.style.display = 'none';
+                    }, 2000);
+                  }
+                })
+                .catch(clipErr => {
+                  console.error('Error al copiar con clipboard API: ', clipErr);
+                  alert('No se pudo copiar el enlace. Por favor, cópialo manualmente.');
+                });
+            }
+            break;
+        }
+      });
+    });
+
+   
+    
+    // Guardar el evento onclick original del botón de cerrar
+    const closeModalX = document.getElementById('close-modal');
+    const originalXClose = closeModalX.onclick;
+    
+    // Crear un nuevo botón de volver específicamente para el menú de compartir
+    const shareMenuBackBtn = document.createElement('button');
+    shareMenuBackBtn.className = 'btn btn-back';
+    shareMenuBackBtn.textContent = 'Volver';
+    shareMenuBackBtn.style.marginTop = '20px';
+    
+    // Añadir el botón de volver al menú de compartir
+    const shareMenu = modalBody.querySelector('.share-menu');
+    if (shareMenu) {
+      shareMenu.appendChild(shareMenuBackBtn);
+    }
+    
+    const handleBackClick = () => {
+      // Restaurar contenido original del modal
+      modalBody.innerHTML = originalContent;
+    
+      
+      // Restaurar los event listeners de los elementos del contenido original
+      
+      // 1. Restaurar listener para el disclaimer
+      const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
+      const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
+      if (disclaimerBtn && disclaimerContainer) {
+        disclaimerBtn.addEventListener('click', () => {
+          disclaimerContainer.style.display = 
+              disclaimerContainer.style.display === 'none' ? 'block' : 'none';
+        });
+      }
+        // 2. Restaurar listener para el botón de compartir
+      const shareBtn = modalBody.querySelector('.btn-share');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+          // Usar el producto guardado en la variable global para compartir
+          const productToShare = window._currentSharedProduct;
+          shareProduct(productToShare);
+        });
+      }
+      
+      // 3. Restaurar listeners para los blogs relacionados
+      modalBody.querySelectorAll('.related-blog-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const blogId = link.dataset.blogId;
+          const relatedBlog = blogs.find(b => b.id === blogId);
+          if (relatedBlog) {
+            // Mostrar el blog...
+            const blogContentDiv = document.getElementById('blog-content-in-product');
+            const blogContentContainer = document.getElementById('blog-content-container');
+            
+            if (blogContentDiv && blogContentContainer) {
+              blogContentContainer.innerHTML = `
+                <h3>${relatedBlog.title}</h3>
+                <p>${relatedBlog.excerpt || 'Contenido no disponible'}</p>
+              `;
+              blogContentDiv.style.display = 'block';
+              blogContentDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              
+              const closeButton = document.getElementById('close-blog-content');
+              if (closeButton) {
+                const newCloseButton = closeButton.cloneNode(true);
+                closeButton.parentNode.replaceChild(newCloseButton, closeButton);
+                
+                newCloseButton.addEventListener('click', () => {
+                  blogContentDiv.style.display = 'none';
+                });
+              }
+            }
+          }
+        });
+      });
+    };
+    
+    // Asignar evento al botón de volver del menú de compartir
+    shareMenuBackBtn.addEventListener('click', handleBackClick);
+    
+  
   }
