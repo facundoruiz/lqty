@@ -1180,7 +1180,9 @@ footer {
 
 /* Tablets pequeñas y móviles grandes (576px - 767px) */
 @media (min-width: 576px) and (max-width: 767.98px) {
-  .product-grid,
+  .product-grid{
+    grid-template-columns: repeat(1, 1fr);
+  }
   .blog-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1222,7 +1224,10 @@ footer {
     max-width: 960px;
   }
   
-  .product-grid,
+  .product-grid{
+    grid-template-columns: repeat(1, 1fr);
+  }
+
   .blog-grid {
     grid-template-columns: repeat(4, 1fr);
   }
