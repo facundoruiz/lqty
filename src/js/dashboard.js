@@ -1,21 +1,29 @@
-// Este archivo puede estar vacío o contener la lógica específica del dashboard
-import '../../styles.css';
-import '../auth/auth-check.js'; // Corregir la ruta de importación
-import { onAuthStateChange, logout, getUserData } from '../services/authService.js';
-import { setupEventListeners, loadTasks, displayTasks, filterTasks, openTaskModal, closeTaskModal, saveTask, deleteTask, toggleTaskStatus } from './tasks.js'; // Asumiendo que tienes un tasks.js
-import { loadUserMixes, openMixModal, closeMixModal, saveMix, deleteMix, loadHerbsForSelection } from './mixes.js'; // Importar funciones de mezclas
+// Dashboard entry point for webpack
+// Importar estilos para que webpack los procese
+import '../styles.css';
+import '../styles/dashboard.css';
+import '../styles/notifications.css';
+import '../styles/mixes.css';
+
+// Importar módulos de funcionalidad
+import './auth/auth-check.js';
+import { onAuthStateChange, logout, getUserData } from './services/authService.js';
+import { loadUserMixes, openMixModal, closeMixModal, saveMix, deleteMix, loadHerbsForSelection } from './dashboard/mixes.js';
+import { showSuccessNotification, showErrorNotification, showWarningNotification, showInfoNotification } from './utils/notifications.js';
+
+// Hacer las notificaciones disponibles globalmente para otros módulos
+window.notifications = {
+    showSuccessNotification,
+    showErrorNotification,
+    showWarningNotification,
+    showInfoNotification
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     const userNameElement = document.getElementById('user-name');
     const userEmailElement = document.getElementById('user-email');
     const logoutLink = document.getElementById('logout-link');
-    const addTaskBtn = document.getElementById('add-task-btn');
-    const closeModalBtn = document.getElementById('close-modal');
-    const taskForm = document.getElementById('task-form');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const tasksList = document.getElementById('tasks-list');
-    const taskModal = document.getElementById('task-modal');
-
+    
     // Elementos para mezclas
     const addMixBtn = document.getElementById('add-mix-btn');
     const closeMixModalBtn = document.getElementById('close-mix-modal');
@@ -63,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verificar si hay un hash en la URL para activar la tab correspondiente
     const activateTabFromHash = () => {
         const hash = window.location.hash.substring(1);
-        if (hash && ['tasks', 'mixes', 'profile'].includes(hash)) {
+        if (hash && ['mixes', 'profile'].includes(hash)) {
             switchTab(hash);
         }
     };
@@ -103,8 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('profile-email').value = userData.data.email || '';
                 }
 
-                // Cargar tareas del usuario
-                loadTasks(user.uid);
                 // Cargar mezclas del usuario
                 loadUserMixes(user.uid);
                 // Cargar hierbas para el modal de mezclas
@@ -120,19 +126,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 profileForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const name = document.getElementById('profile-name').value;
-                    
                     try {
                         // Actualizar el perfil del usuario
                         const result = await updateUserProfile(user.uid, { name });
                         if (result.success) {
-                            showNotification('Perfil actualizado con éxito', 'success');
+                            showSuccessNotification('Perfil actualizado con éxito');
                             userNameElement.textContent = name;
                         } else {
-                            showNotification('Error al actualizar el perfil', 'error');
+                            showErrorNotification('Error al actualizar el perfil');
                         }
                     } catch (error) {
                         console.error('Error al actualizar el perfil:', error);
-                        showNotification('Error al actualizar el perfil', 'error');
+                        showErrorNotification('Error al actualizar el perfil');
                     }
                 });
             }
@@ -142,36 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     await logout();
                     window.location.href = 'login.html';
-                });
-            }
-
-            // Event listeners para tareas
-            if (addTaskBtn) addTaskBtn.addEventListener('click', () => openTaskModal());
-            if (closeModalBtn) closeModalBtn.addEventListener('click', () => closeTaskModal());
-            if (taskForm) taskForm.addEventListener('submit', (e) => saveTask(e, user.uid));
-            
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    filterTasks(btn.getAttribute('data-filter'));
-                });
-            });
-
-            if (tasksList) {
-                tasksList.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('delete-task-btn')) {
-                        const taskId = e.target.closest('.task-item').dataset.id;
-                        deleteTask(taskId, user.uid);
-                    }
-                    if (e.target.classList.contains('edit-task-btn')) {
-                        const taskId = e.target.closest('.task-item').dataset.id;
-                        openTaskModal(taskId);
-                    }
-                    if (e.target.classList.contains('task-status-checkbox')) {
-                        const taskId = e.target.closest('.task-item').dataset.id;
-                        toggleTaskStatus(taskId, user.uid, e.target.checked);
-                    }
                 });
             }
 
@@ -207,71 +182,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // Usuario no está logueado, redirigir a login
             if (window.location.pathname.endsWith('dashboard.html')) {
-                 window.location.href = 'login.html';
+                window.location.href = 'login.html';
             }
         }
     });
 });
 
-// Función para mostrar notificaciones
-function showNotification(message, type = 'info') {
-    // Crear el contenedor de notificación si no existe
-    let notificationContainer = document.getElementById('notification-container');
-    
-    if (!notificationContainer) {
-        notificationContainer = document.createElement('div');
-        notificationContainer.id = 'notification-container';
-        notificationContainer.style.position = 'fixed';
-        notificationContainer.style.top = '20px';
-        notificationContainer.style.right = '20px';
-        notificationContainer.style.zIndex = '1000';
-        document.body.appendChild(notificationContainer);
-    }
-    
-    // Crear la notificación
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    
-    // Estilo para la notificación
-    notification.style.backgroundColor = type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : '#2196F3';
-    notification.style.color = 'white';
-    notification.style.padding = '12px 20px';
-    notification.style.marginBottom = '10px';
-    notification.style.borderRadius = '4px';
-    notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-    notification.style.opacity = '0';
-    notification.style.transform = 'translateY(-20px)';
-    notification.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-    
-    // Añadir al contenedor
-    notificationContainer.appendChild(notification);
-    
-    // Forzar reflow para que la transición funcione
-    void notification.offsetWidth;
-    
-    // Mostrar con animación
-    notification.style.opacity = '1';
-    notification.style.transform = 'translateY(0)';
-    
-    // Eliminar después de un tiempo
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateY(-20px)';
-        
-        setTimeout(() => {
-            notificationContainer.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
-
 // Función para actualizar el perfil del usuario
 async function updateUserProfile(userId, userData) {
     try {
         // Implementar la función para actualizar los datos del usuario en Firebase
-        // Esta es una implementación de ejemplo, deberás adaptarla según tu servicio
         const { updateDoc, doc } = await import('firebase/firestore');
-        const { db } = await import('../../firebase-config.js'); // Corregida la ruta de importación
+        const { db } = await import('../firebase-config.js');
         
         await updateDoc(doc(db, 'users', userId), userData);
         return { success: true };

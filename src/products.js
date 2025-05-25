@@ -543,3 +543,306 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     
   
   }
+// Función auxiliar para verificar si el elemento del carrusel existe
+function waitForCarouselElement() {
+    return new Promise((resolve) => {
+        const checkElement = () => {
+            const container = document.getElementById('herbs-carousel-container');
+            if (container) {
+                resolve(container);
+            } else {
+                setTimeout(checkElement, 100);
+            }
+        };
+        checkElement();
+    });
+}
+
+// Función mejorada para renderizar el carrusel de hierbas
+export async function renderHerbsCarousel(products) {
+    // Esperar a que el elemento del carrusel esté disponible
+    const container = await waitForCarouselElement();
+    const track = container.querySelector('.carousel-track');
+    const indicatorsContainer = container.parentElement.querySelector('.carousel-indicators');
+    
+    if (!products || !products.length) {
+        track.innerHTML = '<div class="carousel-empty"><i class="bi bi-leaf"></i><p>No hay hierbas disponibles</p></div>';
+        if (indicatorsContainer) {
+            indicatorsContainer.innerHTML = '';
+        }
+        return;
+    }
+
+    // Limpiar contenido anterior
+    track.innerHTML = '';
+    if (indicatorsContainer) {
+        indicatorsContainer.innerHTML = '';
+    }
+
+    // Crear items del carrusel
+    const carouselItems = products.map(product => {
+        const category = product.category || product.category_name || 'Sin categoría';
+        const description = product.description || product.short_description || 'Descubre las propiedades de esta hierba...';
+        
+        return `
+            <div class="carousel-item" data-id="${product.id}">
+                <div class="carousel-item-image">
+                    <img src="./${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
+                    <div class="carousel-item-tag">${category}</div>
+                </div>
+                <div class="carousel-item-info">
+                    <h3>${product.title}</h3>
+                    <div class="carousel-item-description">${description}</div>
+                    <div class="carousel-item-tags">
+                        ${product.tags?.map(tag => `<span class="tag">${tag}</span>`).join('') || ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    track.innerHTML = carouselItems;
+
+    // Crear indicadores
+    const indicators = products.map((_, index) => 
+        `<button class="carousel-indicator ${index === 0 ? 'active' : ''}" data-slide="${index}"></button>`
+    ).join('');
+    
+    indicatorsContainer.innerHTML = indicators;
+
+    // Inicializar funcionalidad del carrusel
+    initializeCarousel(products.length);    // Agregar event listeners para abrir modal
+    const carouselItemElements = track.querySelectorAll('.carousel-item');
+    carouselItemElements.forEach(item => {
+        item.addEventListener('click', () => {
+            const productId = item.dataset.id;
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                showProductDetail(product, window.allBlogs);
+            }
+        });
+    });
+}
+
+// Función para inicializar la funcionalidad del carrusel
+function initializeCarousel(totalItems) {
+    const track = document.querySelector('#herbs-carousel-container .carousel-track');
+    const prevBtn = document.querySelector('.carousel-prev');
+    const nextBtn = document.querySelector('.carousel-next');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+      let currentSlide = 0;
+    let visibleItems = getVisibleItems();
+    let maxSlides = Math.max(0, totalItems - visibleItems);
+
+    function getVisibleItems() {
+        const containerWidth = track.parentElement.offsetWidth;
+        
+        // Lógica responsive para determinar cuántos items mostrar
+        if (containerWidth <= 480) {
+            return 1; // Móviles pequeños: 1 item
+        } else if (containerWidth <= 768) {
+            return 1; // Tablets: 1 item
+        } else if (containerWidth <= 1024) {
+            return 2; // Tablets grandes: 2 items
+        } else {
+            return 3; // Desktop: 3 items
+        }
+    }
+
+    function getItemWidth() {
+        const containerWidth = track.parentElement.offsetWidth;
+        const items = getVisibleItems();
+        
+        if (containerWidth <= 768) {
+            // En móvil, el item ocupa casi todo el ancho
+            return containerWidth - 40; // Resta el padding lateral
+        } else {
+            // En desktop, usar el ancho fijo + gap
+            const gap = 24;
+            return (containerWidth - (gap * (items - 1))) / items;
+        }
+    }
+
+    function updateCarousel() {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // En móvil, usar percentage para moverse de elemento en elemento
+            const translateX = -(currentSlide * 100);
+            track.style.transform = `translateX(${translateX}%)`;
+        } else {
+            // En desktop, usar el ancho calculado
+            const itemWidth = getItemWidth();
+            const gap = 24;
+            const totalWidth = itemWidth + gap;
+            const translateX = -(currentSlide * totalWidth);
+            track.style.transform = `translateX(${translateX}px)`;
+        }
+        
+        // Actualizar indicadores
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', 
+                index >= currentSlide && index < currentSlide + visibleItems
+            );
+        });
+
+        // Actualizar botones
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide >= maxSlides;
+    }
+
+    function nextSlide() {
+        if (currentSlide < maxSlides) {
+            currentSlide++;
+            updateCarousel();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateCarousel();
+        }
+    }
+
+    function goToSlide(slideIndex) {
+        currentSlide = Math.min(slideIndex, maxSlides);
+        updateCarousel();
+    }
+
+    // Event listeners
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => goToSlide(index));
+    });
+
+    // Auto-play del carrusel (opcional)
+    let autoplayInterval;
+    
+    function startAutoplay() {
+        autoplayInterval = setInterval(() => {
+            if (currentSlide >= maxSlides) {
+                currentSlide = 0;
+            } else {
+                currentSlide++;
+            }
+            updateCarousel();
+        }, 5000); // Cambiar cada 5 segundos
+    }
+
+    function stopAutoplay() {
+        clearInterval(autoplayInterval);
+    }
+
+    // Iniciar autoplay y detenerlo al interactuar
+    startAutoplay();
+    
+    const carouselWrapper = document.querySelector('.carousel-wrapper');
+    carouselWrapper.addEventListener('mouseenter', stopAutoplay);
+    carouselWrapper.addEventListener('mouseleave', startAutoplay);    // Responsive: actualizar al cambiar el tamaño de ventana
+    window.addEventListener('resize', () => {
+        const newVisibleItems = getVisibleItems();
+        const newMaxSlides = Math.max(0, totalItems - newVisibleItems);
+        
+        // Actualizar variables globales
+        visibleItems = newVisibleItems;
+        maxSlides = newMaxSlides;
+        
+        // Ajustar currentSlide si es necesario
+        if (currentSlide > maxSlides) {
+            currentSlide = maxSlides;
+        }
+        
+        updateCarousel();
+    });
+
+    // Inicializar estado
+    updateCarousel();
+
+    // Soporte para touch/swipe en móviles
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+
+    track.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        isDragging = true;
+        stopAutoplay();
+    });
+
+    track.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        currentX = e.touches[0].clientX;
+        e.preventDefault();
+    });
+
+    track.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        
+        const diffX = startX - currentX;
+        const threshold = 50;
+
+        if (diffX > threshold) {
+            nextSlide();
+        } else if (diffX < -threshold) {
+            prevSlide();
+        }
+
+        isDragging = false;
+        startAutoplay();
+    });
+
+    // Soporte para navegación con teclado
+    document.addEventListener('keydown', (e) => {
+        const carouselWrapper = document.querySelector('.carousel-wrapper');
+        if (!carouselWrapper || !carouselWrapper.matches(':hover')) return;
+        
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else {
+                nextSlide();
+            }
+            stopAutoplay();
+            setTimeout(startAutoplay, 3000); // Reanudar autoplay después de 3 segundos
+        }
+    });
+
+    // Mejorar accesibilidad con indicadores ARIA
+    prevBtn.setAttribute('aria-label', 'Producto anterior');
+    nextBtn.setAttribute('aria-label', 'Producto siguiente');
+      indicators.forEach((indicator, index) => {
+        indicator.setAttribute('aria-label', `Ir al producto ${index + 1}`);
+    });
+
+  
+}
+
+// Ajustes específicos para móvil
+    function adjustForMobile() {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // Reducir el threshold para swipe en móvil
+            const threshold = 30;
+            
+            // Mejorar la detección de swipe
+          //  track.style.touchAction = 'pan-y pinch-zoom';
+            
+            // Asegurar que los indicadores sean más visibles en móvil
+            const indicators = document.querySelectorAll('.carousel-indicator');
+            indicators.forEach(indicator => {
+                indicator.style.width = '14px';
+                indicator.style.height = '14px';
+            });
+        }
+    }
+
+    // Llamar al ajuste inicial
+    adjustForMobile();
+    
+    // Llamar al ajuste cuando cambie el tamaño
+    window.addEventListener('resize', adjustForMobile);

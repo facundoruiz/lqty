@@ -5,12 +5,11 @@ const Dotenv = require('dotenv-webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  mode: 'development',
-  entry: {
+  mode: 'development',  entry: {
     main: './src/index.js',
     login: './src/js/auth/login.js',
     register: './src/js/auth/register.js',
-    dashboard: './src/js/dashboard/dashboard.js',
+    dashboard: './src/js/dashboard.js',
   },
   output: {
     filename: '[name].bundle.js',

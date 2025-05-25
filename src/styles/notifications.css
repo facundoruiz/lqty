@@ -1,0 +1,236 @@
+/**
+ * Estilos para el sistema de notificaciones
+ * Proporciona estilos para notificaciones tipo toast con animaciones
+ */
+
+/* Contenedor principal de notificaciones */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+/* Estilo base para todas las notificaciones */
+.notification {
+    background-color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 300px;
+    max-width: 400px;
+    word-wrap: break-word;
+    animation: slideIn 0.3s ease-out;
+    pointer-events: auto;
+    border-left: 5px solid #007bff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect */
+.notification:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Contenido de la notificación */
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+/* Icono de la notificación */
+.notification-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Mensaje de la notificación */
+.notification-message {
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* Botón de cerrar */
+.notification-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    padding: 4px;
+    border-radius: 4px;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.notification-close:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Tipos de notificaciones */
+
+/* Notificación de éxito */
+.notification-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left-color: #28a745;
+}
+
+.notification-success .notification-icon {
+    color: #28a745;
+}
+
+.notification-success .notification-close {
+    color: #155724;
+}
+
+/* Notificación de error */
+.notification-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc3545;
+}
+
+.notification-error .notification-icon {
+    color: #dc3545;
+}
+
+.notification-error .notification-close {
+    color: #721c24;
+}
+
+/* Notificación de advertencia */
+.notification-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left-color: #ffc107;
+}
+
+.notification-warning .notification-icon {
+    color: #ffc107;
+}
+
+.notification-warning .notification-close {
+    color: #856404;
+}
+
+/* Notificación de información */
+.notification-info {
+    background-color: #cce5ff;
+    color: #004085;
+    border-left-color: #007bff;
+}
+
+.notification-info .notification-icon {
+    color: #007bff;
+}
+
+.notification-info .notification-close {
+    color: #004085;
+}
+
+/* Animaciones */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Clase para animación de salida */
+.notification-exit {
+    animation: slideOut 0.3s ease-out forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+    }
+    
+    .notification {
+        min-width: auto;
+        max-width: none;
+        width: 100%;
+    }
+    
+    .notification-message {
+        font-size: 0.85rem;
+    }
+}
+
+/* Estados especiales */
+.notification.notification-persistent {
+    border-left-width: 6px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Efectos adicionales para mejorar la experiencia */
+.notification-container:empty {
+    display: none;
+}
+
+/* Tema oscuro (opcional) */
+@media (prefers-color-scheme: dark) {
+    .notification {
+        background-color: #2d2d2d;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .notification-success {
+        background-color: #1e4d2e;
+        color: #90ee90;
+    }
+    
+    .notification-error {
+        background-color: #4d1e1e;
+        color: #ffb3b3;
+    }
+    
+    .notification-warning {
+        background-color: #4d3d1e;
+        color: #ffe066;
+    }
+    
+    .notification-info {
+        background-color: #1e2d4d;
+        color: #87ceeb;
+    }
+    
+    .notification-close:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}

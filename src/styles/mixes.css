@@ -1,0 +1,691 @@
+/**
+ * Estilos para el módulo de mezclas
+ * Incluye estilos para la cuadrícula de mezclas, tarjetas y elementos relacionados
+ */
+
+/* Cuadrícula de mezclas */
+.mixes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Tarjeta de mezcla */
+.mix-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.mix-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Encabezado de la tarjeta */
+.mix-card-header {
+    padding: 15px 20px;
+    background-color: var(--secondary-color, #6c757d);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mix-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+/* Acciones de la tarjeta */
+.mix-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-icon:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+.edit-mix-btn:hover {
+    background-color: rgba(40, 167, 69, 0.2);
+}
+
+.continue-iteration-btn:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+}
+
+.delete-mix-btn {
+    color: #ffcccc;
+}
+
+.delete-mix-btn:hover {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #ffffff;
+}
+
+/* Cuerpo de la tarjeta */
+.mix-card-body {
+    padding: 15px 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.mix-description {
+    margin-bottom: 15px;
+    color: #555;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+/* Contenedor de hierbas */
+.mix-herbs-container {
+    margin-top: auto;
+}
+
+.mix-herbs-container h4 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #444;
+    font-weight: 600;
+}
+
+.mix-herbs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.mix-herbs-list li {
+    background-color: #f4f9f0;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    border: 1px solid #dbe9d1;
+    color: #2d5a2d;
+    font-weight: 500;
+}
+
+/* Pie de la tarjeta */
+.mix-card-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9faf7;
+}
+
+.mix-date {
+    color: #777;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Botón de compartir */
+.btn-share {
+    background-color: #25D366;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-share:hover {
+    background-color: #128C7E;
+    transform: scale(1.02);
+}
+
+.btn-share:focus {
+    outline: 2px solid #25D366;
+    outline-offset: 2px;
+}
+
+/* Estado vacío */
+.empty-mixes {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.empty-mixes i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.6;
+}
+
+.empty-mixes h3 {
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.empty-mixes p {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+/* Indicador de carga */
+.loading-indicator {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.loading-indicator i {
+    font-size: 2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Modal de mezclas */
+.mix-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.mix-modal.visible {
+    opacity: 1;
+}
+
+.mix-modal-content {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 900px;
+    height: 85vh;
+    max-height: 85vh;
+    min-height: 500px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+        scale: 0.95;
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+        scale: 1;
+    }
+}
+
+.mix-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: var(--secondary-color);
+}
+
+.mix-modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    background-color: #f0f0f0;
+    text-decoration: none;
+}
+
+.mix-modal-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.mix-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* Layout del formulario de mezclas */
+.mix-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    min-height: 400px;
+}
+
+.mix-form-left,
+.mix-form-right {
+    display: flex;
+    flex-direction: column;
+}
+
+.mix-form-right {
+    max-height: 500px;
+    overflow: hidden;
+}
+
+/* Selección de hierbas */
+.herbs-selection-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.herbs-selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.selected-herbs-counter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--primary-color, #007bff);
+    font-weight: 600;
+}
+
+.selected-herbs-counter #selected-herbs-count {
+    font-size: 1.2rem;
+    color: var(--accent-color, #0056b3);
+}
+
+.search-herbs-container {
+    position: relative;
+    width: 45%;
+
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    z-index: 1;
+}
+
+.search-herbs-container input {
+    width: 100%;
+    padding: 8px 15px 8px 35px;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+/* Contenedor de selección de hierbas */
+.herbs-selection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+}
+
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.loading-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    animation: spin 1s linear infinite;
+}
+
+.herbs-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.herb-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    margin: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+    border: 1px solid transparent;
+}
+
+.herb-item:hover {
+    background-color: #e7f3ff;
+    border-color: #b3d9ff;
+}
+
+.herb-item.selected {
+    background-color: #d4edda;
+    border-color: var(--secondary-color, #28a745);
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.herb-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--secondary-color, #28a745);
+}
+
+.herb-thumbnail {
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid #e9ecef;
+}
+
+.herb-item label {
+    flex: 1;
+    margin: 0;
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    color: #495057;
+}
+
+.herb-item.selected label {
+    color: var(--secondary-color, #28a745);
+    font-weight: 500;
+}
+
+/* Estilos para botones del modal */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color, #007bff);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color, #0056b3);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Estilos para inputs del formulario */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color, #007bff);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .mix-modal-content {
+        width: 95%;
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mixes-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .mix-card-header {
+        padding: 12px 15px;
+    }
+    
+    .mix-card-body {
+        padding: 12px 15px;
+    }
+    
+    .mix-card-footer {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .mix-actions {
+        gap: 3px;
+    }
+    
+    .btn-icon {
+        padding: 4px 6px;
+        font-size: 1rem;
+    }
+    
+    .mix-modal {
+        padding: 10px;
+    }
+    
+    .mix-modal-content {
+        width: 95%;
+        height: 90vh;
+        max-height: 90vh;
+    }
+    
+    .mix-modal-header {
+        padding: 15px;
+    }
+    
+    .mix-modal-body {
+        padding: 15px;
+    }
+    
+    .mix-modal-footer {
+        padding: 15px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .herbs-selection-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .search-herbs-container {
+        width: 100%;
+    }
+    
+    .herbs-filter {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        flex: 1;
+        min-width: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mix-name {
+        font-size: 1rem;
+    }
+    
+    .mix-card-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .mix-actions {
+        align-self: flex-end;
+    }
+    
+    .mix-modal {
+        padding: 0;
+    }
+    
+    .mix-modal-content {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .mix-modal-header {
+        padding: 10px 15px;
+    }
+    
+    .mix-modal-body {
+        padding: 10px 15px;
+    }
+    
+    .mix-modal-footer {
+        padding: 10px 15px;
+    }
+    
+    .herbs-filter {
+        gap: 5px;
+    }
+    
+    .filter-btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}

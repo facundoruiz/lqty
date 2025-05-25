@@ -1,6 +1,6 @@
 import { db } from './firebase-config';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { renderProducts } from './products';
+import { renderProducts, renderHerbsCarousel } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
 import './styles.css';
@@ -142,9 +142,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.allBlogs = blogsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
-      // Renderizar inicialmente pasando ambos arrays
+    }));      // Renderizar inicialmente pasando ambos arrays
     renderProducts(products, window.allBlogs); 
+    renderHerbsCarousel(products).catch(console.error); // Renderizar el carrusel con manejo de errores
     renderBlogs(window.allBlogs);
     
     // Configurar filtrado pasando ambos arrays
@@ -208,8 +208,8 @@ function filterProducts(products, blogs, category, searchTerm) { // Aceptar blog
       (product.description?.toLowerCase() || '').includes(term)
     );
   }
-  
-  renderProducts(filtered, blogs); // Pasar blogs al renderizar filtrados
+    renderProducts(filtered, blogs); // Pasar blogs al renderizar filtrados
+  renderHerbsCarousel(filtered).catch(console.error); // También actualizar el carrusel con manejo de errores
 }
 
 // Función auxiliar para regenerar el texto circular cuando se actualizan los elementos DOM
