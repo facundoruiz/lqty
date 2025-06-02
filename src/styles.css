@@ -68,7 +68,13 @@ header .container {
 .logo span {
     color: var(--secondary-color);
 }
+.lqt  {
+        color: var(--primary-color);
+}
 
+.yo{
+    color: var(--secondary-color);
+}
 nav ul {
     display: flex;
     list-style: none;
@@ -304,13 +310,14 @@ nav ul li a.active::after {
     animation: float 15s ease-in-out infinite;
 }
 
-.herb-1 { top: 10%; left: 10%; animation-delay: 0s; }
+.herb-1 { top: 30%; left: 10%; animation-delay: 0s; }
 .herb-2 { top: 20%; right: 15%; animation-delay: 2s; }
-.herb-3 { top: 60%; left: 5%; animation-delay: 4s; }
-.herb-4 { top: 80%; right: 20%; animation-delay: 6s; }
+.herb-3 { top: 20%; left: 5%; animation-delay: 4s; }
+.herb-4 { top: 40%; right: 50%; animation-delay: 6s; }
 .herb-5 { top: 40%; right: 10%; animation-delay: 8s; }
-.herb-6 { top: 70%; left: 80%; animation-delay: 10s; }
-
+.herb-6 { top: 50%; left: 80%; animation-delay: 10s; }
+.herb-7 { top: 80%; right: 50%; animation-delay: 11s; }
+.herb-8 { top: 30%; right: 70%; animation-delay: 8s; }
 @keyframes float {
     0%, 100% { 
         transform: translateY(0px) rotate(0deg); 
