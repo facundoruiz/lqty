@@ -1,3 +1,5 @@
+import { collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from "firebase/firestore";
+import { db } from "./firebase-config";
 // Renderizar productos en la página
 export function renderProducts(products, blogs) { // Aceptar blogs como argumento
     const container = document.getElementById('products-container');
@@ -106,82 +108,72 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
         }
       });
     });
-
-    // Agregar event listeners para compartir
-    container.querySelectorAll('.btn-share').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evitar que se active el click del card
-        const productId = button.dataset.productId;
-        const product = products.find(p => p.id === productId);
-        if (product) {
-          shareProduct(product);
-        }
-      });
-    });
   }
-  
-  // Mostrar detalle del producto en un modal
-  export function showProductDetail(product, blogs) { // Aceptar blogs como argumento
-    const modal = document.getElementById('generic-modal');
-    const modalBody = document.getElementById('modal-body');
-    const closeModalX = document.getElementById('close-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-  
-    if (!modal || !modalBody || !closeModalX || !closeModalBtn) {
-      console.error("Elementos del modal no encontrados en el DOM.");
-      return;
-    }
-  
-    // Preparar contenido de blogs relacionados
-    const relatedBlogsHtml = product.related_blogs && product.related_blogs.length > 0 
-      ? `
-        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-          <h4>Info de las Hierbas:</h4>
-          <ul class="related-blogs-list">
-            ${product.related_blogs.map(blogRef => {
-              // Intentar encontrar el blog completo por ID para asegurar que existe
-              const relatedBlog = blogs.find(b => b.id === (blogRef.id || blogRef)); // Manejar si es objeto o solo ID
-              const blogTitle = relatedBlog ? relatedBlog.title : (blogRef.title || 'Blog no encontrado'); // Usar título de referencia o del blog encontrado
-              const blogId = relatedBlog ? relatedBlog.id : (blogRef.id || blogRef);
-              // Solo crear enlace si se encontró el blog o se tiene un ID
-              if (relatedBlog || blogRef.id || typeof blogRef === 'string') {
-                 return `<li><a href="#" class="related-blog-link" data-blog-id="${blogId}">${blogTitle}</a></li>`;
-              }
-              return `<li>${blogTitle} (ID: ${blogId})</li>`; // Mostrar sin enlace si no se puede resolver
-            }).join('')}
-          </ul>
-        </div>
-      ` 
-      : '';
-    
-    // Obtener el contenido del disclaimer principal
-    const mainDisclaimer = document.querySelector('.disclaimer-content-hierbas span');
-    const disclaimerText = mainDisclaimer ? mainDisclaimer.innerHTML : 
-        'La información proporcionada en este sitio web es solo para fines informativos y educativos. No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.';    modalBody.innerHTML = `
-    <div class="modal-product-header">
-        <h2>${product.title}</h2>
-        <div class="modal-actions">
+  // Restaurar showProductDetail: encapsular el contenido del modal en una función exportada
+    export function showProductDetail(product, blogs) {
+      const modal = document.getElementById('generic-modal');
+      const modalBody = document.getElementById('modal-body');
+      const closeModalX = document.getElementById('close-modal');
+      const closeModalBtn = document.getElementById('close-modal-btn');
+
+      if (!modal || !modalBody || !closeModalX || !closeModalBtn) {
+        console.error('Elementos del modal no encontrados en el DOM.');
+        return;
+      }
+
+      const mainDisclaimer = document.querySelector('.disclaimer-content-hierbas span');
+      const disclaimerText = mainDisclaimer ? mainDisclaimer.innerHTML : 
+          'La información proporcionada en este sitio web es solo para fines informativos y educativos. No pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte siempre con un profesional de la salud calificado antes de usar cualquier producto o tratamiento.';
+
+      // Mostrar promedio de estrellas justo debajo del título para no distraer
+      const productRatingSummary = getProductRating(product.id);
+      const averageStarsInline = createStarDisplay(productRatingSummary.average);
+
+      // Construir HTML de blogs relacionados si existen
+      let relatedBlogsHtml = '';
+      if (product.related_blogs && product.related_blogs.length) {
+        relatedBlogsHtml = `
+          <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+            <h4>Info de las Hierbas:</h4>
+            <ul class="related-blogs-list">
+              ${product.related_blogs.map(rbId => {
+                const blog = blogs.find(b => b.id === rbId);
+                return `<li><a href="#" class="related-blog-link" data-blog-id="${rbId}">${blog ? blog.title : 'Ficha relacionada'}</a></li>`;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      modalBody.innerHTML = `
+        <div class="modal-product-header">
+          <h2>${product.title}</h2>
+          <div class="modal-average-rating">
+            <div class="average-stars-inline">${averageStarsInline}</div>
+            <div class="average-text-inline"><span class="average-score-inline">${productRatingSummary.average}</span>/5</div>
+          </div>
+          <div class="modal-actions">
             <button class="btn-share" data-product-id="${product.id}">
-                <i class="bi bi-share"></i> Compartir
+              <i class="bi bi-share"></i> Compartir
             </button>
+          </div>
         </div>
-    </div>
-     <img src="${product.image_path|| './asset/img/logo_gris.jpeg'}" alt="${product.title}" >
-    
-    <p>${product.description || 'Descripción no disponible.'}</p> 
-    <button class="disclaimer-btn" title="Declinación de responsabilidad">
-            <i class="bi bi-exclamation-triangle"></i> Descargo de responsabilidad
+        <img src="${product.image_path || './asset/img/logo_gris.jpeg'}" alt="${product.title}" />
+        <p>${product.description || 'Descripción no disponible.'}</p>
+        <button class="disclaimer-btn" title="Declinación de responsabilidad">
+          <i class="bi bi-exclamation-triangle"></i> Descargo de responsabilidad
         </button>
         <div class="modal-disclaimer-container" style="display: none;">
           ${disclaimerText}
         </div>
-        ${relatedBlogsHtml} 
-    <div id="blog-content-in-product" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; display: none;">
-        <h4>Detalle de la Hierba:</h4>
-        <div id="blog-content-container"></div>
-        <button class="btn" id="close-blog-content">Cerrar detalle</button>
-    </div>
-    `;
+        ${relatedBlogsHtml}
+        ${createRatingSection(product.id)}
+        <div id="blog-content-in-product" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; display: none;">
+          <h4>Detalle de la Hierba:</h4>
+          <div id="blog-content-container"></div>
+          <button class="btn" id="close-blog-content">Cerrar detalle</button>
+        </div>
+      `;
     // Agregar evento para el declinador de responsabilidad
     const disclaimerBtn = modalBody.querySelector('.disclaimer-btn');
     const disclaimerContainer = modalBody.querySelector('.modal-disclaimer-container');
@@ -291,19 +283,26 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
         }
       });
     });
-  
     // Mostrar el modal con animación
     modal.style.display = 'flex';
     // Usar setTimeout para asegurar que se aplique la transición
     setTimeout(() => {
       modal.classList.add('visible');
     }, 10);
+
+    // Inicializar el sistema de calificación con estrellas
+    const ratingSection = modalBody.querySelector('.rating-section');
+    if (ratingSection) {
+        initializeStarRating(ratingSection);
+    // Actualizar promedio real desde Firestore al abrir el modal
+    fetchProductRating(product.id).catch(console.error);
+    }
   
     // Agregar listeners para cerrar
     closeModalX.addEventListener('click', close);
     closeModalBtn.addEventListener('click', close);
     window.addEventListener('click', closeOutside);
-  }  // Función para compartir producto
+  }// Función para compartir producto
   function shareProduct(product) {
     const shareData = {
       title: product.title,
@@ -846,3 +845,410 @@ function initializeCarousel(totalItems) {
     
     // Llamar al ajuste cuando cambie el tamaño
     window.addEventListener('resize', adjustForMobile);
+
+// Sistema de calificación con estrellas
+function createRatingSection(productId) {
+    const productRating = getProductRating(productId);
+    const averageStars = createStarDisplay(productRating.average);
+    
+  return `
+    <div class="rating-section">
+  <!-- Formulario para nueva calificación (ordenado: estrellas → nombre opcional → comentario → acciones) -->
+      <div class="new-rating-form">
+        <h4 class="rating-title">¿Qué te pareció este producto?</h4>
+        <!-- Estrellas primero: es lo principal (clasificar) -->
+        <div class="star-rating" data-product-id="${productId}">
+          ${[1, 2, 3, 4, 5].map(i => 
+            `<span class="star" data-rating="${i}">★</span>`
+          ).join('')}
+        </div>
+        <!-- Nombre opcional: dejar claro que es opcional para preservar anonimato -->
+        <input class="rating-name" type="text" placeholder="Tu nombre (opcional)" maxlength="50" />
+        <!-- Comentario: opcional -->
+        <textarea 
+          class="rating-comment" 
+          placeholder="Comparte tu experiencia con este producto (opcional)..."
+          maxlength="500"
+        ></textarea>
+        <div class="character-count">0/500</div>
+        <div class="rating-actions">
+          <button class="btn-rating cancel">
+            <i class="bi bi-x-circle"></i>
+            Cancelar
+          </button>
+          <button class="btn-rating save" disabled>
+            <i class="bi bi-star-fill"></i>
+            Guardar Calificación
+          </button>
+        </div>
+        <div class="rating-success">
+          <i class="bi bi-check-circle-fill"></i>
+          ¡Gracias por tu calificación! Tu opinión nos ayuda a mejorar.
+        </div>
+      </div>
+
+      <!-- Comentarios anteriores -->
+      <div class="previous-ratings">
+        <div class="ratings-header">
+          <h4>Comentarios de otros usuarios</h4>
+          <button class="btn-toggle-comments" data-product-id="${productId}">
+            <i class="bi bi-chevron-down"></i>
+            Ver comentarios
+          </button>
+        </div>
+        <div class="ratings-list" style="display: none;">
+          <!-- Los comentarios se cargarán dinámicamente -->
+        </div>
+      </div>
+      <!-- Resumen de calificación del producto (secundario) -->
+      <div class="product-rating-summary product-rating-summary--secondary">
+        <h4 class="rating-title">Calificaciones del producto</h4>
+        <div class="average-rating">
+          <div class="average-stars">${averageStars}</div>
+          <div class="average-text">
+            <span class="average-score">${productRating.average}</span>/5
+            <span class="rating-count">(${productRating.count} ${productRating.count === 1 ? 'calificación' : 'calificaciones'})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Crear visualización de estrellas (solo lectura)
+function createStarDisplay(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    
+    let starsHtml = '';
+    
+    // Estrellas completas
+    for (let i = 0; i < fullStars; i++) {
+        starsHtml += '<span class="display-star full">★</span>';
+    }
+    
+    // Media estrella
+    if (hasHalfStar) {
+        starsHtml += '<span class="display-star half">★</span>';
+    }
+    
+    // Estrellas vacías
+    for (let i = 0; i < emptyStars; i++) {
+        starsHtml += '<span class="display-star empty">☆</span>';
+    }
+    
+    return starsHtml;
+}
+
+// Crear lista de comentarios anteriores
+async function createRatingsList(productId) {
+  // Consulta a Firestore
+  const q = query(
+    collection(db, "productRatings"),
+    where("productId", "==", productId),
+    orderBy("timestamp", "desc")
+  );
+  const querySnapshot = await getDocs(q);
+  const ratings = querySnapshot.docs.map(doc => doc.data());
+  if (!ratings.length) {
+    return '<div class="no-comments">Aún no hay comentarios para este producto. ¡Sé el primero en comentar!</div>';
+  }
+  return ratings.map(rating => {
+    let date = rating.timestamp && rating.timestamp.toDate ? rating.timestamp.toDate() : new Date();
+    const formattedDate = date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+    const userInitial = rating.name ? rating.name[0].toUpperCase() : '?';
+    const starsDisplay = createStarDisplay(rating.rating);
+    return `
+      <div class="rating-item">
+        <div class="rating-item-header">
+          <div class="user-avatar">${userInitial}</div>
+          <div class="rating-item-info">
+            <div class="rating-item-stars">${starsDisplay}</div>
+            <div class="rating-item-date">${formattedDate}</div>
+          </div>
+        </div>
+        <div class="rating-item-comment">${rating.comment}</div>
+        <div class="rating-item-name">${rating.name || ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Inicializar sistema de estrellas
+function initializeStarRating(container) {
+  const stars = container.querySelectorAll('.star');
+  const saveBtn = container.querySelector('.btn-rating.save');
+  const cancelBtn = container.querySelector('.btn-rating.cancel');
+  const commentTextarea = container.querySelector('.rating-comment');
+  const nameInput = container.querySelector('.rating-name');
+  const characterCount = container.querySelector('.character-count');
+  const successMessage = container.querySelector('.rating-success');
+  const productId = container.querySelector('.star-rating').dataset.productId;
+  const toggleCommentsBtn = container.querySelector('.btn-toggle-comments');
+  const ratingsList = container.querySelector('.ratings-list');
+  let selectedRating = 0;
+
+  // Contador de caracteres
+  commentTextarea.addEventListener('input', () => {
+    const currentLength = commentTextarea.value.length;
+    const maxLength = 500;
+    characterCount.textContent = `${currentLength}/${maxLength}`;
+    characterCount.classList.remove('warning', 'danger');
+    if (currentLength > maxLength * 0.8) {
+      characterCount.classList.add('warning');
+    }
+    if (currentLength > maxLength * 0.95) {
+      characterCount.classList.add('danger');
+    }
+  });
+
+  // Manejar hover y click en estrellas
+  stars.forEach((star, index) => {
+    star.addEventListener('mouseenter', () => {
+      highlightStars(index + 1);
+    });
+    star.addEventListener('click', () => {
+      selectedRating = index + 1;
+      setSelectedStars(selectedRating);
+      saveBtn.disabled = false; // Habilitar botón guardar
+    });
+  });
+
+  // Restaurar estrellas al salir del hover
+  container.querySelector('.star-rating').addEventListener('mouseleave', () => {
+    setSelectedStars(selectedRating);
+  });
+
+  // Toggle comentarios anteriores
+  if (toggleCommentsBtn && ratingsList) {
+    toggleCommentsBtn.addEventListener('click', async () => {
+      const isVisible = ratingsList.style.display !== 'none';
+      ratingsList.style.display = isVisible ? 'none' : 'block';
+      const icon = toggleCommentsBtn.querySelector('i');
+      const text = toggleCommentsBtn.childNodes[1];
+      if (isVisible) {
+        icon.className = 'bi bi-chevron-down';
+        text.textContent = ' Ver comentarios';
+      } else {
+        icon.className = 'bi bi-chevron-up';
+        text.textContent = ' Ocultar comentarios';
+        // Cargar comentarios desde Firestore
+        ratingsList.innerHTML = '<div class="loading">Cargando comentarios...</div>';
+        const html = await createRatingsList(productId);
+        ratingsList.innerHTML = html;
+      }
+    });
+  }
+
+  // Guardar calificación (nombre ahora es opcional; si está vacío se usará 'Anónimo')
+  saveBtn.addEventListener('click', async () => {
+    if (selectedRating === 0) {
+      showNotification('Por favor selecciona una calificación', 'warning');
+      return;
+    }
+    let name = '';
+    if (nameInput) name = nameInput.value.trim();
+    if (!name) name = 'Anónimo'; // nombre opcional
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando...';
+    const comment = commentTextarea.value.trim();
+    try {
+      await saveRating(productId, selectedRating, comment, name);
+      successMessage.style.display = 'block';
+      container.querySelector('.star-rating').style.display = 'none';
+      commentTextarea.style.display = 'none';
+      if (nameInput) nameInput.style.display = 'none';
+      characterCount.style.display = 'none';
+      container.querySelector('.rating-actions').style.display = 'none';
+      // Actualizar el resumen de calificaciones (opcional: recargar promedio desde Firestore)
+      // updateRatingSummary(container, productId);
+      // Refrescar promedio desde Firestore para mostrar el resultado correcto
+      try {
+        await fetchProductRating(productId);
+        // Si la lista de comentarios está visible, recargarla
+        if (ratingsList && ratingsList.style.display !== 'none') {
+          ratingsList.innerHTML = '<div class="loading">Cargando comentarios...</div>';
+          const html = await createRatingsList(productId);
+          ratingsList.innerHTML = html;
+        }
+      } catch (err) {
+        console.warn('No se pudo actualizar el promedio desde Firestore:', err);
+      }
+
+      setTimeout(() => {
+        resetRatingForm();
+      }, 3000);
+    } catch (error) {
+      console.error('Error al guardar calificación:', error);
+      showNotification('Error al guardar la calificación. Intenta nuevamente.', 'error');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<i class="bi bi-star-fill"></i> Guardar Calificación';
+    }
+  });
+
+  // Cancelar calificación
+  cancelBtn.addEventListener('click', () => {
+    resetRatingForm();
+  });
+
+  function highlightStars(rating) {
+    stars.forEach((star, index) => {
+      star.classList.toggle('active', index < rating);
+    });
+  }
+  function setSelectedStars(rating) {
+    stars.forEach((star, index) => {
+      star.classList.toggle('active', index < rating);
+    });
+  }
+  function resetRatingForm() {
+    selectedRating = 0;
+    setSelectedStars(0);
+    commentTextarea.value = '';
+    nameInput.value = '';
+    characterCount.textContent = '0/500';
+    characterCount.classList.remove('warning', 'danger');
+    successMessage.style.display = 'none';
+    container.querySelector('.star-rating').style.display = 'flex';
+    commentTextarea.style.display = 'block';
+    nameInput.style.display = 'block';
+    characterCount.style.display = 'block';
+    container.querySelector('.rating-actions').style.display = 'flex';
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="bi bi-star-fill"></i> Guardar Calificación';
+  }
+}
+
+// Guardar calificación en Firestore
+async function saveRating(productId, rating, comment, name) {
+  try {
+    if (!name || !name.trim()) throw new Error("El nombre es obligatorio");
+    const ratingData = {
+      productId,
+      rating,
+      comment: comment || "",
+      name: name.trim(),
+      timestamp: serverTimestamp()
+    };
+    await addDoc(collection(db, "productRatings"), ratingData);
+    showNotification('¡Calificación guardada! Gracias por tu opinión', 'success');
+    return ratingData;
+  } catch (error) {
+    showNotification('Error al guardar la calificación. Intenta nuevamente.', 'error');
+    throw error;
+  }
+}
+
+// Generar ID único para calificaciones
+function generateRatingId() {
+    return 'rating_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Generar ID único de usuario (simplificado)
+function generateUserId() {
+    let userId = localStorage.getItem('tempUserId');
+    if (!userId) {
+        userId = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem('tempUserId', userId);
+    }
+    return userId;
+}
+
+// Obtener calificación promedio de un producto
+function getProductRating(productId) {
+    const ratings = JSON.parse(localStorage.getItem('productRatings') || '[]');
+    const productRatings = ratings.filter(r => r.productId === productId);
+    
+    if (productRatings.length === 0) {
+        return { average: 0, count: 0 };
+    }
+    
+    const sum = productRatings.reduce((acc, r) => acc + r.rating, 0);
+    const average = (sum / productRatings.length).toFixed(1);
+    
+    return {
+        average: parseFloat(average),
+        count: productRatings.length
+    };
+}
+
+// Función para mostrar notificaciones (simplificada)
+function showNotification(message, type = 'info') {
+    // Crear elemento de notificación
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="notification-icon bi bi-${getNotificationIcon(type)}"></i>
+            <span class="notification-message">${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="bi bi-x"></i>
+        </button>
+    `;
+    
+    // Agregar al contenedor de notificaciones o crear uno
+    let container = document.querySelector('.notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+    }
+    
+    container.appendChild(notification);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+function getNotificationIcon(type) {
+    const icons = {
+        success: 'check-circle',
+        error: 'exclamation-triangle',
+        warning: 'exclamation-triangle',
+        info: 'info-circle'
+    };
+    return icons[type] || 'info-circle';
+}
+
+// Consultar Firestore para obtener promedio y conteo reales y actualizar la UI
+async function fetchProductRating(productId) {
+  try {
+    const q = query(
+      collection(db, 'productRatings'),
+      where('productId', '==', productId)
+    );
+    const snapshot = await getDocs(q);
+    const docs = snapshot.docs.map(d => d.data());
+    const count = docs.length;
+    const average = count === 0 ? 0 : (docs.reduce((s, r) => s + (r.rating || 0), 0) / count);
+
+    // Actualizar elementos del modal si existen
+    const modal = document.getElementById('generic-modal');
+    if (!modal) return { average: parseFloat(average.toFixed(1)), count };
+    const avgStarsContainers = modal.querySelectorAll('.average-stars, .average-stars-inline');
+    const avgScoreEls = modal.querySelectorAll('.average-score, .average-score-inline');
+    const ratingCountEls = modal.querySelectorAll('.rating-count');
+
+    const starsHtml = createStarDisplay(parseFloat(average.toFixed(1)));
+    avgStarsContainers.forEach(el => { el.innerHTML = starsHtml; });
+    avgScoreEls.forEach(el => { el.textContent = parseFloat(average.toFixed(1)); });
+    ratingCountEls.forEach(el => { el.textContent = `(${count} ${count === 1 ? 'calificación' : 'calificaciones'})`; });
+
+    return { average: parseFloat(average.toFixed(1)), count };
+  } catch (error) {
+    console.error('fetchProductRating error:', error);
+    throw error;
+  }
+}
+
+

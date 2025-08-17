@@ -364,6 +364,8 @@ function addReadMoreListeners(container, blogs) {
             // Mostrar el modal con un indicador de carga
             modal.style.display = 'flex';
             modalBody.innerHTML = '<div class="loading"></div>';
+            // Marcar modal para estilos específicos de blog
+            modal.classList.add('blog-modal');
             setTimeout(() => {
                 modal.classList.add('visible');
                 // Actualizar el texto circular para el nuevo elemento de carga
@@ -442,6 +444,8 @@ export function showBlogDetail(blog) {
   // Función para cerrar el modal
   const close = () => {
     modal.classList.remove('visible');
+    // Limpiar marcador de estilo específico para blogs
+    modal.classList.remove('blog-modal');
     // Esperar a que termine la animación antes de ocultar completamente
     setTimeout(() => {
       modal.style.display = 'none';
@@ -473,6 +477,8 @@ export function showBlogDetail(blog) {
   
   // Mostrar el modal y agregar clase visible para la animación
   modal.style.display = 'flex';
+    // Marcar modal para estilos específicos de blog
+    modal.classList.add('blog-modal');
   // Usar setTimeout para asegurar que se aplique la transición
   setTimeout(() => {
     modal.classList.add('visible');

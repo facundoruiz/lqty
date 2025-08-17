@@ -4,6 +4,7 @@ import { renderProducts, renderHerbsCarousel } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
 import './styles.css';
+import './styles/notifications.css';
 
 // Variable global para almacenar blogs (o pasarla a través de funciones)
 window.allBlogs = [];
@@ -150,8 +151,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Configurar filtrado pasando ambos arrays
     setupFilters(products, window.allBlogs);
     
-    // Verificar parámetros en la URL
-    checkURLParameters(products, allBlogs);
+  // Verificar parámetros en la URL
+  checkURLParameters(products, window.allBlogs);
 
     // Verificar si hay un ID en la URL
     const path = window.location.pathname;
@@ -163,7 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const product = products.find(p => p.id === productId);
       if (product) {
         console.log('Product found:', product); // Para debugging
-        showProductDetail(product, allBlogs);
+        showProductDetail(product, window.allBlogs);
       } else {
         console.error('Producto no encontrado con ID:', productId);
       }
