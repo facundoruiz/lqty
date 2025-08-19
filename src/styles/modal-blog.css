@@ -1,0 +1,188 @@
+
+/* Estilos vintage para modal de blog/ficha (extraídos del legacy) */
+.modal.blog-modal {
+	backdrop-filter: blur(2px) saturate(0.9);
+	background: rgba(12,8,6,0.45);
+}
+
+/* Las reglas del modal-content están definidas más abajo para usar el estilo blog-card.paper */
+
+/* Encabezado del modal con estética de libreta/agenda */
+.modal.blog-modal .modal-blog-header h2 {
+	font-size: 2rem;
+	letter-spacing: 0.2px;
+	margin: 0 0 10px 0;
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	text-align: center;
+	justify-content: center;
+}
+
+
+
+
+/* Resumen de calificación dentro del header del modal */
+.modal-average-rating {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	justify-content: center;
+	font-size: 1rem;
+	color: var(--light-text);
+}
+.modal-average-rating .average-stars-inline .display-star,
+.average-stars .display-star {
+	font-size: 30px; /* aumentar las estrellas +2pt aprox */
+	line-height: 1;
+	color: #c17e3e;
+	text-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.modal-average-rating .average-text-inline {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 6px;
+	font-weight: 600;
+	color: var(--text-color);
+}
+.modal-average-rating .rating-count-inline {
+	font-size: 0.95rem;
+	color: var(--light-text);
+	font-weight: 500;
+	margin-left: 6px;
+}
+
+@media (max-width: 767.98px) {
+	.modal-blog-header h2 { font-size: 1.4rem; }
+	.modal-average-rating .average-stars-inline .display-star,
+	.average-stars .display-star { font-size: 26px; }
+}
+
+.modal.blog-modal .modal-blog-header .disclaimer-btn {
+	background: #f1e4c9;
+	border: 1px solid #d2bfa3;
+	padding: 6px 8px;
+	border-radius: 6px;
+	color: #6b4f33;
+}
+
+.modal.blog-modal .modal-disclaimer-container {
+	margin: 8px 0 12px 0;
+	background: rgba(255,255,255,0.6);
+	border-left: 4px solid #d9c2a0;
+	padding: 10px 12px;
+	border-radius: 4px;
+	color: #4a3828;
+	font-size: 0.95rem;
+}
+
+/* Imagen centrada y con estilo de postal dentro del modal */
+.blog-detail-image {
+	display: block;
+	margin: 12px auto;
+	max-width: 68%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	border-radius: 6px;
+	border: 1px solid rgba(0,0,0,0.06);
+	box-shadow: 0 10px 24px rgba(24,14,8,0.12);
+}
+
+/* Aplicar cinta y estilo vintage a la foto interior del modal */
+.blog-detail-photo { position: relative; display: block; }
+.blog-detail-photo::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+ top: -1vmin;
+	width: 52%;
+	height: 3vmin;
+	background-color: var(--tape-gray);
+	border-right: 1px dotted var(--tape-edge-gray);
+	border-left: 1px dotted var(--tape-edge-gray);
+	opacity: 0.95;
+	z-index: 5;
+	pointer-events: none;
+}
+.blog-detail-photo::after {
+	content: "";
+	position: absolute;
+	width: 10vmin;
+	height: 4vmin;
+	right: calc(20% );
+	top: 18vmin;
+	background-color: var(--tape-gray);
+	opacity: 0.95;
+	border-right: 1px dotted var(--tape-edge-gray);
+	border-left: 1px dotted var(--tape-edge-gray);
+	z-index: 5;
+	transform: rotate(-45deg);
+	pointer-events: none;
+}
+
+.modal.blog-modal .blog-content {
+	margin-top: 12px;
+	color: #3d2c1d;
+	line-height: 1.6;
+	font-size: 1rem;
+}
+
+/* Pequeños detalles tipo "papel envejecido" */
+.modal.blog-modal::before {
+	content: '';
+	position: absolute;
+	left: 0; right: 0; top: 0; bottom: 0;
+	pointer-events: none;
+	background-image: radial-gradient(rgba(0,0,0,0.015) 1px, transparent 1px);
+	background-size: 20px 20px;
+	mix-blend-mode: multiply;
+	opacity: 0.6;
+}
+
+/* Hacer que el modal adopte el aspecto de papel vintage sin rayas que molesten */
+.modal.blog-modal .modal-content {
+	/* Estilo de papel envejecido sin las líneas rayadas */
+	position: relative !important;
+	background-color: #fffef8 !important;
+	padding: 18px !important;
+	border: 1px solid rgba(0,0,0,0.06) !important;
+	box-shadow: -0.5rem 0.5rem 1rem rgba(0,0,0,0.08) !important;
+	margin: 1rem 0.3rem !important;
+	/* Sin background-image rayado para mejor legibilidad */
+	overflow: visible !important;
+	max-width: 900px !important;
+	width: calc(100% - 48px) !important;
+	color: #2b200f !important;
+	font-family: Georgia, 'Times New Roman', serif !important;
+}
+
+/* Permitir que .blog-card.paper mantenga sus estilos dentro del modal */
+
+/* Botones y links con tonos cálidos */
+
+.modal.blog-modal a.read-more {
+	background: transparent;
+	color: #7a4f2a;
+}
+
+/* Responsivo: imágenes más grandes en pantallas pequeñas */
+@media (max-width: 600px) {
+	.blog-detail-image { max-width: 92%; }
+	.modal.blog-modal .modal-content { padding: 14px; }
+}
+
+/* Asegurar que solo las fichas con clase aplican cambios: estilos específicos para el container */
+#blogs-container.blog-grid .blog-card { background-clip: padding-box; }
+
+/* Blog Section - Mejora para carga progresiva */
+.blog {
+	background-color: rgba(252, 240, 227, 0.5);
+	margin-top: 60px;
+}
+
+.blog-title {
+	font-size: 1.5rem;
+	margin-bottom: 20px;
+}

@@ -136,10 +136,17 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
           <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
             <h4>Info de las Hierbas:</h4>
             <ul class="related-blogs-list">
-              ${product.related_blogs.map(rbId => {
-                const blog = blogs.find(b => b.id === rbId);
-                return `<li><a href="#" class="related-blog-link" data-blog-id="${rbId}">${blog ? blog.title : 'Ficha relacionada'}</a></li>`;
-              }).join('')}
+              ${product.related_blogs.map(blogRef => {
+              // Intentar encontrar el blog completo por ID para asegurar que existe
+              const relatedBlog = blogs.find(b => b.id === (blogRef.id || blogRef)); // Manejar si es objeto o solo ID
+              const blogTitle = relatedBlog ? relatedBlog.title : (blogRef.title || 'Blog no encontrado'); // Usar título de referencia o del blog encontrado
+              const blogId = relatedBlog ? relatedBlog.id : (blogRef.id || blogRef);
+              // Solo crear enlace si se encontró el blog o se tiene un ID
+              if (relatedBlog || blogRef.id || typeof blogRef === 'string') {
+                 return `<li><a href="#" class="related-blog-link" data-blog-id="${blogId}">${blogTitle}</a></li>`;
+              }
+              return `<li>${blogTitle} (ID: ${blogId})</li>`; // Mostrar sin enlace si no se puede resolver
+            }).join('')}
             </ul>
           </div>
         `;
@@ -150,7 +157,10 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
           <h2>${product.title}</h2>
           <div class="modal-average-rating">
             <div class="average-stars-inline">${averageStarsInline}</div>
-            <div class="average-text-inline"><span class="average-score-inline">${productRatingSummary.average}</span>/5</div>
+            <div class="average-text-inline">
+              <span class="average-score-inline">${productRatingSummary.average}</span>/5
+              <span class="rating-count-inline"> · ${productRatingSummary.count} ${productRatingSummary.count === 1 ? 'reseña' : 'reseñas'}</span>
+            </div>
           </div>
           <div class="modal-actions">
             <button class="btn-share" data-product-id="${product.id}">
@@ -890,25 +900,14 @@ function createRatingSection(productId) {
       <!-- Comentarios anteriores -->
       <div class="previous-ratings">
         <div class="ratings-header">
-          <h4>Comentarios de otros usuarios</h4>
+          <h4>Reseñas</h4>
           <button class="btn-toggle-comments" data-product-id="${productId}">
             <i class="bi bi-chevron-down"></i>
-            Ver comentarios
+            Ver reseñas
           </button>
         </div>
         <div class="ratings-list" style="display: none;">
-          <!-- Los comentarios se cargarán dinámicamente -->
-        </div>
-      </div>
-      <!-- Resumen de calificación del producto (secundario) -->
-      <div class="product-rating-summary product-rating-summary--secondary">
-        <h4 class="rating-title">Calificaciones del producto</h4>
-        <div class="average-rating">
-          <div class="average-stars">${averageStars}</div>
-          <div class="average-text">
-            <span class="average-score">${productRating.average}</span>/5
-            <span class="rating-count">(${productRating.count} ${productRating.count === 1 ? 'calificación' : 'calificaciones'})</span>
-          </div>
+          <!-- Las reseñas se cargarán dinámicamente -->
         </div>
       </div>
     </div>
@@ -1235,14 +1234,43 @@ async function fetchProductRating(productId) {
     // Actualizar elementos del modal si existen
     const modal = document.getElementById('generic-modal');
     if (!modal) return { average: parseFloat(average.toFixed(1)), count };
-    const avgStarsContainers = modal.querySelectorAll('.average-stars, .average-stars-inline');
-    const avgScoreEls = modal.querySelectorAll('.average-score, .average-score-inline');
-    const ratingCountEls = modal.querySelectorAll('.rating-count');
+  const avgStarsContainers = modal.querySelectorAll('.average-stars, .average-stars-inline');
+  const avgScoreEls = modal.querySelectorAll('.average-score, .average-score-inline');
+  const ratingCountEls = modal.querySelectorAll('.rating-count, .rating-count-inline');
 
     const starsHtml = createStarDisplay(parseFloat(average.toFixed(1)));
     avgStarsContainers.forEach(el => { el.innerHTML = starsHtml; });
     avgScoreEls.forEach(el => { el.textContent = parseFloat(average.toFixed(1)); });
-    ratingCountEls.forEach(el => { el.textContent = `(${count} ${count === 1 ? 'calificación' : 'calificaciones'})`; });
+    ratingCountEls.forEach(el => { 
+      // Inline vs block: mantener formato legible
+      if (el.classList.contains('rating-count-inline')) {
+        el.textContent = ` · ${count} ${count === 1 ? 'reseña' : 'reseñas'}`;
+      } else {
+        el.textContent = `(${count} ${count === 1 ? 'calificación' : 'calificaciones'})`;
+      }
+    });
+
+    // Si hay reseñas, desplegarlas automáticamente dentro del modal
+    if (count > 0) {
+      const ratingsList = modal.querySelector('.ratings-list');
+      const toggleBtn = modal.querySelector('.btn-toggle-comments');
+      if (ratingsList) {
+        ratingsList.style.display = 'block';
+        ratingsList.innerHTML = '<div class="loading">Cargando reseñas...</div>';
+        try {
+          const html = await createRatingsList(productId);
+          ratingsList.innerHTML = html;
+        } catch (err) {
+          ratingsList.innerHTML = '<div class="no-comments">No se pudieron cargar las reseñas.</div>';
+        }
+      }
+      if (toggleBtn) {
+        const icon = toggleBtn.querySelector('i');
+        icon.className = 'bi bi-chevron-up';
+        // ajustar texto
+        toggleBtn.childNodes[1] && (toggleBtn.childNodes[1].textContent = ' Ocultar reseñas');
+      }
+    }
 
     return { average: parseFloat(average.toFixed(1)), count };
   } catch (error) {

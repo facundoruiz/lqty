@@ -1,0 +1,233 @@
+/* Estilos específicos para el modal de producto */
+/* Estilos para el encabezado modal y acciones */
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+
+.modal-product-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.modal-product-header h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.modal-average-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    font-size: 1rem;
+    color: var(--light-text);
+}
+.modal-average-rating .average-stars-inline .display-star,
+.average-stars .display-star {
+    font-size: 3rem;
+    line-height: 1;
+    color: #c17e3e;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.modal-average-rating .average-text-inline {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+.modal-average-rating .rating-count-inline {
+    font-size: 0.95rem;
+    color: var(--light-text);
+    font-weight: 500;
+    margin-left: 6px;
+}
+
+@media (max-width: 767.98px) {
+    .modal-product-header h2 { font-size: 2rem; }
+    .modal-average-rating .average-stars-inline .display-star,
+    .average-stars .display-star { font-size: 2.6rem; }
+
+   
+
+    .modal-actions {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+
+/* Estilos para la página de detalle de mezcla */
+.mezcla-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.mezcla-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.mezcla-header h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.mezcla-image {
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mezcla-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.mezcla-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.mezcla-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+}
+
+.related-blogs {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: var(--light-bg);
+    border-radius: 8px;
+}
+
+.related-blogs h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.related-blogs-list {
+    list-style: none;
+    padding: 0;
+}
+
+.related-blogs-list li {
+    margin-bottom: 0.5rem;
+}
+
+.related-blog-link {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.related-blog-link:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.mezcla-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-whatsapp {
+    display: inline-block;
+    background-color: #25D366;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-2px);
+}
+
+.error-message {
+    text-align: center;
+    padding: 2rem;
+}
+
+.error-message h2 {
+    color: var(--error-color);
+    margin-bottom: 1rem;
+}
+
+.error-message p {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+}
+
+
+.modal-disclaimer-container {
+    background-color: #fff3f3;
+    border-left: 4px solid #ff6b6b;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.modal-disclaimer-container p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+
+.disclaimer-btn {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 1.2em;
+    transition: transform 0.2s;
+}
+
+.disclaimer-btn:hover {
+    transform: scale(1.1);
+}
+
+
+.disclaimer-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    color: #000;
+}
+
+.disclaimer-content i {
+    font-size: 1.5em;
+    color: #0a0eec;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.disclaimer-content p {
+    margin: 0;
+    font-size: 0.9em;
+    line-height: 1.5;
+}

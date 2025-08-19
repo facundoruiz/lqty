@@ -156,31 +156,7 @@
 }
 
 /* Botón de compartir */
-.btn-share {
-    background-color: #25D366;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.btn-share:hover {
-    background-color: #128C7E;
-    transform: scale(1.02);
-}
-
-.btn-share:focus {
-    outline: 2px solid #25D366;
-    outline-offset: 2px;
-}
+/* (El estilo .btn-share fue centralizado en src/styles/productos.css) */
 
 /* Estado vacío */
 .empty-mixes {
@@ -205,16 +181,51 @@
     font-size: 0.9rem;
 }
 
-/* Indicador de carga */
+/* Indicador de carga — mejora
+   Uso: mostrar cuando se están buscando más fichas. HTML sugerido:
+   <div class="loading-indicator" role="status" aria-live="polite">
+     <div class="spinner" aria-hidden></div>
+     <div class="loading-text">Buscando más fichas...</div>
+   </div>
+*/
 .loading-indicator {
-    text-align: center;
-    padding: 20px;
-    color: #6c757d;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    color: var(--muted, #6c757d);
+    gap: 8px;
+    background: transparent;
 }
 
-.loading-indicator i {
-    font-size: 2rem;
-    animation: spin 1s linear infinite;
+.loading-indicator .spinner {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 2px solid rgba(0,0,0,0.14);
+    border-top-color: var(--primary-color, #007bff);
+    background: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-indicator .loading-text {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--muted, #6c757d);
+}
+
+/* Variante compacta para usar junto a botones o en filas */
+.loading-indicator.inline {
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px;
+}
+
+.loading-indicator.inline .spinner {
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
 }
 
 @keyframes spin {
@@ -457,20 +468,7 @@
     background-color: #d4edda;
     border-color: var(--secondary-color, #28a745);
     box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
-}
 
-.herb-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--secondary-color, #28a745);
-}
-
-.herb-thumbnail {
-    width: 35px;
-    height: 35px;
-    border-radius: 4px;
-    object-fit: cover;
-    border: 1px solid #e9ecef;
 }
 
 .herb-item label {
@@ -487,45 +485,6 @@
     font-weight: 500;
 }
 
-/* Estilos para botones del modal */
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.btn-primary {
-    background-color: var(--primary-color, #007bff);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--accent-color, #0056b3);
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #545b62;
-}
-
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
 
 /* Estilos para inputs del formulario */
 .form-group {
@@ -689,3 +648,43 @@ textarea.form-control {
         padding: 4px 8px;
     }
 }
+
+/* Normalizar indicadores de carga legacy y nuevos a un mismo estilo simple */
+/* Esto evita la animación de texto circular y unifica apariencia entre .loading y .loading-indicator */
+
+.loading-indicator{
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 8px 12px !important;
+    color: var(--muted, #6c757d) !important;
+    background: transparent !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+
+.loading-indicator .spinner {
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    box-sizing: border-box !important;
+    border: 2px solid rgba(0,0,0,0.14) !important;
+    border-top-color: var(--primary-color, #007bff) !important;
+    background: transparent !important;
+    animation: spin 0.8s linear infinite !important;
+}
+
+
+.loading-indicator .loading-text {
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    color: var(--muted, #6c757d) !important;
+    margin-left: 6px !important;
+    position: static !important;
+    animation: none !important;
+}
+
+
+
