@@ -69,6 +69,7 @@ Este proyecto está licenciado bajo la MIT License. Consulta el archivo `LICENSE
 - **Instagram:** [@laquetomoyo](https://www.instagram.com/laquetomoyo)
 - **Facebook:** [La que tomo Yo!](https://www.facebook.com/laquetomoyo)
 
----
 
-¿Te gustaría que lo guarde directamente en el repositorio o necesitas algún ajuste?
+
+firebase projects:list
+$ firebase deploy --only hosting --project infusionary
