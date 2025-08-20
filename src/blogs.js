@@ -168,7 +168,10 @@ export async function renderBlogs(options = {}) {
 
     // Si reset es true, reiniciamos la paginación
     if (reset) {
-        container.innerHTML = '<div class="loading"></div>';
+        container.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite">'
+            + '<div class="spinner" aria-hidden="true"></div>'
+            + '<div class="loading-text">Buscando más fichas...</div>'
+            + '</div>';
         paginationState = {
             isLoading: true,
             currentLastVisible: null,
@@ -185,8 +188,10 @@ export async function renderBlogs(options = {}) {
     const existingLoading = container.querySelector('.loading-indicator, .loading');
     if (!existingLoading) {
         const loadingIndicator = document.createElement('div');
-        loadingIndicator.className = 'loading-indicator';
-        loadingIndicator.innerText = 'Cargando...';
+    loadingIndicator.className = 'loading-indicator';
+    loadingIndicator.setAttribute('role', 'status');
+    loadingIndicator.setAttribute('aria-live', 'polite');
+    loadingIndicator.innerHTML = '<div class="spinner" aria-hidden="true"></div><div class="loading-text">Cargando...</div>';
         container.appendChild(loadingIndicator);
     }
 
@@ -239,7 +244,7 @@ export async function renderBlogs(options = {}) {
 
         // Renderizar blogs
         const newBlogsHTML = blogs.map(blog => `
-            <div class="blog-card" data-id="${blog.id}">
+            <div class="blog-card paper" data-id="${blog.id}">
                 <div class="blog-image">
                     <img src="${blog.image_path || './asset/img/logo_gris.jpeg'}" alt="${blog.title}" />
                 </div>
@@ -363,7 +368,12 @@ function addReadMoreListeners(container, blogs) {
             
             // Mostrar el modal con un indicador de carga
             modal.style.display = 'flex';
-            modalBody.innerHTML = '<div class="loading"></div>';
+            modalBody.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite">'
+                + '<div class="spinner" aria-hidden="true"></div>'
+                + '<div class="loading-text">Cargando...</div>'
+                + '</div>';
+            // Marcar modal para estilos específicos de blog
+            modal.classList.add('blog-modal');
             setTimeout(() => {
                 modal.classList.add('visible');
                 // Actualizar el texto circular para el nuevo elemento de carga
@@ -423,17 +433,18 @@ export function showBlogDetail(blog) {
       '<p>Información solo con fines informativos. Consulta con un profesional de la salud antes de cualquier uso.</p>';
   
   modalBody.innerHTML = `
-    <div class="modal-product-header">
+    <div class="modal-blog-header">
         <h2>${blog.title}  <button class="disclaimer-btn" title="Declinación de responsabilidad">
             <i class="bi bi-exclamation-triangle"></i>
         </button></h2>
-      
     </div>
     <div class="modal-disclaimer-container" style="display: none;">
         <p>${disclaimerText}</p>
     </div>
     <p>${blog.excerpt}</p>
-    <img src="${blog.image_path || './asset/img/logo_gris.jpeg'}" alt="${blog.title}" class="blog-detail-image" />
+    <div class="blog-detail-photo">
+        <img src="${blog.image_path || './asset/img/logo_gris.jpeg'}" alt="${blog.title}" class="blog-detail-image" />
+    </div>
     <div class="blog-content">
         ${blog.content || 'Contenido no disponible'}
     </div>
@@ -442,6 +453,8 @@ export function showBlogDetail(blog) {
   // Función para cerrar el modal
   const close = () => {
     modal.classList.remove('visible');
+    // Limpiar marcador de estilo específico para blogs
+    modal.classList.remove('blog-modal');
     // Esperar a que termine la animación antes de ocultar completamente
     setTimeout(() => {
       modal.style.display = 'none';
@@ -473,6 +486,8 @@ export function showBlogDetail(blog) {
   
   // Mostrar el modal y agregar clase visible para la animación
   modal.style.display = 'flex';
+    // Marcar modal para estilos específicos de blog
+    modal.classList.add('blog-modal');
   // Usar setTimeout para asegurar que se aplique la transición
   setTimeout(() => {
     modal.classList.add('visible');

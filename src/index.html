@@ -13,14 +13,14 @@
     
     <meta property="og:title" content="La que tomo Yo! - Catálogo de hierbas">
     <meta property="og:description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
-    <meta property="og:image" content="https://laquetomoyo.web.app/asset/android-chrome-512x512.png">
+    <meta property="og:image" content="./asset/img/android-chrome-512x512.png">
     <meta property="og:url" content="https://laquetomoyo.web.app">
     <meta property="og:type" content="website" />
-    <meta property="og:logo" content="https://laquetomoyo.web.app/asset/logo.png" />
+    <meta property="og:logo" content="./asset/img/logo.png" />
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="La que tomo Yo! - Catálogo de hierbas">
     <meta name="twitter:description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
-    <meta name="twitter:image" content="https://laquetomoyo.web.app/asset/img/android-chrome-512x512.png">
+    <meta name="twitter:image" content="./asset/img/android-chrome-512x512.png">
     <meta name="theme-color" content="#fcf0e3">
     <meta name="description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
     <!-- Fuentes -->
@@ -46,16 +46,117 @@
             </button>
             <nav>
                 <ul>
-                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#inicio" class="active">Inicio</a></li>
                     <li><a href="#mezclas">Mezclas/Hierbas</a></li>
                     <li><a href="#fichas">Fichas</a></li>
+                  
+                    <!-- <li><a href="#" id="logout-link" style="display: none;">Cerrar Sesión</a></li> -->
                 </ul>
                 <button class="mobile-menu-close" aria-label="Cerrar menú">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </nav>
+            <div class="menu-overlay"></div>
         </div>
     </header>
+    
+    <!-- Hero Section -->
+    <section class="hero-section" id="inicio">
+        <div class="hero-bg">
+            <div class="hero-pattern"></div>
+            <div class="floating-herbs">
+                <div class="herb-leaf herb-1">🌼</i></div>
+                <div class="herb-leaf herb-2">🌾</i></div>
+                <div class="herb-leaf herb-3">🌿</div>
+                <div class="herb-leaf herb-4">🧉</div>
+                <div class="herb-leaf herb-5">🍃</div>
+                <div class="herb-leaf herb-6">🌱</div>
+                <div class="herb-leaf herb-8">🍵</div>
+                <div class="herb-leaf herb-7">🍃</div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <div class="container">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-natural">Bienestar</span>
+                        <span class="title-emphasis">Natural</span>
+                        <span class="title-subtitle">en cada sorbo</span>
+                    </h1>
+                    <p class="hero-description">
+                        Descubre el poder ancestral de las hierbas argentinas. 
+                        Cada mezcla es una invitación a conectar con la naturaleza 
+                        y cuidar tu bienestar de manera natural y auténtica.
+                    </p>
+                    <div class="hero-features">
+                        <div class="feature-item">
+                            <i class="bi bi-patch-check-fill"></i>
+                            <span>100% Natural</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>Hierbas Argentinas</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-heart-fill"></i>
+                            <span>Tradición Familiar</span>
+                        </div>
+                    </div>
+                    <div class="hero-cta">
+                        <a href="#mezclas" class="btn btn-secondary btn-hero">
+                            <i class="bi bi-leaf"></i>
+                            Explorar Hierbas
+                        </a>
+                        <a href="#fichas" class="btn btn-secondary btn-hero">
+                            <i class="bi bi-book"></i>
+                            Ver Fichas
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-circle">
+                        <div class="circle-content">
+                            <div class="herb-showcase">
+                               <!--  <div class="showcase-item ">
+                                    <i class="bi bi-flower1"></i>
+                                    <span>Hierbas</span>
+                                </div> -->
+                                <div class="showcase-item active">
+                                   <img src="./asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
+                                   <span class="lqt"> La que tomo <span class="yo">Yo!</span></span>
+                                </div>
+                                <!-- <div class="showcase-item">
+                                    <i class="bi bi-heart-pulse"></i>
+                                    <span>Bienestar</span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">5</span>
+                            <span class="stat-label">Variedades</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Natural</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">🇦🇷</span>
+                            <span class="stat-label">Argentino</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <!--  <div class="hero-scroll-indicator">
+            <div class="scroll-text">Descubre más</div>
+            <div class="scroll-arrow">
+                <i class="bi bi-chevron-down"></i>
+            </div>
+        </div> -->
+    </section>
+    
     <main>
 
         <!-- Products Section -->
@@ -66,6 +167,38 @@
                 <div id="products-container" class="product-grid">
                     <!-- Los mezclas se cargarán desde Firebase -->
                     <div class="loading"></div>
+                </div>
+            </div>
+        </section>        <!-- Nueva sección de carrusel para hierbas -->
+        <!-- Esta sección presenta las hierbas en formato carrusel con: -->
+        <!-- - Navegación con botones izquierda/derecha -->
+        <!-- - Indicadores de posición -->
+        <!-- - Autoplay automático con pausa al hover -->
+        <!-- - Soporte táctil para dispositivos móviles -->
+        <!-- - Navegación con teclado (flechas) -->
+        <!-- - Responsive design -->
+        <section class="section products-carousel" id="hierbas-carousel">
+            <div class="container">
+                <h2 class="section-title">Descubre Nuestras Mezclas</h2>
+                <div class="underline"></div>
+                <div class="carousel-wrapper">
+                    <div class="carousel-nav">
+                        <button class="carousel-btn carousel-prev" aria-label="Anterior">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="carousel-btn carousel-next" aria-label="Siguiente">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="herbs-carousel-container" class="carousel-container">
+                        <div class="carousel-track">
+                            <!-- Los productos se cargarán aquí como carrusel -->
+                            <div class="loading carousel-loading"></div>
+                        </div>
+                    </div>
+                    <div class="carousel-indicators">
+                        <!-- Los indicadores se generarán dinámicamente -->
+                    </div>
                 </div>
             </div>
         </section>
@@ -151,7 +284,8 @@
                         <li><a href="#">Inicio</a></li>
                         <li><a href="#mezclas">Mezclas/Hierbas</a></li>
                         <li><a href="#fichas">Fichas</a></li>
-
+                     <!--    <li><a href="login.html" id="footer-login-link">Iniciar Sesión</a></li>
+                        <li><a href="dashboard.html" id="footer-dashboard-link" style="display: none;">Mi Perfil</a></li> -->
                     </ul>
                 </div>
                 <div class="footer-links">
@@ -170,7 +304,7 @@
         </div>
     </footer>
 
-
+    <!-- Scripts -->
 </body>
 
 </html>

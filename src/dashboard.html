@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=5.0, viewport-fit=cover">
+    <title>Mi Perfil - La que tomo Yo!</title>
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./asset/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./asset/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./asset/img/favicon-16x16.png">
+    <meta name="theme-color" content="#fcf0e3">
+    <meta name="description" content="Gestiona tus tareas personales en La que tomo Yo!">
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="./asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
+                <h1>La que tomo <span> Yo!</span></h1>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Abrir menú">
+                <i class="bi bi-list"></i>
+            </button>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="index.html#mezclas">Mezclas/Hierbas</a></li>
+                    <li><a href="index.html#fichas">Fichas</a></li>
+                    <li><a href="dashboard.html" class="active">Mi Perfil</a></li>
+                    <li><a href="#" id="logout-link">Cerrar Sesión</a></li>
+                </ul>
+                <button class="mobile-menu-close" aria-label="Cerrar menú">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </nav>
+            <div class="menu-overlay"></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="section dashboard-section" id="dashboard">
+            <div class="container">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <h2 id="user-name">Cargando...</h2>
+                        <p id="user-email">Cargando...</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-tabs">
+                   
+                    <button class="tab-link active" data-tab="mixes">
+                        <i class="bi bi-cup-hot"></i> Mis Mezclas
+                    </button>
+                    <button class="tab-link" data-tab="profile">
+                        <i class="bi bi-person-circle"></i> Mi Perfil
+                    </button>
+                </div>
+
+                <div class="tab-content">
+            
+
+                    <div id="mixes" class="tab-pane active">
+                        <h3 class="section-title">Mis Mezclas</h3>                        <div class="mixes-actions">
+                            <button class="btn btn-primary" id="add-mix-btn">
+                                <i class="bi bi-plus-circle"></i> Crear Nueva Mezcla
+                            </button>
+                        </div>
+                        <div id="user-mixes-list" class="user-mixes-container">
+                            <!-- Las mezclas del usuario se cargarán aquí -->
+                            <div class="loading-indicator">Cargando mezclas...</div>
+                        </div>
+                        <div id="empty-mixes" class="empty-state" style="display: none;">
+                            <i class="bi bi-journal-plus"></i>
+                            <p>No has creado ninguna mezcla. ¡Crea una nueva!</p>
+                        </div>
+
+                    
+                    </div>
+
+                    <div id="profile" class="tab-pane">
+                        <h3 class="section-title">Información de Perfil</h3>
+                        <form id="profile-form" class="profile-form">
+                            <div class="form-group">
+                                <label for="profile-name">Nombre</label>
+                                <input type="text" id="profile-name" name="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-email">Correo Electrónico</label>
+                                <input type="email" id="profile-email" name="email" disabled>
+                                <small>El correo electrónico no se puede modificar</small>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de bienvenida (MEJORADA) -->
+        <section class="section welcome-section" id="welcome">
+            <div class="container">
+                <h2>¡Bienvenido a tu perfil!</h2>
+                <p>Gestiona tus mezclas personalizadas y actualiza tu información.</p>
+              </div>
+        </section>
+    </main>
+
+     <!-- Modal para crear/editar mezcla (MEJORADO) -->
+    <div class="mix-modal" id="mix-modal">
+        <div class="mix-modal-content">
+            <div class="mix-modal-header">
+                <h3 class="mix-modal-title" id="mix-modal-title">Crear Nueva Mezcla</h3>
+                <span class="close" id="close-mix-modal">&times;</span>
+            </div>
+            <div class="mix-modal-body">
+                <form id="mix-form">
+                    <div class="mix-form-grid">
+                        <div class="mix-form-left">
+                            <div class="form-group">
+                                <label for="mix-name">Nombre de la Mezcla</label>
+                                <input type="text" id="mix-name" name="mixName" required 
+                                       placeholder="Ej: Mezcla relajante para dormir">
+                            </div>
+                           
+                            <div class="form-group">
+                                <label for="mix-description">Descripción (Opcional)</label>
+                                <textarea id="mix-description" name="mixDescription" rows="4" 
+                                          placeholder="Describe para qué sirve esta mezcla y cuándo tomarla..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mix-form-right">
+                            <div class="form-group herbs-selection-group">
+                                <label>Selecciona las hierbas para tu mezcla</label>
+                                <div class="herbs-selection-header">
+                                    <div class="selected-herbs-counter">
+                                        <span id="selected-herbs-count">0</span>
+                                        <span id="selected-herbs-text">hierbas seleccionadas</span>
+                                    </div>
+                                    <div class="search-herbs-container">
+                                        <i class="bi bi-search search-icon"></i>
+                                        <input type="text" id="search-herbs" placeholder="Buscar hierbas...">
+                                    </div>
+                                </div>
+                                
+                                <div class="herbs-filter">
+                                    <button type="button" class="filter-btn active" data-filter="all">
+                                        <i class="bi bi-grid"></i> Todas
+                                    </button>
+                                    <button type="button" class="filter-btn" data-filter="digestivas">
+                                        <i class="bi bi-droplet"></i> Digestivas
+                                    </button>
+                                    <button type="button" class="filter-btn" data-filter="relajantes">
+                                        <i class="bi bi-moon"></i> Relajantes
+                                    </button>
+                                    <button type="button" class="filter-btn" data-filter="energizantes">
+                                        <i class="bi bi-lightning"></i> Energizantes
+                                    </button>
+                                </div>
+                                
+                                <div id="herbs-selection-container" class="herbs-selection">
+                                    <div class="loading-indicator">
+                                        <i class="bi bi-hourglass-split loading-icon"></i>
+                                        <span>Cargando hierbas...</span>
+                                    </div>
+                                    
+                                    <div class="herbs-grid">
+                                        <!-- Las hierbas se cargarán aquí desde JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="mix-id">
+                </form>
+            </div>            <div class="mix-modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-mix-btn">
+                    <i class="bi bi-x"></i> Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary" form="mix-form">
+                    <i class="bi bi-check2"></i> Guardar Mezcla
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo">
+                        <img src="./asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
+                        <h1>La que tomo <span> Yo!</span></h1>
+                    </div>
+                    <p>¡Bienestar Natural en Cada Sorbo!</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Enlaces</h4>
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="index.html#mezclas">Mezclas</a></li>
+                        <li><a href="index.html#fichas">Fichas</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><a href="https://www.instagram.com/laquetomoyo" target="_blank">
+                                <i class="bi bi-instagram"></i> laquetomoyo</a></li>
+                        <li><a href="https://www.facebook.com/laquetomoyo" target="_blank">
+                                <i class="bi bi-facebook"></i> laquetomoyo</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 La que tomo Yo! - Todos los derechos e izquierdos reservados.</p>
+            </div>
+        </div>    </footer>
+
+   
+</body>
+
+</html>

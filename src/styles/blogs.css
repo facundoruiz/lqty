@@ -1,0 +1,364 @@
+/* estilos vintage para blogs/fichas - aspecto agenda antigua */
+
+/* Asegurar que solo las fichas con clase aplican cambios: estilos específicos para el container */
+#blogs-container.blog-grid .blog-card { background-clip: padding-box; }
+
+/* Blog Section - Mejora para carga progresiva */
+.blog {
+    background-color: rgba(252, 240, 227, 0.5);
+    margin-top: 60px;
+}
+
+.blog-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: var(--secondary-color);
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Mostrar 5 columnas */
+    gap: 30px;
+}
+
+.blog-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    cursor: pointer;
+}
+
+
+
+.blog-image {
+    width: 100%;
+    height: 200px;
+    background-color: #f1f1f1;
+    overflow: hidden;
+}
+
+.blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-speed);
+}
+
+
+.blog-info {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+}
+
+.blog-info a {
+    cursor: pointer;
+}
+
+.blog-date {
+    font-size: 0.8rem;
+    color: var(--medium-gray);
+    margin-bottom: var(--small-spacing);
+}
+
+.blog-post-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--color-text);
+}
+
+.blog-excerpt {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.read-more {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-block;
+    padding: 5px 0;
+    position: relative;
+    align-self: flex-start;
+    cursor: pointer;
+}
+
+.read-more:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+}
+
+
+
+#load-more-blogs {
+    background-color: var(--secondary-color);
+    color: white;
+    font-weight: 500;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    margin: 15px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 220px;
+}
+
+#load-more-blogs:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+#load-more-blogs:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+#load-more-blogs:before {
+    content: "\F287";
+    font-family: "bootstrap-icons";
+    font-size: 1.1rem;
+}
+
+#end-of-blogs {
+    color: var(--light-text);
+    font-style: italic;
+    font-size: 0.9rem;
+    margin: 20px 0;
+    background-color: var(--background-color);
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Ajustes responsivos para blog-grid */
+@media (max-width: 1199.98px) {
+    .blog-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 columnas en pantallas grandes */
+    }
+}
+
+@media (max-width: 991.98px) {
+    .blog-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columnas en tablets medianas */
+    }
+}
+
+@media (max-width: 767.98px) {
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets pequeñas */
+    }
+}
+
+@media (max-width: 575.98px) {
+    .blog-grid {
+        grid-template-columns: 1fr; /* 1 columna en móviles */
+    }
+}
+
+/* Layout de la rejilla de fichas (agenda) */
+#blogs-container.blog-grid,
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  align-items: start;
+  padding: 6px 0;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.blog-card {
+  background: linear-gradient(180deg, #fbf5ea 0%, #f3ead6 100%); /* papel envejecido */
+  border: 1px solid #d7c5a8;
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(34,20,12,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+  color: #2b200f;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+
+.blog-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0 12px 0;
+  position: relative;
+  overflow: visible;
+}
+
+.blog-image img {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 12px rgba(18,12,8,0.08);
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.blog-info {
+  padding: 6px 2px 2px 2px;
+}
+
+/* Variant: paper/card stacked effect (legacy) */
+.blog-card.paper { position: relative;
+    background-color: #fffef8;
+    padding: 18px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: -0.5rem 0.5rem 1rem rgba(0,0,0,0.08);
+    margin: 1rem 0.3rem;
+    background-image: linear-gradient(to bottom, #fff calc(1.2em - 1px), #e7dfcf calc(1.2em - 1px), #e7dfcf 1.2em, #fff 1.2em);
+    background-position: 0% 1.2em;
+    background-size: 100% 1.2em;
+    background-repeat: repeat-y;
+    overflow: visible; }
+.blog-card.paper::before,
+.blog-card.paper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fffef8;
+    box-shadow: -0.5rem 0.5rem 1rem rgba(0,0,0,0.06);
+    pointer-events: none;
+}
+.blog-card.paper::before {
+    transform: rotate(-2deg);
+    z-index: -1;
+}
+.blog-card.paper::after {
+    transform: rotate(2deg);
+    z-index: -2;
+}
+
+/* Tape sticker / decorative tabs on the blog image (legacy aesthetic) */
+.blog-image::before,
+.blog-image::after {
+  content: '';
+  position: absolute;
+  width: 34%;
+  height: 22px;
+  background: linear-gradient(90deg,#f5e6c9,#f1e0b5);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  border-radius: 3px;
+  z-index: 0;
+}
+.blog-image::before { top: -6px; left: -4%; }
+.blog-image::after  { bottom: -6px; right: -4%; transform: rotate(-20deg); }
+
+/* Impares: cinta arriba con pestañas a la derecha; pares invertida */
+.blog-card:nth-child(odd) .blog-image::before { top: -5px; left: -5%; }
+.blog-card:nth-child(odd) .blog-image::after  { top: 80%; right: -4vmin; transform: rotate(-45deg); }
+.blog-card:nth-child(even) .blog-image::before { bottom: -5px; top: auto; left: auto; }
+.blog-card:nth-child(even) .blog-image::after  { bottom: -5px; left: -4vmin; transform: rotate(45deg); right: auto; }
+
+.blog-post-title {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 700;
+  color: #2f2416;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.blog-excerpt {
+  color: #4a3828;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.read-more {
+  display: inline-block;
+  font-weight: 600;
+  color: #7a4f2a;
+  text-decoration: underline;
+  background: transparent;
+}
+
+
+/* Asegurar que el hover aplicado al .blog-card no escale la imagen interna: */
+
+
+.blog-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0 12px 0;
+}
+
+.blog-image img {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 6px 12px rgba(18,12,8,0.08);
+    /* quitar efecto zoom en la rejilla */
+    transform: none;
+}
+/* Support for <paper> element inside blog cards (some templates wrap content in <paper>) */
+#blogs-container .blog-card paper,
+.blog-card paper {
+  display: block;
+  background: linear-gradient(180deg, #fbf5ea 0%, #f3ead6 100%);
+  border: 1px solid #d7c5a8;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(34,20,12,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+  color: #2b200f;
+}
+
+/* Responsivo: imágenes más grandes en pantallas pequeñas */
+@media (max-width: 600px) {
+  .blog-detail-image { max-width: 92%; }
+  .modal.blog-modal .modal-content { padding: 14px; }
+}
+
+/* Ajustes responsive para la rejilla y los detalles del tape/sticker */
+@media (max-width: 900px) {
+  .blog-image::before,
+  .blog-image::after { display: none; }
+}
+
+/* Asegurar que solo las fichas con clase aplican cambios: estilos específicos para el container */
+#blogs-container.blog-grid .blog-card { background-clip: padding-box; }
+
