@@ -245,9 +245,9 @@ export async function renderBlogs(options = {}) {
         // Renderizar blogs
         const newBlogsHTML = blogs.map(blog => `
             <div class="blog-card paper" data-id="${blog.id}">
-                <div class="blog-image">
-                    <img src="${blog.image_path || './asset/img/logo_gris.jpeg'}" alt="${blog.title}" />
-                </div>
+                        <div class="blog-image">
+                            <img src="${blog.image_path || './asset/img/logo_gris.jpeg'}" alt="${blog.title}" loading="lazy" decoding="async" width="324" height="182" />
+                        </div>
                 <div class="blog-info">
                     <h3 class="blog-post-title">${blog.title}</h3>
                     <p class="blog-excerpt">${blog.excerpt}</p>
