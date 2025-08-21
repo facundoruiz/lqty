@@ -9,4 +9,5 @@ testing/
 .env
 .env.local
 .env.*.local
+.firebase/
 .firebase/hosting.cHVibGlj.cache

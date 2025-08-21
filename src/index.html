@@ -13,23 +13,25 @@
     
     <meta property="og:title" content="La que tomo Yo! - Catálogo de hierbas">
     <meta property="og:description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
-    <meta property="og:image" content="./asset/img/android-chrome-512x512.png">
+    <meta property="og:image" content="https://laquetomoyo.web.app/asset/img/logo.png">
     <meta property="og:url" content="https://laquetomoyo.web.app">
     <meta property="og:type" content="website" />
-    <meta property="og:logo" content="./asset/img/logo.png" />
+    <meta property="og:logo" content="https://laquetomoyo.web.app/asset/img/logo.png" />
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="La que tomo Yo! - Catálogo de hierbas">
     <meta name="twitter:description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
-    <meta name="twitter:image" content="./asset/img/android-chrome-512x512.png">
+    <meta name="twitter:image" content="https://laquetomoyo.web.app/asset/img/logo.png">
     <meta name="theme-color" content="#fcf0e3">
     <meta name="description" content="Descubre nuestra variedad de mezclas de hierbas naturales">
-    <!-- Fuentes -->
+    <!-- Fuentes (carga no bloqueante) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <!-- choose one -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" as="style" onload="this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <!-- Bootstrap icons (carga no bloqueante) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
     <link rel="manifest" href="manifest.json">
 </head>
 
@@ -38,7 +40,7 @@
     <header>
         <div class="container">
             <div class="logo">
-                <img src="./asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
+                <img src="https://laquetomoyo.web.app/asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
                 <h1>La que tomo <span> Yo!</span></h1>
             </div>
             <button class="mobile-menu-toggle" aria-label="Abrir menú">
@@ -122,7 +124,7 @@
                                     <span>Hierbas</span>
                                 </div> -->
                                 <div class="showcase-item active">
-                                   <img src="./asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
+                                   <img src="https://laquetomoyo.web.app/asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
                                    <span class="lqt"> La que tomo <span class="yo">Yo!</span></span>
                                 </div>
                                 <!-- <div class="showcase-item">
@@ -273,7 +275,7 @@
             <div class="footer-content">
                 <div class="footer-logo">
                     <div class="logo">
-                        <img src="./asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-asset">
+                        <img src="https://laquetomoyo.web.app/asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-asset">
                         <h1>La que tomo <span> Yo!</span></h1>
                     </div>
                     <p>¡Bienestar Natural en Cada Sorbo!</p>
@@ -305,6 +307,20 @@
     </footer>
 
     <!-- Scripts -->
+        <!-- Make main bundle non-blocking: set defer if present -->
+        <script>
+            (function(){
+                try{
+                    var scripts = document.querySelectorAll('script[src]');
+                    scripts.forEach(function(s){
+                        var src = s.getAttribute('src') || '';
+                        if(/bundle\.|bundle\.[a-f0-9]+\.js|bundle\.[a-f0-9]{8}.*\.js/.test(src)){
+                            s.defer = true;
+                        }
+                    });
+                }catch(e){console.error(e)}
+            })();
+        </script>
 </body>
 
 </html>
