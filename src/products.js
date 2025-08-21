@@ -157,7 +157,6 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
   <div class="product-image">
   <img src="${product.image_path || './asset/img/logo_gris.jpeg'}" alt="${product.title}" loading="lazy" decoding="async" width="324" height="200" />
   </div> 
-    
           <h2>${product.title}</h2>
           <div class="modal-average-rating">
             <div class="average-stars-inline">${averageStarsInline}</div>
