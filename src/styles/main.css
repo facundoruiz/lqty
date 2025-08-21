@@ -11,6 +11,7 @@
     --transition: all 0.3s ease;
     --transition-speed: 0.3s ease;
     --border-radius: 8px;
+    --site-font: 'Poppins', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Reset base */
@@ -21,7 +22,7 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--site-font);
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
@@ -878,7 +879,7 @@ footer {
 }
 
 #close-modal-btn {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     border: none;
     border-radius: var(--border-radius);
     color: #fff;
@@ -888,7 +889,7 @@ footer {
     transition: background-color .3s, transform .2s;
 }
 
-#close-modal-btn:hover { background-color: var(--primary-color); transform: translateY(-2px); }
+#close-modal-btn:hover { background-color: var(--secondary-color); transform: translateY(-2px); }
 
 /* Mejoras de legibilidad */
 #modal-body p {
@@ -902,7 +903,7 @@ footer {
     position: absolute;
     top: 10px;
     right: 10px;
-    font-size: 2rem;
+    font-size: 4rem;
     font-weight: bold;
     line-height: 1;
     cursor: pointer;

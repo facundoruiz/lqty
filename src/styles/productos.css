@@ -6,8 +6,8 @@
 .product-image img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
 .product-card:hover .product-image img { transform: scale(1.05); }
 .product-tag { position: absolute; top: 10px; right: 10px; background-color: var(--secondary-color); color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
-.product-info { padding: 20px; }
-.product-info h3 { font-size: 1.2rem; margin-bottom: 10px; color: var(--primary-color); }
+.product-info { padding: 20px;text-align: center; }
+.product-info h2,.product-info h3 { margin-bottom: 10px; color: var(--primary-color); }
 .product-price { font-size: 1.3rem; font-weight: 600; color: var(--secondary-color); margin-bottom: 15px; }
 .description { color: var(--light-text); margin-bottom: 15px; font-size: 0.9rem; }
 .read-more { display: inline-block; color: var(--primary-color); text-decoration: none; font-weight: 500; transition: var(--transition); cursor: pointer; }
@@ -79,7 +79,7 @@
 
 /* Botón de compartir (centralizado desde mixes.css y styles-extension.css) */
 .btn-share {
-    background-color: var(--secondary-color);
+    background-color:var(--primary-color);
     color: white;
     border: none;
     padding: 8px 15px;
@@ -93,7 +93,7 @@
 }
 
 .btn-share:hover {
-    background-color: var(--primary-color);
+    background-color:  var(--secondary-color);
     transform: translateY(-2px);
     color: white;
 }
@@ -110,5 +110,10 @@
 
 
 @media (max-width: 767.98px) {
-	.btn-share { width: 100%; justify-content: center; }
+	.btn-share {         font-size: .95rem;
+        padding: .7rem 1.2rem;
+        width: 80%;
+        display: block;
+        margin: 0 auto;
+        text-align: center;}
 }

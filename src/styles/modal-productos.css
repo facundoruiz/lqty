@@ -231,3 +231,92 @@
     font-size: 0.9em;
     line-height: 1.5;
 }
+
+/* Estilos específicos para la imagen cuando se muestra dentro del modal genérico */
+/* Usamos el id del modal para no afectar las imágenes de las tarjetas de producto */
+#generic-modal .product-image {
+  height: auto;
+    width: 100%;
+    margin: 0 auto 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+#generic-modal .product-image img {
+    width: 100%;
+    /* Altura controlada para mantener consistencia visual en el modal */
+    height: 360px;
+    object-fit: contain; /* asegura que la imagen llene el contenedor sin distorsionar */
+    display: block;
+}
+@media (max-width: 767.98px) {
+    #generic-modal .product-image img {
+        height: 100%;
+    }
+}
+
+/* Tarjeta flotante para el detalle del blog dentro del modal */
+#generic-modal #blog-content-in-product {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.98);
+    width: 92%;
+    max-width: 760px;
+    background: var(--light-bg, #fff);
+    color: var(--text-color, #111);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    border: 1px solid rgba(0,0,0,0.06);
+    z-index: 1300; /* asegurar que la tarjeta esté por encima del backdrop */
+    display: none; /* el JS controla display */
+    opacity: 0;
+    transition: transform .22s ease, opacity .22s ease;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+/* Estado visible (JS añade la clase 'visible' o cambia display) */
+#generic-modal #blog-content-in-product.visible,
+#generic-modal #blog-content-in-product[style*="display: block"] {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Backdrop semi-transparente detrás de la tarjeta flotante */
+#generic-modal .blog-floating-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1200; /* debe quedar por debajo de la tarjeta (que ahora es 1300) */
+    opacity: 0;
+    transition: opacity .2s ease;
+    pointer-events: none;
+}
+#generic-modal .blog-floating-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Close dentro de la tarjeta */
+#generic-modal #close-blog-content {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1210;
+}
+
+@media (max-width: 767.98px) {
+    #generic-modal #blog-content-in-product {
+        width: 96%;
+        padding: 16px;
+        max-height: 85vh;
+    }
+    #generic-modal #close-blog-content {
+        top: 8px;
+        right: 8px;
+    }
+}

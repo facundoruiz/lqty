@@ -154,6 +154,9 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
 
       modalBody.innerHTML = `
         <div class="modal-product-header">
+        <div class="product-image">
+        <img src="${product.image_path || './asset/img/logo_gris.jpeg'}" alt="${product.title}" />
+        </div> 
           <h2>${product.title}</h2>
           <div class="modal-average-rating">
             <div class="average-stars-inline">${averageStarsInline}</div>
@@ -167,8 +170,7 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
               <i class="bi bi-share"></i> Compartir
             </button>
           </div>
-        </div>
-        <img src="${product.image_path || './asset/img/logo_gris.jpeg'}" alt="${product.title}" />
+        </div> 
         <p>${product.description || 'Descripción no disponible.'}</p>
         <button class="disclaimer-btn" title="Declinación de responsabilidad">
           <i class="bi bi-exclamation-triangle"></i> Descargo de responsabilidad
@@ -238,58 +240,87 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
         e.preventDefault();
         const blogId = link.dataset.blogId;
         const relatedBlog = blogs.find(b => b.id === blogId);
+
+        const blogContentDiv = document.getElementById('blog-content-in-product');
+        const blogContentContainer = document.getElementById('blog-content-container');
+
+        if (!blogContentDiv || !blogContentContainer) {
+          console.error('Elementos para mostrar blog no encontrados en el DOM');
+          return;
+        }
+
+        // Rellenar contenido
         if (relatedBlog) {
-          // En lugar de cerrar el modal y abrir uno nuevo, mostrar el contenido del blog en el mismo modal
-          const blogContentDiv = document.getElementById('blog-content-in-product');
-          const blogContentContainer = document.getElementById('blog-content-container');
-          
-          if (blogContentDiv && blogContentContainer) {
-            // Mostrar el contenido del blog
-            blogContentContainer.innerHTML = `
-              <h3>${relatedBlog.title}</h3>
-              <p>${relatedBlog.excerpt || 'Contenido no disponible'}</p>
-            `;
-            blogContentDiv.style.display = 'block';
-            
-            // Desplazar al contenido del blog con animación suave
-            blogContentDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-            // Botón para cerrar el contenido del blog
-            const closeButton = document.getElementById('close-blog-content');
-            if (closeButton) {
-              // Prevenir múltiples listeners quitando y volviéndolo a agregar
-              const newCloseButton = closeButton.cloneNode(true);
-              closeButton.parentNode.replaceChild(newCloseButton, closeButton);
-              
-              newCloseButton.addEventListener('click', () => {
-                blogContentDiv.style.display = 'none';
-              });
-            }
-          } else {
-            console.error("Elementos para mostrar blog no encontrados en el DOM");
-          }
+          blogContentContainer.innerHTML = `
+            <div class="blog-card">
+              <h2>${relatedBlog.title}</h2>
+              <p>${relatedBlog.excerpt || relatedBlog.content || 'Contenido no disponible'}</p>
+            </div>
+          `;
         } else {
-          console.error("Blog relacionado no encontrado con ID:", blogId);
-          // Mensaje de error más amigable
-          const blogContentDiv = document.getElementById('blog-content-in-product');
-          const blogContentContainer = document.getElementById('blog-content-container');
-          
-          if (blogContentDiv && blogContentContainer) {
-            blogContentContainer.innerHTML = `
+          blogContentContainer.innerHTML = `
+            <div class="blog-card">
               <div class="no-results">No se pudo encontrar el detalle del blog solicitado</div>
-            `;
-            blogContentDiv.style.display = 'block';
-            
-            const closeButton = document.getElementById('close-blog-content');
-            if (closeButton) {
-              const newCloseButton = closeButton.cloneNode(true);
-              closeButton.parentNode.replaceChild(newCloseButton, closeButton);
-              
-              newCloseButton.addEventListener('click', () => {
-                blogContentDiv.style.display = 'none';
-              });
+            </div>
+          `;
+        }
+
+        // Crear/backdrop si no existe. Intentar insertarlo antes del contenedor flotante
+        let backdrop = modal.querySelector('.blog-floating-backdrop');
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.className = 'blog-floating-backdrop';
+          // blogContentDiv puede no ser hijo directo de `modal` -> usar su parentNode
+          const refParent = blogContentDiv.parentNode;
+          try {
+            if (refParent && refParent.contains(blogContentDiv) && modal.contains(refParent)) {
+              refParent.insertBefore(backdrop, blogContentDiv);
+            } else {
+              // fallback seguro
+              modal.appendChild(backdrop);
             }
+          } catch (err) {
+            // En caso raro de que insertBefore falle, usar appendChild como respaldo
+            modal.appendChild(backdrop);
+            console.warn('Fallo insertBefore para backdrop, se usó appendChild como fallback', err);
           }
+        }
+
+        // Mostrar backdrop y tarjeta flotante
+        backdrop.classList.add('visible');
+        blogContentDiv.style.display = 'block';
+        // Forzar reflow para activar la transición
+        void blogContentDiv.offsetWidth;
+        blogContentDiv.classList.add('visible');
+
+        // Cerrar al clicar backdrop
+        const handleBackdropClick = (ev) => {
+          if (ev.target === backdrop) {
+            closeBlogFloating();
+          }
+        };
+        backdrop.addEventListener('click', handleBackdropClick);
+
+        // Manejar botón cerrar dentro de la tarjeta
+        const closeButton = document.getElementById('close-blog-content');
+        if (closeButton) {
+          // Reemplazar para evitar listeners duplicados
+          const newClose = closeButton.cloneNode(true);
+          closeButton.parentNode.replaceChild(newClose, closeButton);
+          newClose.addEventListener('click', closeBlogFloating);
+        }
+
+        // Función para cerrar la tarjeta flotante
+        function closeBlogFloating() {
+          blogContentDiv.classList.remove('visible');
+          backdrop.classList.remove('visible');
+          // Esperar transición antes de ocultar
+          setTimeout(() => {
+            blogContentDiv.style.display = 'none';
+            // remover backdrop para limpieza
+            if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+          }, 220);
+          backdrop.removeEventListener('click', handleBackdropClick);
         }
       });
     });
@@ -321,7 +352,7 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     };
 
     // Verificar si el dispositivo soporta la API Web Share
-    if (navigator.share) {
+    if (!navigator.share) {
       // API de Web Share (dispositivos móviles)
       navigator.share(shareData)
         .catch(error => {
@@ -379,7 +410,7 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
           </button>
           <button class="share-option" data-platform="twitter">
             <i class="bi bi-twitter-x"></i>
-            Twitter
+            X
           </button>
           <button class="share-option" data-platform="telegram">
             <i class="bi bi-telegram"></i>
@@ -414,7 +445,7 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
             window.open(shareUrl, '_blank');
             break;
           case 'twitter':
-            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
+            shareUrl = `https://x.com/intent/post?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
             window.open(shareUrl, '_blank', 'width=600,height=400');
             break;
           case 'telegram':
@@ -866,6 +897,12 @@ function createRatingSection(productId) {
   <!-- Formulario para nueva calificación (ordenado: estrellas → nombre opcional → comentario → acciones) -->
       <div class="new-rating-form">
         <h4 class="rating-title">¿Qué te pareció este producto?</h4>
+        <div class="rating-help">
+          <small>
+            <i class="bi bi-info-circle"></i>
+            La puntuación con estrellas es voluntaria, pero es el mínimo necesario para dejar una reseña.
+          </small>
+        </div>
         <!-- Estrellas primero: es lo principal (clasificar) -->
         <div class="star-rating" data-product-id="${productId}">
           ${[1, 2, 3, 4, 5].map(i => 
