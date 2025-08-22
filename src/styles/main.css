@@ -72,7 +72,9 @@ header .container {
 }
 
 .lqt  {
-        color: var(--primary-color);
+    font-size: 7rem;
+    text-align: center;
+    color: var(--primary-color);
 }
 
 .yo{
@@ -264,7 +266,7 @@ nav ul li a.active::after {
 .herb-5 { top: 40%; right: 10%; animation-delay: 8s; }
 .herb-6 { top: 50%; left: 80%; animation-delay: 10s; }
 .herb-7 { top: 80%; right: 50%; animation-delay: 11s; }
-.herb-8 { top: 30%; right: 70%; animation-delay: 8s; }
+.herb-8 { top: 20%; right: 70%; animation-delay: 8s; }
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     25% { transform: translateY(-20px) rotate(5deg); }
@@ -476,6 +478,39 @@ nav ul li a.active::after {
 .showcase-item.active {
     background: rgba(193, 126, 62, 0.1);
     color: var(--primary-color);
+}
+
+/* Asegurar que la imagen dentro de .showcase-item.active sea al menos
+   del tamaño de .circle-content (rellene el área del círculo). */
+.hero-circle .circle-content .herb-showcase {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-circle .circle-content .showcase-item.active {
+    width: 100%;
+    height: 100%;
+    padding: 0; /* eliminar padding para que la imagen aproveche todo el espacio */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(193, 126, 62, 0.08);
+}
+
+.hero-circle .circle-content .showcase-item.active img {
+    /* Garantiza que la imagen sea al menos tan grande como el contenedor circular */
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: cover; /* cubrir el área sin dejar espacios */
+    display: block;
+    border-radius: 50%;
+        margin-bottom: 11%;
 }
 
 .showcase-item i {

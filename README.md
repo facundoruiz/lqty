@@ -1,5 +1,7 @@
 # La que tomo Yo!
-
+<p align="center">
+   <img src="src/img/logo.png" alt="La que tomo Yo! Logo" width="200">
+</p>
 **La que tomo Yo!** es una plataforma web que ofrece un catálogo de hierbas y mezclas naturales, diseñada para brindar información educativa y mejorar el bienestar natural.
 
 ## Características

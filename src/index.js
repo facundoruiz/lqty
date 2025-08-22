@@ -1,5 +1,4 @@
-import { db } from './firebase-config';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getDb } from './firebase-config';
 import { renderProducts, renderHerbsCarousel } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
@@ -130,16 +129,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inicializar texto circular en elementos de carga
     createCircularText();
     
-    // Cargar productos
-    const productsSnapshot = await getDocs(collection(db, 'products'));
+  // Cargar productos (inicializa Firestore solo cuando se necesita)
+  const db = await getDb();
+  const { collection, getDocs } = await import('firebase/firestore');
+  const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = productsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }))
-    // Filtrar solo productos con publish_web = 1
+  // Filtrar solo productos con publish_web = 1
     .filter(product => product.publish_web === "1");
       // Cargar blogs
-    const blogsSnapshot = await getDocs(collection(db, 'blogs'));
+  const blogsSnapshot = await getDocs(collection(db, 'blogs'));
     window.allBlogs = blogsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()

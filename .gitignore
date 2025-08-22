@@ -11,3 +11,4 @@ testing/
 .env.*.local
 .firebase/
 .firebase/hosting.cHVibGlj.cache
+public/
