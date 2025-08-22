@@ -1,5 +1,5 @@
-import { getDocs, collection, query, orderBy, limit, startAfter, startAt, endBefore, limitToLast, doc, getDoc } from 'firebase/firestore';
-import { db } from './firebase-config';
+import { getDb } from './firebase-config';
+// Firestore functions will be imported dinámicamente where needed to reduce bundle size
 import { refreshCircularText } from './index.js';
 
 // Variables para la paginación de blogs
@@ -39,6 +39,8 @@ export async function fetchBlogs(options = {}) {
     }
 
     try {
+        const db = await getDb();
+        const { getDocs, collection, query, orderBy, limit, startAfter, startAt, endBefore, limitToLast } = await import('firebase/firestore');
         if (loadPrevious && firstVisible) {
             // Carga página anterior usando limitToLast y endBefore
             blogsQuery = query(
@@ -120,8 +122,10 @@ export async function fetchBlogs(options = {}) {
 // Función para obtener un blog específico por su ID
 export async function fetchBlogById(blogId) {
     try {
-        const blogRef = doc(db, 'blogs', blogId);
-        const blogDoc = await getDoc(blogRef);
+    const db = await getDb();
+    const { doc, getDoc } = await import('firebase/firestore');
+    const blogRef = doc(db, 'blogs', blogId);
+    const blogDoc = await getDoc(blogRef);
         
         if (blogDoc.exists()) {
             return {

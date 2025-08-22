@@ -1,5 +1,4 @@
-import { collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from "firebase/firestore";
-import { db } from "./firebase-config";
+import { getDb } from "./firebase-config";
 // Renderizar productos en la página
 export function renderProducts(products, blogs) { // Aceptar blogs como argumento
     const container = document.getElementById('products-container');
@@ -979,7 +978,9 @@ function createStarDisplay(rating) {
 
 // Crear lista de comentarios anteriores
 async function createRatingsList(productId) {
-  // Consulta a Firestore
+  // Consulta a Firestore (inicializa DB e importa funciones dinámicamente)
+  const db = await getDb();
+  const { query, collection, where, orderBy, getDocs } = await import('firebase/firestore');
   const q = query(
     collection(db, "productRatings"),
     where("productId", "==", productId),
@@ -1160,18 +1161,21 @@ function initializeStarRating(container) {
   }
 }
 
-// Guardar calificación en Firestore
+// Guardar calificación en Firestore (usa getDb e import dinámico)
 async function saveRating(productId, rating, comment, name) {
   try {
-    if (!name || !name.trim()) throw new Error("El nombre es obligatorio");
+    if (!name || !name.trim()) throw new Error('El nombre es obligatorio');
+    const dbInstance = await getDb();
+    const firestore = await import('firebase/firestore');
+    const { addDoc, collection, serverTimestamp } = firestore;
     const ratingData = {
       productId,
       rating,
-      comment: comment || "",
+      comment: comment || '',
       name: name.trim(),
       timestamp: serverTimestamp()
     };
-    await addDoc(collection(db, "productRatings"), ratingData);
+    await addDoc(collection(dbInstance, 'productRatings'), ratingData);
     showNotification('¡Calificación guardada! Gracias por tu opinión', 'success');
     return ratingData;
   } catch (error) {
@@ -1259,10 +1263,10 @@ function getNotificationIcon(type) {
 // Consultar Firestore para obtener promedio y conteo reales y actualizar la UI
 async function fetchProductRating(productId) {
   try {
-    const q = query(
-      collection(db, 'productRatings'),
-      where('productId', '==', productId)
-    );
+    const dbInstance = await getDb();
+    const firestore = await import('firebase/firestore');
+    const { query, collection, where, getDocs } = firestore;
+    const q = query(collection(dbInstance, 'productRatings'), where('productId', '==', productId));
     const snapshot = await getDocs(q);
     const docs = snapshot.docs.map(d => d.data());
     const count = docs.length;
@@ -1271,15 +1275,14 @@ async function fetchProductRating(productId) {
     // Actualizar elementos del modal si existen
     const modal = document.getElementById('generic-modal');
     if (!modal) return { average: parseFloat(average.toFixed(1)), count };
-  const avgStarsContainers = modal.querySelectorAll('.average-stars, .average-stars-inline');
-  const avgScoreEls = modal.querySelectorAll('.average-score, .average-score-inline');
-  const ratingCountEls = modal.querySelectorAll('.rating-count, .rating-count-inline');
+    const avgStarsContainers = modal.querySelectorAll('.average-stars, .average-stars-inline');
+    const avgScoreEls = modal.querySelectorAll('.average-score, .average-score-inline');
+    const ratingCountEls = modal.querySelectorAll('.rating-count, .rating-count-inline');
 
     const starsHtml = createStarDisplay(parseFloat(average.toFixed(1)));
     avgStarsContainers.forEach(el => { el.innerHTML = starsHtml; });
     avgScoreEls.forEach(el => { el.textContent = parseFloat(average.toFixed(1)); });
-    ratingCountEls.forEach(el => { 
-      // Inline vs block: mantener formato legible
+    ratingCountEls.forEach(el => {
       if (el.classList.contains('rating-count-inline')) {
         el.textContent = ` · ${count} ${count === 1 ? 'reseña' : 'reseñas'}`;
       } else {
@@ -1304,7 +1307,6 @@ async function fetchProductRating(productId) {
       if (toggleBtn) {
         const icon = toggleBtn.querySelector('i');
         icon.className = 'bi bi-chevron-up';
-        // ajustar texto
         toggleBtn.childNodes[1] && (toggleBtn.childNodes[1].textContent = ' Ocultar reseñas');
       }
     }

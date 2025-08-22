@@ -1,18 +1,7 @@
-import { 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
-    signOut, 
-    GoogleAuthProvider, 
-    signInWithPopup,
-    signInAnonymously,
-    sendPasswordResetEmail,
-    onAuthStateChanged
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../../firebase-config';
+import { getAuthInstance, getDb } from '../../firebase-config';
 
 // Proveedor para autenticación con Google
-const googleProvider = new GoogleAuthProvider();
+let googleProvider = null;
 
 /**
  * Registro de usuario con email y contraseña
@@ -23,16 +12,19 @@ const googleProvider = new GoogleAuthProvider();
  */
 export const registerWithEmail = async (email, password, userData) => {
     try {
+        const auth = await getAuthInstance();
+        const db = await getDb();
+        const { createUserWithEmailAndPassword, serverTimestamp } = await import('firebase/auth');
+        const { serverTimestamp: fsServerTimestamp } = await import('firebase/firestore');
         // Crear el usuario en Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
         // Crear el registro en la colección de usuarios
         await createUserInFirestore(user.uid, {
             ...userData,
             email,
             role: 'usuario',
-            createdAt: serverTimestamp()
+            createdAt: fsServerTimestamp()
         });
         
         return { success: true, user };
@@ -50,8 +42,10 @@ export const registerWithEmail = async (email, password, userData) => {
  */
 export const loginWithEmail = async (email, password) => {
     try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        return { success: true, user: userCredential.user };
+    const auth = await getAuthInstance();
+    const { signInWithEmailAndPassword } = await import('firebase/auth');
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return { success: true, user: userCredential.user };
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
         return { success: false, error: translateAuthError(error) };
@@ -64,14 +58,18 @@ export const loginWithEmail = async (email, password) => {
  */
 export const loginWithGoogle = async () => {
     try {
+        const auth = await getAuthInstance();
+        if (!googleProvider) {
+            const { GoogleAuthProvider } = await import('firebase/auth');
+            googleProvider = new GoogleAuthProvider();
+        }
+        const { signInWithPopup } = await import('firebase/auth');
         const userCredential = await signInWithPopup(auth, googleProvider);
         const user = userCredential.user;
-        
-        // Verificar si el usuario ya existe en Firestore
+        const db = await getDb();
+        const { doc, getDoc, serverTimestamp } = await import('firebase/firestore');
         const userDoc = await getDoc(doc(db, 'users', user.uid));
-        
         if (!userDoc.exists()) {
-            // Si no existe, crear el registro en la colección de usuarios
             await createUserInFirestore(user.uid, {
                 name: user.displayName || '',
                 email: user.email || '',
@@ -79,7 +77,6 @@ export const loginWithGoogle = async () => {
                 createdAt: serverTimestamp()
             });
         }
-        
         return { success: true, user };
     } catch (error) {
         console.error('Error al iniciar sesión con Google:', error);
@@ -93,10 +90,11 @@ export const loginWithGoogle = async () => {
  */
 export const loginAnonymously = async () => {
     try {
+        const auth = await getAuthInstance();
+        const { signInAnonymously } = await import('firebase/auth');
+        const { serverTimestamp } = await import('firebase/firestore');
         const userCredential = await signInAnonymously(auth);
         const user = userCredential.user;
-        
-        // Crear el registro en la colección de usuarios
         await createUserInFirestore(user.uid, {
             name: 'Usuario Anónimo',
             email: '',
@@ -104,7 +102,6 @@ export const loginAnonymously = async () => {
             isAnonymous: true,
             createdAt: serverTimestamp()
         });
-        
         return { success: true, user };
     } catch (error) {
         console.error('Error al iniciar sesión anónimo:', error);
@@ -118,7 +115,9 @@ export const loginAnonymously = async () => {
  */
 export const logout = async () => {
     try {
-        await signOut(auth);
+    const auth = await getAuthInstance();
+    const { signOut } = await import('firebase/auth');
+    await signOut(auth);
         return { success: true };
     } catch (error) {
         console.error('Error al cerrar sesión:', error);
@@ -157,6 +156,8 @@ export const getCurrentUser = () => {
  */
 const createUserInFirestore = async (userId, userData) => {
     try {
+        const db = await getDb();
+        const { doc, setDoc } = await import('firebase/firestore');
         const userRef = doc(db, 'users', userId);
         await setDoc(userRef, userData);
         return { success: true };
@@ -173,6 +174,8 @@ const createUserInFirestore = async (userId, userData) => {
  */
 export const getUserData = async (userId) => {
     try {
+        const db = await getDb();
+        const { doc, getDoc } = await import('firebase/firestore');
         const userDoc = await getDoc(doc(db, 'users', userId));
         if (userDoc.exists()) {
             return { success: true, data: { id: userDoc.id, ...userDoc.data() } };
@@ -191,7 +194,11 @@ export const getUserData = async (userId) => {
  * @returns {function} - Función para dejar de observar
  */
 export const onAuthStateChange = (callback) => {
-    return onAuthStateChanged(auth, callback);
+    return (async () => {
+        const auth = await getAuthInstance();
+        const { onAuthStateChanged } = await import('firebase/auth');
+        return onAuthStateChanged(auth, callback);
+    })();
 };
 
 /**

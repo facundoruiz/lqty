@@ -5,15 +5,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-const CompressionPlugin = require('compression-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
     filename: 'bundle.[contenthash].js',
-    path: path.resolve(__dirname, 'public'),
+    path: path.resolve(__dirname, 'docs'),
     clean: true,
     assetModuleFilename: 'asset/[name].[hash][ext]'
   },
@@ -41,47 +39,10 @@ module.exports = {
     ],
   },
   optimization: {
-    moduleIds: 'deterministic',
-    runtimeChunk: 'single',
-    splitChunks: {
-      chunks: 'all',
-      maxInitialRequests: 10,
-      maxAsyncRequests: 10,
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          priority: -10,
-        },
-        firebase: {
-          test: /[\\/]node_modules[\\/]firebase[\\/]/,
-          name: 'firebase',
-          priority: 15,
-          enforce: true,
-        },
-        commons: {
-          test: /[\\/]src[\\/](components|utils)[\\/]/,
-          name: 'commons',
-          minChunks: 2,
-          priority: -20,
-        },
-      },
-    },
     minimizer: [
-      new TerserPlugin({
-        parallel: true,
-        terserOptions: {
-          compress: { drop_console: true },
-        },
-        extractComments: false,
-      }),
+      new TerserPlugin(),
       new CssMinimizerPlugin(),
     ],
-  },
-  performance: {
-    hints: 'warning',
-    maxEntrypointSize: 300000,
-    maxAssetSize: 300000,
   },
   plugins: [
     new Dotenv(),
@@ -129,14 +90,5 @@ module.exports = {
         }
       ],
     }),
-    // Genera .gz para servir desde servidor en producción
-    new CompressionPlugin({
-      algorithm: 'gzip',
-      test: /\.(js|css|html|svg)$/, 
-      threshold: 10240,
-      minRatio: 0.8,
-    }),
-    // Report estático para analizar el bundle (opcional)
-    new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false, reportFilename: 'bundle-report.html' }),
   ],
 };
