@@ -1,0 +1,18 @@
+/* Ejemplos. Ajusta a tus clases reales si difieren. */
+.button {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .6rem 1rem; border-radius: var(--radius-md);
+  background: var(--primary); color: var(--primary-contrast);
+  border: 1px solid color-mix(in srgb, var(--primary) 70%, #000 30%);
+  box-shadow: var(--shadow-1); cursor: pointer;
+}
+.button--ghost { background: transparent; color: var(--primary); border-color: var(--primary); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: var(--sp-3);
+}
+.badge { display: inline-block; padding: .25rem .5rem; border-radius: var(--radius-sm); }
