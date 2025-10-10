@@ -1,0 +1,410 @@
+/* 🎄 Tema Navidad Ultra Festivo - Verde pino, rojo cereza, dorado brillante, blanco nieve */
+/* Con nieve cayendo, luces parpadeantes, regalos flotantes y magia navideña */
+html[data-theme="navidad"] {
+  --bg: #fffdf7;              /* Blanco nieve */
+  --text: #1a202c;            /* Verde oscuro profundo */
+  --muted: #4b5563;           /* Gris suave */
+  --primary: #1a8e4b;         /* Verde pino intenso */
+  --primary-contrast: #ffffff;
+  --accent: #c0392b;          /* Rojo cereza navideño */
+  --surface: #fffaf0;         /* Crema cálida */
+  --border: #fde68a;          /* Dorado suave */
+
+  /* Colores navideños adicionales */
+  --navidad-red: #c0392b;     /* Rojo cereza */
+  --navidad-green: #1a8e4b;   /* Verde pino */
+  --navidad-gold: #d4af37;    /* Oro brillante */
+  --navidad-snow: #f8fafc;    /* Blanco nieve */
+  --navidad-shadow: #2d3748;  /* Verde sombra */
+
+  /* Colores de modales navideños */
+  --modal-bg: #ffffff;
+  --modal-text: #1a202c;
+  --modal-muted: #4b5563;
+  --modal-surface: #fffaf0;
+  --modal-border: #fde68a;
+  --modal-backdrop: rgba(26, 142, 75, 0.85);
+
+  /* Fondo con patrón de nieve y bokeh navideño */
+  body {
+    background-color: var(--bg);
+    background-image:
+      /* Copos de nieve cayendo */
+      radial-gradient(circle at 15% 25%, rgba(255,255,255,0.8) 1px, transparent 2px),
+      radial-gradient(circle at 35% 15%, rgba(255,255,255,0.6) 1px, transparent 2px),
+      radial-gradient(circle at 55% 35%, rgba(255,255,255,0.7) 1px, transparent 2px),
+      radial-gradient(circle at 75% 45%, rgba(255,255,255,0.5) 1px, transparent 2px),
+      radial-gradient(circle at 25% 65%, rgba(255,255,255,0.9) 1px, transparent 2px),
+      radial-gradient(circle at 45% 75%, rgba(255,255,255,0.6) 1px, transparent 2px),
+      radial-gradient(circle at 65% 85%, rgba(255,255,255,0.8) 1px, transparent 2px),
+      radial-gradient(circle at 85% 55%, rgba(255,255,255,0.7) 1px, transparent 2px),
+      /* Bokeh navideño con colores festivos */
+      radial-gradient(circle at 10% 20%, rgba(212,175,55,0.15) 0 40px, transparent 41px),
+      radial-gradient(circle at 80% 10%, rgba(26,142,75,0.12) 0 50px, transparent 51px),
+      radial-gradient(circle at 50% 80%, rgba(192,57,43,0.10) 0 60px, transparent 61px),
+      radial-gradient(circle at 30% 60%, rgba(255,255,255,0.08) 0 35px, transparent 36px);
+    background-size:
+      120px 120px, 180px 180px, 150px 150px, 200px 200px, 140px 140px, 160px 160px, 130px 130px, 170px 170px,
+      250px 250px, 300px 300px, 280px 280px, 220px 220px;
+    background-repeat: repeat;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Animación de nieve cayendo */
+  body::before {
+    content: '❄️ 🎄 🎅 🔔';
+    position: fixed;
+    top: -50px;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    font-size: 2rem;
+    opacity: 0.6;
+    animation: snow-fall 25s linear infinite;
+  }
+
+  body::after {
+    content: '🎁 ⭐ 🌟 ❄️';
+    position: fixed;
+    top: -30px;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    font-size: 1.5rem;
+    opacity: 0.4;
+    animation: snow-fall 30s linear infinite reverse;
+  }
+
+  /* Elementos decorativos flotantes */
+  .floating-christmas {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.7;
+    animation: float-christmas 15s ease-in-out infinite;
+    display: block !important;
+  }
+
+  .christmas-1 { top: 15%; left: 5%; animation-delay: 0s; }
+  .christmas-2 { top: 25%; right: 8%; animation-delay: 3s; }
+  .christmas-3 { top: 35%; left: 15%; animation-delay: 6s; }
+  .christmas-4 { top: 45%; right: 12%; animation-delay: 9s; }
+  .christmas-5 { top: 55%; left: 8%; animation-delay: 12s; }
+
+  /* Cards con efectos navideños */
+  .card {
+    border: 2px solid var(--border);
+    box-shadow:
+      var(--shadow-1),
+      0 0 20px rgba(212, 175, 55, 0.15),
+      inset 0 0 20px rgba(26, 142, 75, 0.05);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(255,250,240,0.95) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg,
+      transparent,
+      rgba(212, 175, 55, 0.1),
+      transparent 60deg,
+      rgba(26, 142, 75, 0.08),
+      transparent 120deg,
+      rgba(192, 57, 43, 0.06),
+      transparent 180deg,
+      rgba(255, 255, 255, 0.12),
+      transparent 240deg,
+      rgba(212, 175, 55, 0.08),
+      transparent
+    );
+    animation: christmas-glow 12s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Badges navideños */
+  .badge {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(45deg, var(--navidad-gold), var(--accent));
+    color: white;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    animation: christmas-twinkle 3s ease-in-out infinite alternate;
+  }
+
+  .badge::before {
+    content: '🎄';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8em;
+    opacity: 0.8;
+    animation: spin-slow 8s linear infinite;
+  }
+
+  /* Botones con efectos navideños */
+  .button, .btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--primary), var(--navidad-green));
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(26, 142, 75, 0.3);
+  }
+
+  .button:hover, .btn:hover {
+    box-shadow:
+      0 6px 20px rgba(26, 142, 75, 0.4),
+      0 0 30px rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .button::before, .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+  }
+
+  .button:hover::before, .btn:hover::before {
+    left: 100%;
+  }
+
+  /* Headers con magia navideña */
+  h1, h2, h3 {
+    position: relative;
+    text-shadow:
+      0 0 5px rgba(212, 175, 55, 0.5),
+      0 0 10px rgba(26, 142, 75, 0.3),
+      0 0 15px rgba(192, 57, 43, 0.2);
+    color: var(--text);
+  }
+
+  h1::before {
+    content: '🎄';
+    position: absolute;
+    top: -15px;
+    left: -35px;
+    font-size: 1.8em;
+    opacity: 0.7;
+    animation: bounce-christmas 4s ease-in-out infinite;
+  }
+
+  h1::after {
+    content: '⭐';
+    position: absolute;
+    top: -10px;
+    right: -35px;
+    font-size: 1.5em;
+    opacity: 0.8;
+    animation: twinkle-star 3s ease-in-out infinite;
+  }
+
+  /* Navegación festiva */
+  nav {
+    background: linear-gradient(135deg, var(--surface), rgba(26, 142, 75, 0.1));
+    border-bottom: 3px solid var(--border);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+    position: relative;
+  }
+
+  nav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+      var(--navidad-red),
+      var(--navidad-gold),
+      var(--navidad-green),
+      var(--navidad-gold),
+      var(--navidad-red)
+    );
+    animation: christmas-lights 4s linear infinite;
+  }
+
+  /* Footer navideño */
+  footer {
+    background: linear-gradient(135deg, var(--navidad-green), var(--navidad-shadow));
+    color: white;
+    border-top: 3px solid var(--navidad-gold);
+    position: relative;
+    box-shadow: 0 0 20px rgba(26, 142, 75, 0.3);
+  }
+
+  footer * {
+    color: white !important;
+  }
+
+  footer a {
+    color: var(--navidad-gold) !important;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  footer a:hover {
+    color: #ffd700 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+
+  footer::before {
+    content: '🎄 ❄️ 🎅 🔔 🎁 ⭐ 🌟';
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+  }
+
+  /* Estilos específicos navideños */
+  .btn--buy {
+    background: linear-gradient(135deg, var(--accent), var(--navidad-red));
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn--buy::before {
+    content: '🎁';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+  }
+
+  .btn--buy:hover {
+    box-shadow: 0 6px 25px rgba(192, 57, 43, 0.6);
+    transform: translateY(-3px);
+  }
+
+  .ribbon {
+    background: linear-gradient(90deg, var(--navidad-gold), #b8860b, var(--navidad-gold));
+    color: #222;
+    position: relative;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  }
+
+  .ribbon::before {
+    content: '⭐';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.8;
+  }
+
+  /* Animaciones navideñas */
+  @keyframes snow-fall {
+    0% { transform: translateY(-100vh) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(360deg); }
+  }
+
+  @keyframes float-christmas {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+      opacity: 0.4;
+    }
+    25% {
+      transform: translateY(-20px) rotate(5deg);
+      opacity: 0.7;
+    }
+    50% {
+      transform: translateY(-10px) rotate(-3deg);
+      opacity: 0.6;
+    }
+    75% {
+      transform: translateY(-30px) rotate(7deg);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes christmas-glow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes christmas-twinkle {
+    0% {
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+      transform: scale(1);
+    }
+    100% {
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes spin-slow {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  @keyframes bounce-christmas {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @keyframes twinkle-star {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  @keyframes christmas-lights {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    body::before,
+    body::after {
+      display: none;
+    }
+
+    .floating-christmas {
+      display: none;
+    }
+
+    h1::before,
+    h1::after {
+      display: none;
+    }
+
+    footer::before {
+      font-size: 1rem;
+    }
+  }
+}

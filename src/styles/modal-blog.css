@@ -57,20 +57,20 @@
 }
 
 .modal.blog-modal .modal-blog-header .disclaimer-btn {
-	background: #f1e4c9;
-	border: 1px solid #d2bfa3;
+	background: rgba(241, 228, 201, 0.2);
+	border: 1px solid rgba(210, 191, 163, 0.5);
 	padding: 6px 8px;
 	border-radius: 6px;
-	color: #6b4f33;
+	color: var(--accent);
 }
 
 .modal.blog-modal .modal-disclaimer-container {
 	margin: 8px 0 12px 0;
-	background: rgba(255,255,255,0.85);
-	border-left: 4px solid #d9c2a0;
+	background: rgba(255,255,255,0.1);
+	border-left: 4px solid var(--accent);
 	padding: 12px 14px; /* más espacio para legibilidad */
 	border-radius: 6px;
-	color: #3e3023; /* más contraste */
+	color: var(--modal-text); /* más contraste */
 	font-size: 1.06rem; /* aumentar tamaño */
 	font-weight: 600; /* dar importancia */
 	line-height: 1.45;
@@ -129,7 +129,7 @@
 
 .modal.blog-modal .blog-content {
 	margin-top: 12px;
-	color: #3d2c1d;
+	color: var(--modal-text);
 	line-height: 1.6;
 	font-size: 1rem;
 
@@ -151,16 +151,16 @@
 .modal.blog-modal .modal-content {
 	/* Estilo de papel envejecido sin las líneas rayadas */
 	position: relative !important;
-	background-color: #fffef8 !important;
+	background-color: var(--modal-bg) !important;
 	padding: 18px !important;
-	border: 1px solid rgba(0,0,0,0.06) !important;
+	border: 1px solid var(--modal-border) !important;
 	box-shadow: -0.5rem 0.5rem 1rem rgba(0,0,0,0.08) !important;
 	margin: 1rem 0.3rem !important;
 	/* Sin background-image rayado para mejor legibilidad */
 	overflow: visible !important;
 	max-width: 900px !important;
 	width: calc(100% - 48px) !important;
-	color: #2b200f !important;
+	color: var(--modal-text) !important;
 
 }
 

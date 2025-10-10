@@ -1,0 +1,219 @@
+/* Naranja + púrpura + carbón; patrón SVG mejorado con calabazas y telarañas */
+html[data-theme="halloween"] {
+  --bg: #0d0b12;
+  --text: #f8f7ff;
+  --muted: #c7c3d9;
+  --primary: #ff7a1a;            /* calabaza */
+  --primary-contrast: #1a121e;
+  --accent: #7e3ff2;             /* púrpura */
+  --surface: #151026;
+  --border: #2a213a;
+  --halloween-orange: #ff6b35;
+  --halloween-purple: #9d4edd;
+  --halloween-black: #1a1a2e;
+
+  /* Colores de modales halloween (dark theme con efectos spooky) */
+  --modal-bg: #151026;
+  --modal-text: #f8f7ff;
+  --modal-muted: #c7c3d9;
+  --modal-surface: #1a1a2e;
+  --modal-border: #2a213a;
+  --modal-backdrop: rgba(13, 11, 18, 0.9);
+
+  body {
+    background-color: var(--bg);
+    background-image:
+      /* Patrón de telarañas */
+      radial-gradient(circle at 25% 25%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+      /* Patrón de murciélagos y calabazas */
+      url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'>\
+<defs>\
+<pattern id='halloween-pattern' patternUnits='userSpaceOnUse' width='200' height='100'>\
+<path d='M20 40 q10-15 20 0 q10-15 20 0 q-10 10 -20 5 q-10 5 -20 -5z' fill='rgba(255,122,26,0.06)'/>\
+<circle cx='150' cy='30' r='8' fill='rgba(255,107,53,0.08)'/>\
+<path d='M150 22 q-3-3-6 0 q3 3 6 0z' fill='rgba(157,78,221,0.1)'/>\
+<path d='M80 70 l-5-5 l10 0 z' stroke='rgba(255,122,26,0.05)' stroke-width='1' fill='none'/>\
+<path d='M120 20 l-3-3 l6 0 z' stroke='rgba(157,78,221,0.06)' stroke-width='1' fill='none'/>\
+</pattern>\
+</defs>\
+<rect width='200' height='100' fill='url(%23halloween-pattern)'/>\
+</svg>");
+    background-repeat: repeat;
+    background-size: 400px 200px;
+    position: relative;
+  }
+
+  /* Elementos decorativos flotantes */
+  body::before {
+    content: '🎃 👻 🦇';
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  body::after {
+    content: '🕸️ 🕷️';
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    font-size: 1.2rem;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Cards con efecto spooky */
+  .card {
+    border: 2px solid var(--border);
+    box-shadow:
+      var(--shadow-1),
+      0 0 20px rgba(255, 107, 53, 0.1),
+      inset 0 0 20px rgba(157, 78, 221, 0.05);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(26, 16, 30, 0.9) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg,
+      transparent,
+      rgba(255, 107, 53, 0.1),
+      transparent 60deg,
+      rgba(157, 78, 221, 0.1),
+      transparent 120deg,
+      rgba(255, 122, 26, 0.1),
+      transparent 180deg,
+      rgba(157, 78, 221, 0.1),
+      transparent 240deg,
+      rgba(255, 107, 53, 0.1),
+      transparent
+    );
+    animation: spooky-glow 8s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Badges con efectos especiales */
+  .badge {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .badge--spooky {
+    background: linear-gradient(45deg, var(--accent), var(--halloween-orange));
+    color: #fff;
+    box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+    animation: badge-pulse 2s ease-in-out infinite alternate;
+  }
+
+  .badge--spooky::before {
+    content: '👻';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  /* Botones con efectos de hover */
+  .button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .button:hover {
+    box-shadow:
+      var(--shadow-2),
+      0 0 20px rgba(255, 107, 53, 0.4),
+      0 0 40px rgba(157, 78, 221, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .button:hover::before {
+    left: 100%;
+  }
+
+  /* Headers con efectos especiales */
+  h1, h2, h3 {
+    position: relative;
+    text-shadow:
+      0 0 5px rgba(255, 107, 53, 0.5),
+      0 0 10px rgba(157, 78, 221, 0.3);
+  }
+
+  h1::before {
+    content: '🎃';
+    position: absolute;
+    top: -10px;
+    left: -30px;
+    font-size: 1.5em;
+    opacity: 0.6;
+  }
+
+  /* Elementos de navegación */
+  nav {
+    background: linear-gradient(135deg, var(--surface), var(--halloween-black));
+    border-bottom: 2px solid var(--border);
+    box-shadow: 0 0 20px rgba(157, 78, 221, 0.2);
+  }
+
+  /* Footer con tema oscuro */
+  footer {
+    background: linear-gradient(135deg, var(--halloween-black), var(--surface));
+    border-top: 2px solid var(--border);
+  }
+
+  /* Animaciones */
+  @keyframes spooky-glow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes badge-pulse {
+    0% {
+      box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+      transform: scale(1);
+    }
+    100% {
+      box-shadow: 0 0 20px rgba(157, 78, 221, 0.6);
+      transform: scale(1.05);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    body::before,
+    body::after {
+      display: none;
+    }
+
+    h1::before {
+      display: none;
+    }
+  }
+}

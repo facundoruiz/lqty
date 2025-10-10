@@ -1,0 +1,27 @@
+/* Hot Sale / Cyber / fechas comerciales. Fondo dark para resaltar promos */
+html[data-theme="comerciales"] {
+  --bg: #0b1020;
+  --text: #f8fafc;
+  --muted: #cbd5e1;
+  --primary: #22d3ee;            /* cian */
+  --primary-contrast: #0b1020;
+  --accent: #a78bfa;             /* violeta */
+  --surface: #111827;
+  --border: #1f2937;
+
+  /* Colores de modales comerciales (dark theme) */
+  --modal-bg: #111827;
+  --modal-text: #f8fafc;
+  --modal-muted: #cbd5e1;
+  --modal-surface: #1f2937;
+  --modal-border: #374151;
+  --modal-backdrop: rgba(6, 17, 47, 0.85);
+
+  .hero, .promo-strip {
+    background: linear-gradient(135deg, rgba(34,211,238,.25), rgba(167,139,250,.25));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-2);
+  }
+
+  .badge--deal { background: var(--primary); color: var(--primary-contrast); font-weight: 700; }
+}

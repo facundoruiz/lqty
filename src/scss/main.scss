@@ -1,0 +1,23 @@
+/* Importa tokens + base */
+@use "./theme/tokens.core";
+@use "./base/reset";
+@use "./base/typography";
+@use "./base/components";
+
+/* Importa TODOS los temas para que estén disponibles según data-theme */
+@use "./theme/theme.patrios" as *;
+@use "./theme/theme.comerciales" as *;
+@use "./theme/theme.navidad" as *;
+@use "./theme/theme.halloween" as *;
+
+/* Ocultar elementos decorativos flotantes por defecto */
+.floating-christmas {
+  display: none !important;
+}
+
+.floating-patriot {
+  display: none !important;
+}
+
+/* Importa estilos existentes para migración gradual */
+@import "../styles.css";

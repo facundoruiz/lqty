@@ -2,8 +2,14 @@ import { getDb } from './firebase-config';
 import { renderProducts, renderHerbsCarousel } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
-import './styles.css';
+
+import './scss/main.scss';
+
 import './styles/notifications.css';
+import { initTheme, applyTheme } from './js/theme-switcher';
+
+// Exponer applyTheme globalmente para debugging en consola
+window.applyTheme = applyTheme;
 
 // Variable global para almacenar blogs (o pasarla a través de funciones)
 window.allBlogs = [];
@@ -125,6 +131,22 @@ function checkURLParameters(products, blogs) {
 
 // Cargar datos cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', async () => {
+  // Inicializar tema automáticamente según la fecha
+  const month = new Date().getMonth() + 1; // 1-12
+  const day = new Date().getDate();
+  
+  let selectedTheme = 'default';
+  if (month === 12) {
+    selectedTheme = 'navidad';
+  } else if (month === 10 && day >= 31) {
+    selectedTheme = 'halloween';
+  } else if (month === 5 || month === 7) {
+    selectedTheme = 'patrios';
+  }
+  
+  console.log(`Aplicando tema: ${selectedTheme} (mes: ${month}, día: ${day})`);
+  applyTheme(selectedTheme);
+
   try {
     // Inicializar texto circular en elementos de carga
     createCircularText();
