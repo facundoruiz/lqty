@@ -31,7 +31,7 @@ export const registerWithEmail = async (email, password, userData) => {
         await createUserInFirestore(user.uid, {
             ...userData,
             email,
-            role: 'usuario',
+            role: 'user',
             createdAt: serverTimestamp()
         });
         
@@ -75,7 +75,7 @@ export const loginWithGoogle = async () => {
             await createUserInFirestore(user.uid, {
                 name: user.displayName || '',
                 email: user.email || '',
-                role: 'usuario',
+                role: 'user',
                 createdAt: serverTimestamp()
             });
         }
@@ -100,7 +100,7 @@ export const loginAnonymously = async () => {
         await createUserInFirestore(user.uid, {
             name: 'Usuario Anónimo',
             email: '',
-            role: 'usuario',
+            role: 'user',
             isAnonymous: true,
             createdAt: serverTimestamp()
         });
