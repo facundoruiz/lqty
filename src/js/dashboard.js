@@ -10,6 +10,7 @@ import './auth/auth-check.js';
 import { onAuthStateChange, logout, getUserData } from './services/authService.js';
 import { loadUserMixes, openMixModal, closeMixModal, saveMix, deleteMix, loadHerbsForSelection } from './dashboard/mixes.js';
 import { showSuccessNotification, showErrorNotification, showWarningNotification, showInfoNotification } from './utils/notifications.js';
+import { initBlogManagement } from './dashboard/blogs.js';
 
 // Hacer las notificaciones disponibles globalmente para otros módulos
 window.notifications = {
@@ -34,6 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabLinks = document.querySelectorAll('.tab-link');
     const tabPanes = document.querySelectorAll('.tab-pane');
 
+    const isTabAccessible = (tabId) => {
+        const tab = document.querySelector(`.tab-link[data-tab="${tabId}"]`);
+        if (!tab) {
+            return false;
+        }
+
+        return tab.hidden !== true && tab.dataset.disabled !== 'true';
+    };
+
     // Función para cambiar de tab con animación
     const switchTab = (tabId) => {
         // Desactivar todas las tabs
@@ -41,7 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Activar la tab seleccionada
         const selectedTab = document.querySelector(`.tab-link[data-tab="${tabId}"]`);
-        if (selectedTab) selectedTab.classList.add('active');
+        if (!selectedTab || selectedTab.hidden === true || selectedTab.dataset.disabled === 'true') {
+            return;
+        }
+
+        selectedTab.classList.add('active');
         
         // Ocultar con animación el contenido actual
         tabPanes.forEach(pane => {
@@ -55,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Mostrar el panel seleccionado
                     const selectedPane = document.getElementById(tabId);
-                    if (selectedPane) {
+                    if (selectedPane && !selectedPane.hasAttribute('aria-hidden')) {
                         selectedPane.classList.add('active');
                         // Forzar reflow para asegurar la animación
                         void selectedPane.offsetWidth;
@@ -71,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verificar si hay un hash en la URL para activar la tab correspondiente
     const activateTabFromHash = () => {
         const hash = window.location.hash.substring(1);
-        if (hash && ['mixes', 'profile'].includes(hash)) {
+        if (hash && isTabAccessible(hash)) {
             switchTab(hash);
         }
     };
@@ -84,7 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const tabId = link.getAttribute('data-tab');
-            
+
+            if (!isTabAccessible(tabId)) {
+                return;
+            }
+
             // Actualizar URL con hash
             history.pushState(null, null, `#${tabId}`);
             
@@ -102,6 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userData.success) {
                 if (userNameElement) userNameElement.textContent = userData.data.name || 'Usuario';
                 if (userEmailElement) userEmailElement.textContent = userData.data.email || '';
+
+                initBlogManagement({ ...userData.data, uid: user.uid });
+                activateTabFromHash();
 
                 // Cargar datos para el perfil
                 if (document.getElementById('profile-name')) {

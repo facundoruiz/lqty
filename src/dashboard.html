@@ -67,6 +67,9 @@
                     <button class="tab-link" data-tab="profile">
                         <i class="bi bi-person-circle"></i> Mi Perfil
                     </button>
+                    <button class="tab-link" data-tab="blog-admin" id="blog-tab-link" hidden>
+                        <i class="bi bi-journal-text"></i> Gestión de Blogs
+                    </button>
                 </div>
 
                 <div class="tab-content">
@@ -106,6 +109,62 @@
                                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                             </div>
                         </form>
+                    </div>
+
+                    <div id="blog-admin" class="tab-pane" aria-hidden="true">
+                        <div class="blog-management">
+                            <h3 class="section-title">Crear nuevo blog</h3>
+                            <p class="section-subtitle">Los editores pueden crear nuevas fichas para el sitio público.</p>
+
+                            <form id="blog-form" class="blog-form">
+                                <div class="form-group">
+                                    <label for="blog-title">Título</label>
+                                    <input type="text" id="blog-title" name="title" required placeholder="Ej: Propiedades de la manzanilla">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="blog-excerpt">Resumen</label>
+                                    <textarea id="blog-excerpt" name="excerpt" rows="3" required placeholder="Escribe un resumen breve que se mostrará en la lista de fichas."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="blog-content">Contenido</label>
+                                    <textarea id="blog-content" name="content" rows="8" required placeholder="Describe en detalle la hierba, usos y recomendaciones."></textarea>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="blog-image">URL de la imagen</label>
+                                        <input type="url" id="blog-image" name="imagePath" placeholder="https://...">
+                                        <small>Opcional. Puedes subir la imagen al repositorio de uploads y pegar la ruta.</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="blog-image-alt">Texto alternativo</label>
+                                        <input type="text" id="blog-image-alt" name="imageAlt" placeholder="Descripción de la imagen">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="blog-tags">Etiquetas</label>
+                                    <input type="text" id="blog-tags" name="tags" placeholder="digestivas, relajantes">
+                                    <small>Opcional. Separa las etiquetas con comas.</small>
+                                </div>
+
+                                <div class="form-group form-group-inline">
+                                    <input type="checkbox" id="blog-publish" name="publishWeb">
+                                    <label for="blog-publish">Publicar en el sitio web al guardar</label>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-upload"></i> Guardar Blog
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div id="blog-form-status" class="form-status" role="status" aria-live="polite"></div>
+                        </div>
                     </div>
                 </div>
             </div>

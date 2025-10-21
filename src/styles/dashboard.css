@@ -144,6 +144,115 @@
     to { transform: rotate(360deg); }
 }
 
+/* Gestión de blogs */
+.blog-management {
+    margin-top: 2rem;
+}
+
+.blog-management .section-subtitle {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+.blog-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.blog-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.blog-form input[type="text"],
+.blog-form input[type="url"],
+.blog-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+    color: #495057;
+}
+
+.blog-form input[type="text"]:focus,
+.blog-form input[type="url"]:focus,
+.blog-form textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    outline: none;
+}
+
+.blog-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.blog-form .form-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.blog-form .form-group-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.blog-form .form-group-inline input[type="checkbox"] {
+    width: auto;
+    height: auto;
+}
+
+.blog-form small {
+    display: block;
+    margin-top: 0.5rem;
+    color: #868e96;
+}
+
+.blog-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.blog-form .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blog-form .btn.is-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.form-status {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    display: none;
+    font-size: 0.95rem;
+}
+
+.form-status[data-status="success"] {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.form-status[data-status="error"] {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.form-status[data-status="loading"] {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-content {
@@ -158,5 +267,9 @@
     .dashboard-tabs .nav-tabs .nav-link {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
+    }
+
+    .blog-form .form-actions {
+        justify-content: stretch;
     }
 }
