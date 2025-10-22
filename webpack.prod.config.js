@@ -10,7 +10,12 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
   mode: 'production',
-  entry: './src/js/index.js',
+  entry: {
+    main: './src/index.js',
+    login: './src/js/auth/login.js',
+    register: './src/js/auth/register.js',
+    dashboard: './src/js/dashboard.js',
+  },
   output: {
     filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'public'),
@@ -94,6 +99,41 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
+      filename: 'index.html',
+      chunks: ['main'],
+      favicon: './src/img/favicon-32x32.png',
+      minify: {
+        removeAttributeQuotes: true,
+        collapseWhitespace: true,
+        removeComments: true
+      }
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/login.html',
+      filename: 'login.html',
+      chunks: ['login'],
+      favicon: './src/img/favicon-32x32.png',
+      minify: {
+        removeAttributeQuotes: true,
+        collapseWhitespace: true,
+        removeComments: true
+      }
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/register.html',
+      filename: 'register.html',
+      chunks: ['register'],
+      favicon: './src/img/favicon-32x32.png',
+      minify: {
+        removeAttributeQuotes: true,
+        collapseWhitespace: true,
+        removeComments: true
+      }
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/dashboard.html',
+      filename: 'dashboard.html',
+      chunks: ['dashboard'],
       favicon: './src/img/favicon-32x32.png',
       minify: {
         removeAttributeQuotes: true,
@@ -103,9 +143,9 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { 
-          from: './src/img', 
-          to: 'asset/img' 
+        {
+          from: './src/img',
+          to: 'asset/img'
         },
         {
           from: './src/uploads/images',
@@ -136,7 +176,7 @@ module.exports = {
     // Genera .gz para servir desde servidor en producción
     new CompressionPlugin({
       algorithm: 'gzip',
-      test: /\.(js|css|html|svg)$/, 
+      test: /\.(js|css|html|svg)$/,
       threshold: 10240,
       minRatio: 0.8,
     }),

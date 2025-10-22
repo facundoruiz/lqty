@@ -619,38 +619,43 @@ export async function renderHerbsCarousel(products) {
     }
 
     // Crear items del carrusel
-    const carouselItems = products.map(product => {
-        const category = product.category || product.category_name || 'Sin categoría';
-        const description = product.description || product.short_description || 'Descubre las propiedades de esta hierba...';
-        
-        return `
-            <div class="carousel-item" data-id="${product.id}">
-                <div class="carousel-item-image">
-                    <img src="./${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
-                    <div class="carousel-item-tag">${category}</div>
-                </div>
-                <div class="carousel-item-info">
-                    <h3>${product.title}</h3>
-                    <div class="carousel-item-description">${description}</div>
-                    <div class="carousel-item-tags">
-                        ${product.tags?.map(tag => `<span class="tag">${tag}</span>`).join('') || ''}
-                    </div>
-                </div>
+    const filteredProducts = products.filter(product => {
+     return product.category_id == "4";
+      
+    });
+
+    const carouselItems = filteredProducts.map(product => {
+      const category = product.category || product.category_name || 'Sin categoría';
+      const description = product.description || product.short_description || 'Descubre las propiedades de esta hierba...';
+      
+      return `
+        <div class="carousel-item" data-id="${product.id}">
+          <div class="carousel-item-image">
+            <img src="./${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
+            <div class="carousel-item-tag">${category}</div>
+          </div>
+          <div class="carousel-item-info">
+            <h3>${product.title}</h3>
+            <div class="carousel-item-description">${description}</div>
+            <div class="carousel-item-tags">
+              ${product.tags?.map(tag => `<span class="tag">${tag}</span>`).join('') || ''}
             </div>
-        `;
+          </div>
+        </div>
+      `;
     }).join('');
 
     track.innerHTML = carouselItems;
 
     // Crear indicadores
-    const indicators = products.map((_, index) => 
+    const indicators = filteredProducts.map((_, index) => 
         `<button class="carousel-indicator ${index === 0 ? 'active' : ''}" data-slide="${index}"></button>`
     ).join('');
     
     indicatorsContainer.innerHTML = indicators;
 
     // Inicializar funcionalidad del carrusel
-    initializeCarousel(products.length);    // Agregar event listeners para abrir modal
+    initializeCarousel(filteredProducts.length);    // Agregar event listeners para abrir modal
     const carouselItemElements = track.querySelectorAll('.carousel-item');
     carouselItemElements.forEach(item => {
         item.addEventListener('click', () => {
