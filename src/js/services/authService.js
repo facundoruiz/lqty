@@ -14,8 +14,8 @@ export const registerWithEmail = async (email, password, userData) => {
     try {
         const auth = await getAuthInstance();
         const db = await getDb();
-        const { createUserWithEmailAndPassword, serverTimestamp } = await import('firebase/auth');
-        const { serverTimestamp: fsServerTimestamp } = await import('firebase/firestore');
+        const { createUserWithEmailAndPassword } = await import('firebase/auth');
+        const { serverTimestamp: fsServerTimestamp } = await import('firebase/firestore/lite');
         // Crear el usuario en Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -62,12 +62,37 @@ export const loginWithGoogle = async () => {
         if (!googleProvider) {
             const { GoogleAuthProvider } = await import('firebase/auth');
             googleProvider = new GoogleAuthProvider();
+            // Pedir selección de cuenta para evitar entrar con cuenta no deseada
+            try {
+                googleProvider.setCustomParameters({ prompt: 'select_account' });
+            } catch (e) {
+                // Algunos polyfills o versiones pueden no soportar setCustomParameters
+            }
         }
-        const { signInWithPopup } = await import('firebase/auth');
-        const userCredential = await signInWithPopup(auth, googleProvider);
+        const { signInWithPopup, signInWithRedirect } = await import('firebase/auth');
+        let userCredential;
+        try {
+            userCredential = await signInWithPopup(auth, googleProvider);
+        } catch (popupError) {
+            // Si el popup está bloqueado o fue cerrado, intentar redirect como fallback
+            console.warn('signInWithPopup failed, attempting redirect fallback:', popupError);
+            const code = popupError && popupError.code ? popupError.code : '';
+            if (code.includes('popup') || code.includes('blocked')) {
+                try {
+                    await signInWithRedirect(auth, googleProvider);
+                    // signInWithRedirect no devolverá credencial aquí porque redirige la página.
+                    return { success: true, redirect: true };
+                } catch (redirErr) {
+                    console.error('Redirect sign-in also failed:', redirErr);
+                    return { success: false, error: translateAuthError(redirErr) };
+                }
+            }
+            // Si no es un error de popup, relanzarlo para el manejo general
+            throw popupError;
+        }
         const user = userCredential.user;
         const db = await getDb();
-        const { doc, getDoc, serverTimestamp } = await import('firebase/firestore');
+        const { doc, getDoc, serverTimestamp } = await import('firebase/firestore/lite');
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (!userDoc.exists()) {
             await createUserInFirestore(user.uid, {
@@ -92,7 +117,7 @@ export const loginAnonymously = async () => {
     try {
         const auth = await getAuthInstance();
         const { signInAnonymously } = await import('firebase/auth');
-        const { serverTimestamp } = await import('firebase/firestore');
+        const { serverTimestamp } = await import('firebase/firestore/lite');
         const userCredential = await signInAnonymously(auth);
         const user = userCredential.user;
         await createUserInFirestore(user.uid, {
@@ -132,6 +157,8 @@ export const logout = async () => {
  */
 export const resetPassword = async (email) => {
     try {
+        const auth = await getAuthInstance();
+        const { sendPasswordResetEmail } = await import('firebase/auth');
         await sendPasswordResetEmail(auth, email);
         return { success: true };
     } catch (error) {
@@ -145,7 +172,11 @@ export const resetPassword = async (email) => {
  * @returns {object} - Usuario autenticado o null
  */
 export const getCurrentUser = () => {
-    return auth.currentUser;
+    // Devolver el usuario actual solicitando la instancia de auth (lazy)
+    return (async () => {
+        const auth = await getAuthInstance();
+        return auth.currentUser;
+    })();
 };
 
 /**
@@ -157,7 +188,7 @@ export const getCurrentUser = () => {
 const createUserInFirestore = async (userId, userData) => {
     try {
         const db = await getDb();
-        const { doc, setDoc } = await import('firebase/firestore');
+        const { doc, setDoc } = await import('firebase/firestore/lite');
         const userRef = doc(db, 'users', userId);
         await setDoc(userRef, userData);
         return { success: true };
@@ -175,7 +206,7 @@ const createUserInFirestore = async (userId, userData) => {
 export const getUserData = async (userId) => {
     try {
         const db = await getDb();
-        const { doc, getDoc } = await import('firebase/firestore');
+        const { doc, getDoc } = await import('firebase/firestore/lite');
         const userDoc = await getDoc(doc(db, 'users', userId));
         if (userDoc.exists()) {
             return { success: true, data: { id: userDoc.id, ...userDoc.data() } };
@@ -217,6 +248,8 @@ const translateAuthError = (error) => {
         'auth/wrong-password': 'Contraseña incorrecta.',
         'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
         'auth/popup-closed-by-user': 'Inicio de sesión cancelado.',
+    'auth/popup-blocked': 'La ventana emergente fue bloqueada por el navegador.',
+    'auth/cancelled-popup-request': 'Solicitud de inicio de sesión cancelada.',
         'auth/operation-not-allowed': 'Esta operación no está permitida.',
         'auth/requires-recent-login': 'Por favor, inicie sesión de nuevo para continuar.',
         'auth/too-many-requests': 'Demasiados intentos fallidos. Por favor, inténtelo más tarde.'

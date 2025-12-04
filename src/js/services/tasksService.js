@@ -10,7 +10,7 @@ const TASKS_COLLECTION = 'tasks';
 export const getUserTasks = async (userId) => {
     try {
         const db = await getDb();
-        const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore');
+        const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore/lite');
         const tasksQuery = query(
             collection(db, TASKS_COLLECTION),
             where('userId', '==', userId),
@@ -43,7 +43,7 @@ export const getUserTasks = async (userId) => {
 export const createTask = async (userId, taskData) => {
     try {
         const db = await getDb();
-        const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
+        const { addDoc, collection, serverTimestamp } = await import('firebase/firestore/lite');
         const docRef = await addDoc(collection(db, TASKS_COLLECTION), {
             ...taskData,
             userId,
@@ -76,7 +76,7 @@ export const createTask = async (userId, taskData) => {
 export const updateTask = async (taskId, taskData) => {
     try {
         const db = await getDb();
-        const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
+        const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore/lite');
         const taskRef = doc(db, TASKS_COLLECTION, taskId);
         await updateDoc(taskRef, {
             ...taskData,
@@ -105,7 +105,7 @@ export const updateTask = async (taskId, taskData) => {
 export const toggleTaskCompletion = async (taskId, completed) => {
     try {
         const db = await getDb();
-        const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
+        const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore/lite');
         const taskRef = doc(db, TASKS_COLLECTION, taskId);
         await updateDoc(taskRef, {
             completed,
@@ -127,7 +127,7 @@ export const toggleTaskCompletion = async (taskId, completed) => {
 export const deleteTask = async (taskId) => {
     try {
     const db = await getDb();
-    const { deleteDoc, doc } = await import('firebase/firestore');
+    const { deleteDoc, doc } = await import('firebase/firestore/lite');
     await deleteDoc(doc(db, TASKS_COLLECTION, taskId));
         return { success: true };
     } catch (error) {

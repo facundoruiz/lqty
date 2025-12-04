@@ -242,7 +242,7 @@ export const loadUserMixes = async (userId) => {
         // Intentar cargar mezclas con ordenación por fecha
         try {
             const db = await getDb();
-            const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore');
+                const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore/lite');
             mixesCollectionRef = collection(db, 'userMixes');
             const q = query(mixesCollectionRef, where('userId', '==', userId), orderBy('createdAt', 'desc'));
             const querySnapshot = await getDocs(q);
@@ -251,7 +251,7 @@ export const loadUserMixes = async (userId) => {
             // Si hay un error de índice, intentamos una consulta más simple
             console.warn('Error con índice compuesto, intentando consulta sin ordenación');
             const db = await getDb();
-            const { collection, query, where, getDocs } = await import('firebase/firestore');
+                const { collection, query, where, getDocs } = await import('firebase/firestore/lite');
             mixesCollectionRef = collection(db, 'userMixes');
             const simpleQuery = query(mixesCollectionRef, where('userId', '==', userId));
             const simpleSnapshot = await getDocs(simpleQuery);
@@ -267,7 +267,7 @@ export const loadUserMixes = async (userId) => {
         if (availableHerbs.length === 0) {
             try {
                 const db = await getDb();
-                const { collection, getDocs } = await import('firebase/firestore');
+                const { collection, getDocs } = await import('firebase/firestore/lite');
                 const herbsSnapshot = await getDocs(collection(db, 'blogs'));
                 availableHerbs = herbsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             } catch (error) {
@@ -584,7 +584,7 @@ export const saveMix = async (event, userId) => {
         }
         
         const db = await getDb();
-        const { doc, updateDoc, serverTimestamp, addDoc, collection } = await import('firebase/firestore');
+        const { doc, updateDoc, serverTimestamp, addDoc, collection } = await import('firebase/firestore/lite');
         mixesCollectionRef = mixesCollectionRef || collection(db, 'userMixes');
         if (id) {
             // Actualizar mezcla existente
@@ -626,7 +626,7 @@ export const saveMix = async (event, userId) => {
 export const deleteMix = async (mixId, userId) => {
     try {
     const db = await getDb();
-    const { deleteDoc, doc } = await import('firebase/firestore');
+    const { deleteDoc, doc } = await import('firebase/firestore/lite');
     await deleteDoc(doc(db, 'userMixes', mixId));
         await loadUserMixes(userId); // Recargar mezclas del usuario
         window.notifications?.showSuccessNotification('Mezcla eliminada correctamente');

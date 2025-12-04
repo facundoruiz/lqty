@@ -63,7 +63,8 @@ module.exports = {
           priority: -10,
         },
         firebase: {
-          test: /[\\/]node_modules[\\/]firebase[\\/]/,
+          // Agrupar tanto 'firebase' como paquetes bajo '@firebase' en un chunk independiente
+          test: /[\\/](?:node_modules|~)[\\/](?:firebase|@firebase)[\\/]/,
           name: 'firebase',
           priority: 15,
           enforce: true,

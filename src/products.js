@@ -985,7 +985,7 @@ function createStarDisplay(rating) {
 async function createRatingsList(productId) {
   // Consulta a Firestore (inicializa DB e importa funciones dinámicamente)
   const db = await getDb();
-  const { query, collection, where, orderBy, getDocs } = await import('firebase/firestore');
+  const { query, collection, where, orderBy, getDocs } = await import('firebase/firestore/lite');
   const q = query(
     collection(db, "productRatings"),
     where("productId", "==", productId),
@@ -1171,7 +1171,7 @@ async function saveRating(productId, rating, comment, name) {
   try {
     if (!name || !name.trim()) throw new Error('El nombre es obligatorio');
     const dbInstance = await getDb();
-    const firestore = await import('firebase/firestore');
+    const firestore = await import('firebase/firestore/lite');
     const { addDoc, collection, serverTimestamp } = firestore;
     const ratingData = {
       productId,
@@ -1269,7 +1269,7 @@ function getNotificationIcon(type) {
 async function fetchProductRating(productId) {
   try {
     const dbInstance = await getDb();
-    const firestore = await import('firebase/firestore');
+    const firestore = await import('firebase/firestore/lite');
     const { query, collection, where, getDocs } = firestore;
     const q = query(collection(dbInstance, 'productRatings'), where('productId', '==', productId));
     const snapshot = await getDocs(q);
