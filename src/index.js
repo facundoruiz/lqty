@@ -138,9 +138,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   let selectedTheme = 'default';
   if (month === 12) {
     selectedTheme = 'navidad';
-  } else if (month === 10 && day >= 31) {
+  } else if (month === 10 && day >= 22) {
     selectedTheme = 'halloween';
-  } else if (month === 5 || month === 7) {
+  } else if (month === 5 || month === 7 || month === 2) {
     selectedTheme = 'patrios';
   }
   
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
   // Cargar productos (inicializa Firestore solo cuando se necesita)
   const db = await getDb();
-  const { collection, getDocs } = await import('firebase/firestore');
+  const { collection, getDocs } = await import('firebase/firestore/lite');
   const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = productsSnapshot.docs.map(doc => ({
       id: doc.id,

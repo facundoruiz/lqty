@@ -8,9 +8,7 @@ import '../styles/mixes.css';
 // Importar módulos de funcionalidad
 import './auth/auth-check.js';
 import { onAuthStateChange, logout, getUserData } from './services/authService.js';
-import { loadUserMixes, openMixModal, closeMixModal, saveMix, deleteMix, loadHerbsForSelection } from './dashboard/mixes.js';
 import { showSuccessNotification, showErrorNotification, showWarningNotification, showInfoNotification } from './utils/notifications.js';
-import { initBlogManagement } from './dashboard/blogs.js';
 
 // Hacer las notificaciones disponibles globalmente para otros módulos
 window.notifications = {
@@ -121,7 +119,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userNameElement) userNameElement.textContent = userData.data.name || 'Usuario';
                 if (userEmailElement) userEmailElement.textContent = userData.data.email || '';
 
-                initBlogManagement({ ...userData.data, uid: user.uid });
+                // Cargar dinámicamente los módulos pesados del dashboard sólo cuando el usuario está autenticado
+                try {
+                    const mixesModule = await import('./dashboard/mixes.js');
+                    const blogsModule = await import('./dashboard/blogs.js');
+
+                    // Inicializar gestión de blogs
+                    if (blogsModule && typeof blogsModule.initBlogManagement === 'function') {
+                        blogsModule.initBlogManagement({ ...userData.data, uid: user.uid });
+                    }
+
+                    // Inicializar mezclas y exponer funciones locales
+                    if (mixesModule) {
+                        // Llamadas para cargar datos
+                        if (typeof mixesModule.loadUserMixes === 'function') mixesModule.loadUserMixes(user.uid);
+                        if (typeof mixesModule.loadHerbsForSelection === 'function') mixesModule.loadHerbsForSelection();
+
+                        // Event listeners que usan funciones del módulo de mezclas
+                        if (addMixBtn) addMixBtn.addEventListener('click', () => mixesModule.openMixModal());
+                        if (closeMixModalBtn) closeMixModalBtn.addEventListener('click', () => mixesModule.closeMixModal());
+                        if (mixForm) mixForm.addEventListener('submit', (e) => mixesModule.saveMix(e, user.uid));
+
+                        if (userMixesList) {
+                            userMixesList.addEventListener('click', (e) => {
+                                if (e.target.classList.contains('edit-mix-btn') || e.target.closest('.edit-mix-btn')) {
+                                    const mixItem = e.target.closest('.mix-item');
+                                    if (mixItem) {
+                                        const mixId = mixItem.dataset.id;
+                                        mixesModule.openMixModal(mixId);
+                                    }
+                                }
+                                if (e.target.classList.contains('delete-mix-btn') || e.target.closest('.delete-mix-btn')) {
+                                    const mixItem = e.target.closest('.mix-item');
+                                    if (mixItem) {
+                                        const mixId = mixItem.dataset.id;
+                                        mixesModule.deleteMix(mixId, user.uid);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading dashboard modules:', err);
+                }
+
                 activateTabFromHash();
 
                 // Cargar datos para el perfil
@@ -214,8 +255,8 @@ async function updateUserProfile(userId, userData) {
     try {
         // Implementar la función para actualizar los datos del usuario en Firebase
         const { updateDoc, doc } = await import('firebase/firestore');
-        const { db } = await import('../firebase-config.js');
-        
+        const { getDb } = await import('../firebase-config.js');
+        const db = await getDb();
         await updateDoc(doc(db, 'users', userId), userData);
         return { success: true };
     } catch (error) {

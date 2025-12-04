@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 showMessage('Iniciando sesión con Google...', false);
                 const result = await loginWithGoogle();
+                if (result.redirect) {
+                    // signInWithRedirect ya inició la navegación; no hacer nada más
+                    return;
+                }
                 if (result.success) {
                     window.location.href = 'dashboard.html';
                 } else {

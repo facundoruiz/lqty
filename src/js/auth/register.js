@@ -78,7 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 showMessage('Iniciando sesión con Google...', false);
                 const result = await loginWithGoogle();
-                
+                if (result.redirect) {
+                    return;
+                }
                 if (result.success) {
                     window.location.href = 'dashboard.html';
                 } else {

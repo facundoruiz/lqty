@@ -1,7 +1,7 @@
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebase-config.js';
+import { getDb } from '../../firebase-config.js';
 
-const blogsCollectionRef = collection(db, 'blogs');
+// Nota: usamos getDb() para inicialización perezosa de Firestore
+
 
 const normalizeString = (value) => (typeof value === 'string' ? value.trim() : '');
 
@@ -55,8 +55,8 @@ const buildBlogPayload = (data, userContext) => {
         publish_web: publishWeb ? '1' : '0',
         status: publishWeb ? 'published' : 'draft',
         slug: toSlug(title),
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
+        // created_at/updated_at se asignan al guardar en Firestore (serverTimestamp)
+        // para evitar importar firestore en el módulo raíz y reducir el bundle inicial.
         author_id: createdBy,
         author_name: authorName
     };
@@ -78,6 +78,13 @@ const buildBlogPayload = (data, userContext) => {
 
 export const createBlog = async (data, userContext = {}) => {
     const payload = buildBlogPayload(data, userContext);
+    const db = await getDb();
+    // Importar dinámicamente las funciones de Firestore lite solo cuando se crean blogs
+    const { collection, addDoc, serverTimestamp } = await import('firebase/firestore/lite');
+    // Añadir timestamps del servidor justo antes de guardar
+    payload.created_at = serverTimestamp();
+    payload.updated_at = serverTimestamp();
+    const blogsCollectionRef = collection(db, 'blogs');
     const docRef = await addDoc(blogsCollectionRef, payload);
     return docRef;
 };

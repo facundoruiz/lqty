@@ -40,7 +40,7 @@ export async function fetchBlogs(options = {}) {
 
     try {
         const db = await getDb();
-        const { getDocs, collection, query, orderBy, limit, startAfter, startAt, endBefore, limitToLast } = await import('firebase/firestore');
+        const { getDocs, collection, query, orderBy, limit, startAfter, startAt, endBefore, limitToLast } = await import('firebase/firestore/lite');
         if (loadPrevious && firstVisible) {
             // Carga página anterior usando limitToLast y endBefore
             blogsQuery = query(
@@ -123,7 +123,7 @@ export async function fetchBlogs(options = {}) {
 export async function fetchBlogById(blogId) {
     try {
     const db = await getDb();
-    const { doc, getDoc } = await import('firebase/firestore');
+    const { doc, getDoc } = await import('firebase/firestore/lite');
     const blogRef = doc(db, 'blogs', blogId);
     const blogDoc = await getDoc(blogRef);
         

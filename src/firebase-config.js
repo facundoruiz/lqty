@@ -23,7 +23,7 @@ async function initApp() {
 export async function getDb() {
     if (_db) return _db;
     const app = await initApp();
-    const { getFirestore } = await import('firebase/firestore');
+    const { getFirestore } = await import('firebase/firestore/lite');
     _db = getFirestore(app);
     return _db;
 }
