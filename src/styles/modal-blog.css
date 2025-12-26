@@ -145,6 +145,12 @@
 	z-index: 1;
 }
 
+/* Asegurar que la imagen queda por debajo de los tapes */
+.blog-detail-image {
+	position: relative;
+	z-index: 1;
+}
+
 .modal.blog-modal .blog-content {
 	margin-top: 12px;
 	color: var(--modal-text);
@@ -178,8 +184,8 @@
 	overflow: visible !important;
 	max-width: 900px !important;
 	width: calc(100% - 48px) !important;
-	color: #2b200f !important;
-	font-family: Georgia, 'Times New Roman', serif !important;
+	color: var(--modal-text) !important;
+
 }
 
 /* Permitir que .blog-card.paper mantenga sus estilos dentro del modal */
