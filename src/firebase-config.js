@@ -1,5 +1,4 @@
-// Inicialización perezosa de Firebase para evitar incluir el SDK en el bundle inicial
-// Uso: const db = await getDb(); const auth = await getAuthInstance();
+// Configuración de Firebase usando CDN (externalizado)
 const firebaseConfig = {
         apiKey: process.env.FIREBASE_API_KEY,
         authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -15,23 +14,23 @@ let _auth = null;
 
 async function initApp() {
     if (_app) return _app;
-    const { initializeApp } = await import('firebase/app');
-    _app = initializeApp(firebaseConfig);
+    // Usar Firebase desde el CDN (disponible globalmente)
+    _app = window.firebase.initializeApp(firebaseConfig);
     return _app;
 }
 
 export async function getDb() {
     if (_db) return _db;
-    const app = await initApp();
-    const { getFirestore } = await import('firebase/firestore/lite');
-    _db = getFirestore(app);
+    await initApp();
+    // Usar Firebase desde el CDN (disponible globalmente)
+    _db = window.firebase.firestore.getFirestore(_app);
     return _db;
 }
 
 export async function getAuthInstance() {
     if (_auth) return _auth;
-    const app = await initApp();
-    const { getAuth } = await import('firebase/auth');
-    _auth = getAuth(app);
+    await initApp();
+    // Usar Firebase desde el CDN (disponible globalmente)
+    _auth = window.firebase.auth.getAuth(_app);
     return _auth;
 }

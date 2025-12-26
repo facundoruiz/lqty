@@ -1,4 +1,8 @@
 import { getDb } from "./firebase-config";
+
+// Helper functions to get Firebase functions from CDN
+const getFirebaseFirestore = () => window.firebase.firestore;
+
 // Renderizar productos en la página
 export function renderProducts(products, blogs) { // Aceptar blogs como argumento
     const container = document.getElementById('products-container');
@@ -985,7 +989,11 @@ function createStarDisplay(rating) {
 async function createRatingsList(productId) {
   // Consulta a Firestore (inicializa DB e importa funciones dinámicamente)
   const db = await getDb();
-  const { query, collection, where, orderBy, getDocs } = await import('firebase/firestore/lite');
+  const query = getFirebaseFirestore().query;
+  const collection = getFirebaseFirestore().collection;
+  const where = getFirebaseFirestore().where;
+  const orderBy = getFirebaseFirestore().orderBy;
+  const getDocs = getFirebaseFirestore().getDocs;
   const q = query(
     collection(db, "productRatings"),
     where("productId", "==", productId),
@@ -1171,8 +1179,10 @@ async function saveRating(productId, rating, comment, name) {
   try {
     if (!name || !name.trim()) throw new Error('El nombre es obligatorio');
     const dbInstance = await getDb();
-    const firestore = await import('firebase/firestore/lite');
-    const { addDoc, collection, serverTimestamp } = firestore;
+    const firestore = getFirebaseFirestore();
+    const addDoc = firestore.addDoc;
+    const collection = firestore.collection;
+    const serverTimestamp = firestore.serverTimestamp;
     const ratingData = {
       productId,
       rating,
@@ -1269,8 +1279,11 @@ function getNotificationIcon(type) {
 async function fetchProductRating(productId) {
   try {
     const dbInstance = await getDb();
-    const firestore = await import('firebase/firestore/lite');
-    const { query, collection, where, getDocs } = firestore;
+    const firestore = getFirebaseFirestore();
+    const query = firestore.query;
+    const collection = firestore.collection;
+    const where = firestore.where;
+    const getDocs = firestore.getDocs;
     const q = query(collection(dbInstance, 'productRatings'), where('productId', '==', productId));
     const snapshot = await getDocs(q);
     const docs = snapshot.docs.map(d => d.data());
