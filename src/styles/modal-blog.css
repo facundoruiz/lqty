@@ -127,6 +127,12 @@
 	z-index: 1;
 }
 
+/* Asegurar que la imagen queda por debajo de los tapes */
+.blog-detail-image {
+	position: relative;
+	z-index: 1;
+}
+
 .modal.blog-modal .blog-content {
 	margin-top: 12px;
 	color: var(--modal-text);
