@@ -58,8 +58,8 @@ const buildBlogPayload = (data, userContext) => {
         publish_web: publishWeb ? '1' : '0',
         status: publishWeb ? 'published' : 'draft',
         slug: toSlug(title),
-        // created_at/updated_at se asignan al guardar en Firestore (serverTimestamp)
-        // para evitar importar firestore en el módulo raíz y reducir el bundle inicial.
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
         author_id: createdBy,
         author_name: authorName
     };

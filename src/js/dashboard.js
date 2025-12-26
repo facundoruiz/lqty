@@ -9,6 +9,7 @@ import '../styles/mixes.css';
 import './auth/auth-check.js';
 import { onAuthStateChange, logout, getUserData } from './services/authService.js';
 import { showSuccessNotification, showErrorNotification, showWarningNotification, showInfoNotification } from './utils/notifications.js';
+import { initBlogManagement } from './dashboard/blogs.js';
 
 // Hacer las notificaciones disponibles globalmente para otros módulos
 window.notifications = {

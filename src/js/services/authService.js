@@ -40,7 +40,7 @@ export const registerWithEmail = async (email, password, userData) => {
         await createUserInFirestore(user.uid, {
             ...userData,
             email,
-            role: 'usuario',
+            role: 'user',
             createdAt: serverTimestamp()
         });
 
