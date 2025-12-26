@@ -4,6 +4,19 @@ import { getAuthInstance, getDb } from '../../firebase-config';
 const getFirebaseAuth = () => window.firebase.auth;
 const getFirebaseFirestore = () => window.firebase.firestore;
 
+// Helper to get GoogleAuthProvider from Firebase CDN
+const getGoogleAuthProvider = () => {
+    // Try different possible locations for GoogleAuthProvider
+    if (window.firebase && window.firebase.auth && window.firebase.auth.GoogleAuthProvider) {
+        return window.firebase.auth.GoogleAuthProvider;
+    }
+    // Fallback - sometimes it's available directly on firebase
+    if (window.firebase && window.firebase.GoogleAuthProvider) {
+        return window.firebase.GoogleAuthProvider;
+    }
+    throw new Error('GoogleAuthProvider not found in Firebase CDN');
+};
+
 // Proveedor para autenticación con Google
 let googleProvider = null;
 
@@ -64,7 +77,7 @@ export const loginWithGoogle = async () => {
     try {
         const auth = await getAuthInstance();
         if (!googleProvider) {
-            const GoogleAuthProvider = getFirebaseAuth().GoogleAuthProvider;
+            const GoogleAuthProvider = getGoogleAuthProvider();
             googleProvider = new GoogleAuthProvider();
             // Pedir selección de cuenta para evitar entrar con cuenta no deseada
             try {

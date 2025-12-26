@@ -153,7 +153,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
   // Cargar productos (inicializa Firestore solo cuando se necesita)
   const db = await getDb();
-  const { collection, getDocs } = await import('firebase/firestore/lite');
+  const collection = window.firebase.firestore.collection;
+  const getDocs = window.firebase.firestore.getDocs;
   const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = productsSnapshot.docs.map(doc => ({
       id: doc.id,

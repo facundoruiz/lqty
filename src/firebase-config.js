@@ -21,9 +21,9 @@ async function initApp() {
 
 export async function getDb() {
     if (_db) return _db;
-    await initApp();
+    const app = await initApp();
     // Usar Firebase desde el CDN (disponible globalmente)
-    _db = window.firebase.firestore.getFirestore(_app);
+    _db = window.firebase.firestore.getFirestore(app);
     return _db;
 }
 

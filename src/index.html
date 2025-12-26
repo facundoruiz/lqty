@@ -335,14 +335,44 @@
     <!-- Firebase CDN -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, sendPasswordResetEmail, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, query, where, orderBy, getDocs, serverTimestamp, deleteDoc, limit, startAfter, startAt, endBefore, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
         // Make Firebase available globally
         window.firebase = {
             initializeApp,
-            auth: { getAuth },
-            firestore: { getFirestore }
+            auth: {
+                getAuth,
+                GoogleAuthProvider,
+                signInWithEmailAndPassword,
+                createUserWithEmailAndPassword,
+                signInWithPopup,
+                signInWithRedirect,
+                signOut,
+                onAuthStateChanged,
+                sendPasswordResetEmail,
+                signInAnonymously
+            },
+            firestore: {
+                getFirestore,
+                collection,
+                addDoc,
+                doc,
+                getDoc,
+                setDoc,
+                updateDoc,
+                query,
+                where,
+                orderBy,
+                getDocs,
+                serverTimestamp,
+                deleteDoc,
+                limit,
+                startAfter,
+                startAt,
+                endBefore,
+                limitToLast
+            }
         };
     </script>
 </body>
