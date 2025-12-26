@@ -16,6 +16,12 @@ module.exports = {
     register: './src/js/auth/register.js',
     dashboard: './src/js/dashboard.js',
   },
+  externals: {
+    'firebase/app': 'firebase',
+    'firebase/auth': 'firebase.auth',
+    'firebase/firestore/lite': 'firebase.firestore',
+    'firebase/firestore': 'firebase.firestore',
+  },
   output: {
     filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'public'),

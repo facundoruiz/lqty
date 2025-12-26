@@ -291,7 +291,18 @@
             </div>
         </div>    </footer>
 
-   
-</body>
+    <!-- Firebase CDN -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
-</html>
+        // Make Firebase available globally
+        window.firebase = {
+            initializeApp,
+            auth: { getAuth },
+            firestore: { getFirestore }
+        };
+    </script>
+
+</body></html>

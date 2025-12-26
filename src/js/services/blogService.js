@@ -1,5 +1,8 @@
 import { getDb } from '../../firebase-config.js';
 
+// Helper functions to get Firebase functions from CDN
+const getFirebaseFirestore = () => window.firebase.firestore;
+
 // Nota: usamos getDb() para inicialización perezosa de Firestore
 
 
@@ -79,8 +82,10 @@ const buildBlogPayload = (data, userContext) => {
 export const createBlog = async (data, userContext = {}) => {
     const payload = buildBlogPayload(data, userContext);
     const db = await getDb();
-    // Importar dinámicamente las funciones de Firestore lite solo cuando se crean blogs
-    const { collection, addDoc, serverTimestamp } = await import('firebase/firestore/lite');
+    // Usar funciones de Firebase desde CDN
+    const collection = getFirebaseFirestore().collection;
+    const addDoc = getFirebaseFirestore().addDoc;
+    const serverTimestamp = getFirebaseFirestore().serverTimestamp;
     // Añadir timestamps del servidor justo antes de guardar
     payload.created_at = serverTimestamp();
     payload.updated_at = serverTimestamp();

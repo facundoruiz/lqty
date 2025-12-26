@@ -18,6 +18,9 @@ window.notifications = {
     showInfoNotification
 };
 
+// Helper functions to get Firebase functions from CDN
+const getFirebaseFirestore = () => window.firebase.firestore;
+
 document.addEventListener('DOMContentLoaded', () => {
     const userNameElement = document.getElementById('user-name');
     const userEmailElement = document.getElementById('user-email');
@@ -131,6 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Inicializar mezclas y exponer funciones locales
                     if (mixesModule) {
+                        // Exponer funciones globalmente para compatibilidad
+                        window.loadUserMixes = mixesModule.loadUserMixes;
+                        window.loadHerbsForSelection = mixesModule.loadHerbsForSelection;
+                        window.openMixModal = mixesModule.openMixModal;
+                        window.deleteMix = mixesModule.deleteMix;
+
                         // Llamadas para cargar datos
                         if (typeof mixesModule.loadUserMixes === 'function') mixesModule.loadUserMixes(user.uid);
                         if (typeof mixesModule.loadHerbsForSelection === 'function') mixesModule.loadHerbsForSelection();
@@ -212,34 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Event listeners para mezclas
-            if (addMixBtn) {
-                addMixBtn.addEventListener('click', () => {
-                    openMixModal();
-                });
-            }
-            if (closeMixModalBtn) closeMixModalBtn.addEventListener('click', () => closeMixModal());
-            if (mixForm) mixForm.addEventListener('submit', (e) => saveMix(e, user.uid));
-
-            // Event listener para la lista de mezclas (editar/eliminar)
-            if (userMixesList) {
-                userMixesList.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('edit-mix-btn') || e.target.closest('.edit-mix-btn')) {
-                        const mixItem = e.target.closest('.mix-item');
-                        if (mixItem) {
-                            const mixId = mixItem.dataset.id;
-                            openMixModal(mixId);
-                        }
-                    }
-                    if (e.target.classList.contains('delete-mix-btn') || e.target.closest('.delete-mix-btn')) {
-                        const mixItem = e.target.closest('.mix-item');
-                        if (mixItem) {
-                            const mixId = mixItem.dataset.id;
-                            deleteMix(mixId, user.uid);
-                        }
-                    }
-                });
-            }
+            // Event listeners para mezclas se configuran dentro del bloque de carga de módulos
+            // para asegurar que las funciones estén disponibles
 
         } else {
             // Usuario no está logueado, redirigir a login
@@ -254,7 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function updateUserProfile(userId, userData) {
     try {
         // Implementar la función para actualizar los datos del usuario en Firebase
-        const { updateDoc, doc } = await import('firebase/firestore');
+        const updateDoc = getFirebaseFirestore().updateDoc;
+        const doc = getFirebaseFirestore().doc;
         const { getDb } = await import('../firebase-config.js');
         const db = await getDb();
         await updateDoc(doc(db, 'users', userId), userData);
