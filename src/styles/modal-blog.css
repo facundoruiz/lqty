@@ -95,13 +95,7 @@
 	display: block;
 	overflow: visible; /* asegurar que los pseudos no queden recortados */
 }
-.blog-detail-photo::before,
-.blog-detail-photo::after {
-.blog-detail-photo {
-	position: relative;
-	display: block;
-	overflow: visible; /* asegurar que los pseudos no queden recortados */
-}
+
 .blog-detail-photo::before,
 .blog-detail-photo::after {
 	content: "";
@@ -113,36 +107,21 @@
 	border-left: 1px dotted var(--tape-edge-gray, #a58b6a);
 	opacity: 0.75;
 }
-.blog-detail-photo::before {
-	pointer-events: none;
-	z-index: 9999; /* forzar por delante de la imagen y otros elementos */
-	background: linear-gradient(90deg, #f6e7c9, #f1e0b5);
-	border-right: 1px dotted var(--tape-edge-gray, #a58b6a);
-	border-left: 1px dotted var(--tape-edge-gray, #a58b6a);
-	opacity: 0.75;
-}
+
 .blog-detail-photo::before {
 	left: 50%;
 	transform: translateX(-50%);
 	top: -0.6rem; /* más estable que usar vmin para no salir de la caja */
-	top: -0.6rem; /* más estable que usar vmin para no salir de la caja */
 	width: 52%;
 	height: 3vmin;
 }
+
 .blog-detail-photo::after {
-	    right: 13rem;
-    top: 10.5rem;
-	    right: 13rem;
-    top: 10.5rem;
+	right: 13rem;
+	top: 10.5rem;
 	width: 10vmin;
 	height: 4vmin;
 	transform: rotate(-45deg);
-}
-
-/* Asegurar que la imagen queda por debajo de los tapes */
-.blog-detail-image {
-	position: relative;
-	z-index: 1;
 }
 
 /* Asegurar que la imagen queda por debajo de los tapes */

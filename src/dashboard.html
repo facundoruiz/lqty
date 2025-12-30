@@ -21,16 +21,16 @@
 
 <body>
     <!-- Header -->
-    <header>
+    <header class="dashboard-header">
         <div class="container">
-            <div class="logo">
+            <div class="dashboard-logo">
                 <img src="./asset/img/logo.png" alt="Logo La que tomo Yo!" class="logo-img">
                 <h1>La que tomo <span> Yo!</span></h1>
             </div>
             <button class="mobile-menu-toggle" aria-label="Abrir menú">
                 <i class="bi bi-list"></i>
             </button>
-            <nav>
+            <nav class="dashboard-nav">
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
                     <li><a href="index.html#mezclas">Mezclas/Hierbas</a></li>
@@ -174,8 +174,25 @@
         <section class="section welcome-section" id="welcome">
             <div class="container">
                 <h2>¡Bienvenido a tu perfil!</h2>
-                <p>Gestiona tus mezclas personalizadas y actualiza tu información.</p>
-              </div>
+                <p>Administra tus mezclas personalizadas y gestiona el contenido del sitio.</p>
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <i class="bi bi-cup-hot"></i>
+                        <h4>Mis Mezclas</h4>
+                        <p>Crea y administra tus mezclas personalizadas</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-person-circle"></i>
+                        <h4>Mi Perfil</h4>
+                        <p>Actualiza tu información personal</p>
+                    </div>
+                    <div class="feature-item" id="blog-feature" style="display: none;">
+                        <i class="bi bi-journal-text"></i>
+                        <h4>Gestión de Blogs</h4>
+                        <p>Crea y administra las fichas del sitio</p>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
