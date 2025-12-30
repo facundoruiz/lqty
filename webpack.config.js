@@ -24,11 +24,18 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(s[ac]ss|css)$/i,
+        test: /\.scss$/i,
         use: [
           MiniCssExtractPlugin.loader,
           { loader: 'css-loader', options: { importLoaders: 1 } },
           'sass-loader'
+        ]
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader'
         ]
       },
       {

@@ -113,18 +113,13 @@
 	width: 52%;
 	height: 3vmin;
 }
+
 .blog-detail-photo::after {
 	    right: 13rem;
     top: 10.5rem;
 	width: 10vmin;
 	height: 4vmin;
 	transform: rotate(-45deg);
-}
-
-/* Asegurar que la imagen queda por debajo de los tapes */
-.blog-detail-image {
-	position: relative;
-	z-index: 1;
 }
 
 /* Asegurar que la imagen queda por debajo de los tapes */
