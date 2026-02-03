@@ -79,7 +79,7 @@ const searchHerbs = (searchTerm) => {
     if (searchTerm.trim() === '') {
         // Si el campo de búsqueda está vacío, mostrar todas las hierbas
         herbItems.forEach(item => {
-            item.style.display = 'flex';
+            item.classList.remove('hidden');
         });
         return;
     }
@@ -89,9 +89,9 @@ const searchHerbs = (searchTerm) => {
     herbItems.forEach(item => {
         const herbName = item.querySelector('label').textContent.toLowerCase();
         if (herbName.includes(searchTermLower)) {
-            item.style.display = 'flex';
+            item.classList.remove('hidden');
         } else {
-            item.style.display = 'none';
+            item.classList.add('hidden');
         }
     });
 };
@@ -102,7 +102,7 @@ const filterHerbsByCategory = (category) => {
     
     if (category === 'all') {
         herbItems.forEach(item => {
-            item.style.display = 'flex';
+            item.classList.remove('hidden');
         });
         return;
     }
@@ -110,11 +110,40 @@ const filterHerbsByCategory = (category) => {
     herbItems.forEach(item => {
         const herbCategories = item.dataset.categories ? item.dataset.categories.split(',') : [];
         if (herbCategories.includes(category)) {
-            item.style.display = 'flex';
+            item.classList.remove('hidden');
         } else {
-            item.style.display = 'none';
+            item.classList.add('hidden');
         }
     });
+};
+
+// Mostrar modal con detalles de la hierba
+const showHerbDetailsModal = (herbId) => {
+    const herb = availableHerbs.find(h => h.id === herbId);
+    if (!herb) return;
+
+    const modal = document.getElementById('herb-details-modal');
+    const herbName = document.getElementById('herb-details-name');
+    const herbImage = document.getElementById('herb-details-image');
+    const herbDescription = document.getElementById('herb-details-description');
+
+    herbName.textContent = herb.title || herb.name || 'Sin nombre';
+    herbDescription.textContent = herb.content || herb.description || 'Sin descripción disponible';
+    
+    let imageUrl = herb.image_path || herb.image || herb.thumbnail || '';
+    if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = `./uploads/blogs/${imageUrl}`;
+    }
+    herbImage.src = imageUrl || './asset/img/logo.png';
+    herbImage.onerror = () => { herbImage.src = './asset/img/logo.png'; };
+
+    modal.classList.add('show');
+};
+
+// Cerrar modal de detalles
+const closeHerbDetailsModal = () => {
+    const modal = document.getElementById('herb-details-modal');
+    modal.classList.remove('show');
 };
 
 // Cargar hierbas disponibles para selección en el modal
@@ -127,25 +156,34 @@ export const loadHerbsForSelection = async () => {
     }
     
     try {
+        // Limpiar contenedor y mostrar indicador de carga
+        const loadingIndicator = document.querySelector('#herbs-selection-container .loading-indicator');
+        const herbsGrid = document.querySelector('#herbs-selection-container .herbs-grid');
+        
+        if (loadingIndicator) loadingIndicator.style.display = 'block';
+        if (herbsGrid) herbsGrid.innerHTML = '';
+        
         const db = await getDb();
         const collection = window.firebase.firestore.collection;
         const getDocs = window.firebase.firestore.getDocs;
-        // Solo cargar hierbas si no tenemos datos
-        if (availableHerbs.length === 0) {
+        
+        // Forzar recarga de hierbas cada vez para asegurar datos frescos
+        try {
             const querySnapshot = await getDocs(collection(db, 'blogs'));
             availableHerbs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            console.log('Hierbas cargadas:', availableHerbs.length);
+        } catch (error) {
+            console.error("Error al obtener blogs de Firebase:", error);
+            if (loadingIndicator) loadingIndicator.style.display = 'none';
+            if (herbsGrid) {
+                herbsGrid.innerHTML = '<p class="no-herbs" style="padding: 20px; text-align: center; color: #c17e3e;">Error al cargar las hierbas. Intenta nuevamente.</p>';
+            }
+            return;
         }
-        
-        // Limpiar contenedor y mostrar indicador de carga
-        const loadingIndicator = document.querySelector('#herbs-selection-container .loading-indicator');
-        if (loadingIndicator) loadingIndicator.style.display = 'block';
-        
-        const herbsGrid = document.querySelector('#herbs-selection-container .herbs-grid');
-        if (herbsGrid) herbsGrid.innerHTML = '';
         
         if (availableHerbs.length === 0) {
             if (herbsGrid) {
-                herbsGrid.innerHTML = '<p class="no-herbs">No hay hierbas disponibles para seleccionar.</p>';
+                herbsGrid.innerHTML = '<p class="no-herbs" style="padding: 20px; text-align: center; color: #999;">No hay hierbas disponibles para seleccionar.</p>';
             }
             if (loadingIndicator) loadingIndicator.style.display = 'none';
             return;
@@ -171,6 +209,7 @@ export const loadHerbsForSelection = async () => {
                 categories = herb.tags;
             }
             herbItem.dataset.categories = categories.join(',').toLowerCase();
+            herbItem.dataset.herbId = herb.id;
             
             // Crear checkbox con imagen y nombre
             const herbName = herb.title || herb.name || 'Sin nombre';
@@ -183,12 +222,22 @@ export const loadHerbsForSelection = async () => {
             
             herbItem.innerHTML = `
                 <input type="checkbox" id="herb-${herb.id}" name="selectedHerbs" value="${herb.id}">
-                ${imageUrl ? `<img src="${imageUrl || './asset/img/logo_gris.jpeg'}" alt="${herbName}" class="herb-thumbnail" onerror="this.src='./asset/img/logo.png';">` : ''}
+                ${imageUrl ? `<img src="${imageUrl}" alt="${herbName}" class="herb-thumbnail" onerror="this.src='./asset/img/logo.png';" onclick="event.stopPropagation();" style="cursor: pointer;" title="Click para ver detalles">` : ''}
                 <label for="herb-${herb.id}">${herbName}</label>
             `;
             
+            // Agregar listener para ver detalles al hacer click en la imagen
+            const thumbImg = herbItem.querySelector('.herb-thumbnail');
+            if (thumbImg) {
+                thumbImg.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showHerbDetailsModal(herb.id);
+                });
+            }
+            
             // Agregar listener para el cambio de estado del checkbox
             herbItem.querySelector('input[type="checkbox"]').addEventListener('change', (e) => {
+
                 if (e.target.checked) {
                     herbItem.classList.add('selected');
                 } else {
@@ -205,23 +254,63 @@ export const loadHerbsForSelection = async () => {
         // Ocultar indicador de carga
         if (loadingIndicator) loadingIndicator.style.display = 'none';
 
+        // Configurar búsqueda en tiempo real
+        const searchInput = document.getElementById('search-herbs');
+        if (searchInput) {
+            searchInput.value = ''; // Limpiar búsqueda anterior
+            searchInput.addEventListener('input', (e) => {
+                searchHerbs(e.target.value);
+            });
+        }
+
+        // Configurar listeners para filtros
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Remover clase active de todos los botones
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // Agregar clase active al botón clickeado
+                btn.classList.add('active');
+                // Filtrar hierbas
+                filterHerbsByCategory(btn.dataset.filter);
+            });
+        });
+
+        // Asegurar que el primer filtro (Todas) esté activo
+        const firstFilterBtn = document.querySelector('.filter-btn[data-filter="all"]');
+        if (firstFilterBtn) {
+            firstFilterBtn.classList.add('active');
+        }
+
+        // Cerrar modal de detalles cuando se hace click fuera
+        const herbDetailsModal = document.getElementById('herb-details-modal');
+        if (herbDetailsModal) {
+            herbDetailsModal.addEventListener('click', (e) => {
+                if (e.target === herbDetailsModal) {
+                    closeHerbDetailsModal();
+                }
+            });
+        }
+
+        // Cerrar modal de detalles cuando se hace click en el botón cerrar
+        const closeHerbModalBtn = document.getElementById('close-herb-modal');
+        if (closeHerbModalBtn) {
+            closeHerbModalBtn.addEventListener('click', closeHerbDetailsModal);
+        }
+
     } catch (error) {
         console.error("Error al cargar hierbas para selección:", error);
-        if (herbsSelectionContainer) {
-            herbsSelectionContainer.innerHTML = `
-                <p class="error-message">Error al cargar las hierbas para selección.</p>
-                <p class="error-details">Detalles: ${error.message}</p>
-                <button id="retry-load-herbs" class="btn btn-primary">
-                    Intentar nuevamente
-                </button>
+        const loadingIndicator = document.querySelector('#herbs-selection-container .loading-indicator');
+        const herbsGrid = document.querySelector('#herbs-selection-container .herbs-grid');
+        if (herbsGrid) {
+            herbsGrid.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <p class="error-message" style="color: #c17e3e; margin-bottom: 10px;">Error al cargar las hierbas para selección.</p>
+                    <p class="error-details" style="color: #999; font-size: 0.9rem;">Detalles: ${error.message}</p>
+                </div>
             `;
-            
-            // Agregar listener para el botón de reintentar
-            const retryBtn = document.getElementById('retry-load-herbs');
-            if (retryBtn) {
-                retryBtn.addEventListener('click', loadHerbsForSelection);
-            }
         }
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
     }
 };
 
@@ -571,8 +660,8 @@ export const saveMix = async (event, userId) => {
         return;
     }
     
-    if (selectedHerbs.length === 0) {
-        alert('Debes seleccionar al menos una hierba para la mezcla.');
+    if (selectedHerbs.length < 2) {
+        alert('Debes seleccionar al menos 2 hierbas para crear una mezcla.');
         return;
     }
 
