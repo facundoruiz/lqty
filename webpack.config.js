@@ -10,6 +10,7 @@ module.exports = {
     login: './src/js/auth/login.js',
     register: './src/js/auth/register.js',
     dashboard: './src/js/dashboard.js',
+    admin: './src/js/admin.js',
   },
   output: {
     filename: '[name].bundle.js',
@@ -82,6 +83,12 @@ module.exports = {
       template: './src/dashboard.html',
       filename: 'dashboard.html',
       chunks: ['dashboard'],
+      favicon: './src/img/favicon-32x32.png',
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/admin.html',
+      filename: 'admin.html',
+      chunks: ['admin'],
       favicon: './src/img/favicon-32x32.png',
     }),
     new CopyWebpackPlugin({
