@@ -1,5 +1,5 @@
 import { addCollectionDoc, getCollectionDocs, updateCollectionDoc, serverTimestamp } from './admin-data.js';
-import { readFileAsDataURL, formatDate, placeholderImage, slugify } from './admin-utils.js';
+import { cropAndCompressImageToDataURL, readFileAsDataURL, formatDate, placeholderImage, slugify } from './admin-utils.js';
 import { showErrorNotification, showSuccessNotification } from './utils/notifications.js';
 import { setEditorContent } from './admin-wysiwyg.js';
 
@@ -125,10 +125,24 @@ const setupImageInput = () => {
   input.addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const dataUrl = await readFileAsDataURL(file);
-    preview.style.backgroundImage = `url(${dataUrl})`;
-    preview.textContent = '';
-    formEl().querySelector('[name="image_base64"]').value = dataUrl;
+    try {
+      const dataUrl = await cropAndCompressImageToDataURL(file, {
+        targetWidth: 356,
+        targetHeight: 200,
+        maxBytes: 800 * 1024,
+        mimeType: 'image/jpeg'
+      });
+      preview.style.backgroundImage = `url(${dataUrl})`;
+      preview.textContent = '';
+      formEl().querySelector('[name="image_base64"]').value = dataUrl;
+    } catch (err) {
+      console.error('Error procesando imagen:', err);
+      showErrorNotification(err?.message || 'No se pudo procesar la imagen.');
+      event.target.value = '';
+      preview.style.backgroundImage = '';
+      preview.textContent = 'Sin imagen seleccionada';
+      formEl().querySelector('[name="image_base64"]').value = '';
+    }
   });
 };
 
