@@ -45,7 +45,7 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
           return `
             <div class="product-card" data-id="${product.id}" data-category="${category}">
               <div class="product-image">
-                <img src="./${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
+                <img src="${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
                 <div class="product-tag">${category}</div> 
               </div>
               <div class="product-info">
