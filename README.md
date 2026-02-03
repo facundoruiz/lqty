@@ -71,3 +71,5 @@ Este proyecto está licenciado bajo la MIT License. Consulta el archivo `LICENSE
 
 firebase projects:list
 $ firebase deploy --only hosting --project infusionary
+
+firebase deploy --only hosting:infusionary --project infusionary
