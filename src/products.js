@@ -635,7 +635,7 @@ export async function renderHerbsCarousel(products) {
       return `
         <div class="carousel-item" data-id="${product.id}">
           <div class="carousel-item-image">
-            <img src="./${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
+            <img src="${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
             <div class="carousel-item-tag">${category}</div>
           </div>
           <div class="carousel-item-info">
