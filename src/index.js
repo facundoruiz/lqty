@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     selectedTheme = 'navidad';
   } else if (month === 10 && day >= 22) {
     selectedTheme = 'halloween';
-  } else if (month === 5 || month === 7 || month === 2) {
+  } else if ((month === 5 && day >= 18 && day <= 25) || (month === 7 && day === 9) || (month === 4 && day ===2) || month === 6 && day === 20) {
     selectedTheme = 'patrios';
   }
   
