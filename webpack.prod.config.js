@@ -8,6 +8,9 @@ const Dotenv = require('dotenv-webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+const gaMeasurementId = process.env.GA_MEASUREMENT_ID || '';
+
 module.exports = {
   mode: 'production',
   entry: {
@@ -108,6 +111,7 @@ module.exports = {
       template: './src/index.html',
       filename: 'index.html',
       chunks: ['main'],
+      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
         removeAttributeQuotes: true,
@@ -119,6 +123,7 @@ module.exports = {
       template: './src/login.html',
       filename: 'login.html',
       chunks: ['login'],
+      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
         removeAttributeQuotes: true,
@@ -130,6 +135,7 @@ module.exports = {
       template: './src/register.html',
       filename: 'register.html',
       chunks: ['register'],
+      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
         removeAttributeQuotes: true,
@@ -141,6 +147,7 @@ module.exports = {
       template: './src/dashboard.html',
       filename: 'dashboard.html',
       chunks: ['dashboard'],
+      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
         removeAttributeQuotes: true,
