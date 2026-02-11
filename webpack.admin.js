@@ -6,6 +6,9 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+const gaMeasurementId = process.env.GA_MEASUREMENT_ID || '';
+
 module.exports = {
   mode: 'production',
   entry: {
@@ -98,6 +101,7 @@ module.exports = {
       template: './src/login.html',
       filename: 'login.html',
       chunks: ['login'],
+      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
         removeAttributeQuotes: true,
@@ -109,6 +113,7 @@ module.exports = {
       template: './src/admin.html',
       filename: 'admin.html',
       chunks: ['admin'],
+      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
         removeAttributeQuotes: true,
