@@ -1,5 +1,5 @@
 import { addCollectionDoc, getCollectionDocs, updateCollectionDoc, serverTimestamp, docRef } from './admin-data.js';
-import { cropAndCompressImageToDataURL, formatDate, placeholderImage } from './admin-utils.js';
+import { cropAndCompressImageToDataURL, formatDate, isCropCancelledError, placeholderImage } from './admin-utils.js';
 import { showErrorNotification, showSuccessNotification } from './utils/notifications.js';
 import { setEditorContent } from './admin-wysiwyg.js';
 
@@ -199,6 +199,9 @@ const setupImageInput = () => {
   input.addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    const form = formEl();
+    const hiddenField = form?.querySelector('[name="image_base64"]');
+    const previousImage = hiddenField?.value || '';
     try {
       const dataUrl = await cropAndCompressImageToDataURL(file, {
         targetWidth: 356,
@@ -208,14 +211,24 @@ const setupImageInput = () => {
       });
       preview.style.backgroundImage = `url(${dataUrl})`;
       preview.textContent = '';
-      formEl().querySelector('[name="image_base64"]').value = dataUrl;
+      if (hiddenField) hiddenField.value = dataUrl;
     } catch (err) {
+      if (isCropCancelledError(err)) {
+        event.target.value = '';
+        return;
+      }
       console.error('Error procesando imagen:', err);
       showErrorNotification(err?.message || 'No se pudo procesar la imagen.');
       event.target.value = '';
-      preview.style.backgroundImage = '';
-      preview.textContent = 'Sin imagen seleccionada';
-      formEl().querySelector('[name="image_base64"]').value = '';
+      if (previousImage) {
+        preview.style.backgroundImage = `url(${previousImage})`;
+        preview.textContent = '';
+        if (hiddenField) hiddenField.value = previousImage;
+      } else {
+        preview.style.backgroundImage = '';
+        preview.textContent = 'Sin imagen seleccionada';
+        if (hiddenField) hiddenField.value = '';
+      }
     }
   });
 };
