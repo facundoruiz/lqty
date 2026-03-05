@@ -461,6 +461,181 @@ body.admin-body {
   color: #a94442;
 }
 
+.admin-cropper-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(30, 23, 14, 0.72);
+}
+
+.admin-cropper-modal.is-open {
+  display: flex;
+}
+
+.admin-cropper-dialog {
+  width: min(920px, 96vw);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  box-shadow: var(--admin-shadow);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-cropper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-cropper-header h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.admin-cropper-close {
+  min-width: 36px;
+  min-height: 32px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.admin-cropper-help {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 13px;
+}
+
+.admin-cropper-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-cropper-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-cropper-control-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  min-width: 60px;
+}
+
+.admin-cropper-zoom-controls,
+.admin-cropper-rotation-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-cropper-zoom-slider {
+  width: min(280px, 52vw);
+}
+
+.admin-cropper-zoom-value {
+  min-width: 46px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--admin-muted);
+}
+
+.admin-cropper-rotate-btn.is-active,
+.admin-cropper-mirror-btn.is-active {
+  border-color: var(--admin-accent);
+  color: var(--admin-accent);
+  box-shadow: inset 0 0 0 1px rgba(179, 106, 46, 0.25);
+}
+
+.admin-cropper-stage {
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: #f7f1e6;
+  padding: 12px;
+}
+
+.admin-cropper-viewport {
+  width: min(100%, 860px);
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px dashed rgba(47, 42, 36, 0.3);
+  background:
+    linear-gradient(45deg, #f7efe3 25%, transparent 25%) -8px 0 / 16px 16px,
+    linear-gradient(-45deg, #f7efe3 25%, transparent 25%) -8px 0 / 16px 16px,
+    linear-gradient(45deg, transparent 75%, #f7efe3 75%) -8px 0 / 16px 16px,
+    linear-gradient(-45deg, transparent 75%, #f7efe3 75%) -8px 0 / 16px 16px,
+    #fbf8f1;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.admin-cropper-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.admin-cropper-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.admin-cropper-guides {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 0 0 1px rgba(47, 42, 36, 0.3);
+}
+
+.admin-cropper-guides::before,
+.admin-cropper-guides::after {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.admin-cropper-guides::before {
+  left: 33.333%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  box-shadow: calc(33.333% + 0.5px) 0 0 rgba(255, 255, 255, 0.4);
+}
+
+.admin-cropper-guides::after {
+  left: 0;
+  top: 33.333%;
+  width: 100%;
+  height: 1px;
+  box-shadow: 0 calc(33.333% + 0.5px) 0 rgba(255, 255, 255, 0.4);
+}
+
+.admin-cropper-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 @media (max-width: 1024px) {
   .admin-app {
     grid-template-columns: 1fr;
@@ -490,5 +665,28 @@ body.admin-body {
 
   .section-header {
     flex-direction: column;
+  }
+
+  .admin-cropper-dialog {
+    width: 100%;
+    max-height: calc(100vh - 20px);
+    padding: 14px;
+  }
+
+  .admin-cropper-stage {
+    padding: 8px;
+  }
+
+  .admin-cropper-control {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-cropper-control-label {
+    min-width: 0;
+  }
+
+  .admin-cropper-zoom-slider {
+    width: min(260px, 76vw);
   }
 }
