@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=5.0, viewport-fit=cover">
+  <title>Admin CMS - La que tomo Yo!</title>
+  <meta name="description" content="Panel de administración de contenido">
+  <link rel="apple-touch-icon" sizes="180x180" href="./asset/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./asset/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./asset/img/favicon-16x16.png">
+  <meta name="theme-color" content="#f6f2ea">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="manifest" href="manifest.json">
+
+  <% if (GA_MEASUREMENT_ID) { %>
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= GA_MEASUREMENT_ID %>"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '<%= GA_MEASUREMENT_ID %>');
+  </script>
+  <% } %>
+</head>
+<body class="admin-body">
+  <div class="admin-app">
+    <aside class="admin-sidebar">
+      <div class="brand">
+        <img src="./asset/img/logo.png" alt="La que tomo Yo!" />
+        <div>
+          <p class="brand-kicker">CMS</p>
+          <h1>La que tomo Yo!</h1>
+        </div>
+      </div>
+      <nav class="admin-nav">
+        <button class="nav-item active" data-section="section-products">
+          <i class="bi bi-box-seam"></i>
+          <span>Productos</span>
+        </button>
+        <button class="nav-item" data-section="section-blogs">
+          <i class="bi bi-journal-text"></i>
+          <span>Blogs</span>
+        </button>
+        <button class="nav-item" data-section="section-categories">
+          <i class="bi bi-tags"></i>
+          <span>Categorías</span>
+        </button>
+        <button class="nav-item" data-section="section-ratings">
+          <i class="bi bi-star"></i>
+          <span>Comentarios</span>
+        </button>
+        <button class="nav-item" data-section="section-images">
+          <i class="bi bi-images"></i>
+          <span>Images Metadata</span>
+        </button>
+        <button class="nav-item" data-section="section-orders">
+          <i class="bi bi-basket"></i>
+          <span>Pedidos</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">
+            <i class="bi bi-person"></i>
+          </div>
+          <div>
+            <p id="admin-user-name">Cargando...</p>
+            <span id="admin-user-email">Cargando...</span>
+          </div>
+        </div>
+        <button class="btn-ghost" id="admin-logout">
+          <i class="bi bi-box-arrow-right"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-header">
+        <div>
+          <p class="header-kicker">Panel privado</p>
+          <h2>Administración de contenido</h2>
+        </div>
+        <div class="header-actions">
+          <span class="status-pill" id="admin-status">Conectando...</span>
+        </div>
+      </header>
+
+      <main class="admin-content">
+        <section class="admin-section active" id="section-products">
+          <div class="section-header">
+            <div>
+              <h3>Productos</h3>
+              <p>Gestioná mezclas, cerámicas y sus relaciones.</p>
+            </div>
+            <div class="section-actions">
+              <select id="products-filter-category" class="field">
+                <option value="all">Todas las categorías</option>
+              </select>
+              <button class="btn-primary" id="btn-new-product">
+                <i class="bi bi-plus-lg"></i>
+                Nuevo producto
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <div class="panel">
+              <h4>Listado</h4>
+              <div class="table-wrapper">
+                <table class="admin-table" id="products-table">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Categoría</th>
+                      <th>Activo</th>
+                      <th>Destacado</th>
+                      <th>Actualizado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h4 id="product-form-title">Crear producto</h4>
+              <form id="product-form" class="admin-form">
+                <input type="hidden" name="id" />
+                <label class="field-label">Nombre</label>
+                <input class="field" type="text" name="name" required />
+
+                <label class="field-label">Precio</label>
+                <input class="field" type="number" name="price" step="0.01" min="0" placeholder="0.00" />
+
+                <label class="field-label">Imagen</label>
+                <div class="image-input">
+                  <input type="file" accept="image/*" id="product-image-file" />
+                  <input type="hidden" name="image_base64" />
+                  <div class="image-preview" id="product-image-preview"></div>
+                </div>
+
+                <label class="field-label">Categoría</label>
+                <select class="field" name="category_id" id="product-category-select" required></select>
+
+                <label class="field-label">Bajada</label>
+                <textarea class="field" name="bajada" rows="2"></textarea>
+
+                <label class="field-label">Descripción</label>
+                <div class="editor" data-editor="product-description">
+                  <div class="editor-toolbar">
+                    <button type="button" data-cmd="bold"><i class="bi bi-type-bold"></i></button>
+                    <button type="button" data-cmd="italic"><i class="bi bi-type-italic"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList"><i class="bi bi-list-ul"></i></button>
+                    <button type="button" data-cmd="insertOrderedList"><i class="bi bi-list-ol"></i></button>
+                    <button type="button" data-cmd="createLink"><i class="bi bi-link-45deg"></i></button>
+                    <button type="button" data-cmd="removeFormat"><i class="bi bi-eraser"></i></button>
+                  </div>
+                  <div class="editor-body" contenteditable="true" data-placeholder="Descripción del producto..."></div>
+                  <textarea name="description" class="editor-value" hidden></textarea>
+                </div>
+
+                <div class="field-row">
+                  <label><input type="checkbox" name="active" checked /> Activo</label>
+                  <label><input type="checkbox" name="featured" /> Destacado</label>
+                </div>
+                <div class="field-row">
+                  <label><input type="checkbox" name="es_insumo" /> Es insumo</label>
+                  <label><input type="checkbox" name="es_vendible" /> Es vendible</label>
+                </div>
+
+                <label class="field-label">Blogs relacionados</label>
+                <div class="checklist" id="product-related-blogs"></div>
+
+                <div class="form-actions">
+                  <button class="btn-ghost" type="button" id="product-form-reset">Limpiar</button>
+                  <button class="btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-blogs">
+          <div class="section-header">
+            <div>
+              <h3>Blogs / Fichas</h3>
+              <p>Creá y gestioná fichas con contenido rico.</p>
+            </div>
+            <div class="section-actions">
+              <button class="btn-primary" id="btn-new-blog">
+                <i class="bi bi-plus-lg"></i>
+                Nuevo blog
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <div class="panel">
+              <h4>Listado</h4>
+              <div class="table-wrapper">
+                <table class="admin-table" id="blogs-table">
+                  <thead>
+                    <tr>
+                      <th>Título</th>
+                      <th>Estado</th>
+                      <th>Destacado</th>
+                      <th>Actualizado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h4 id="blog-form-title">Crear blog</h4>
+              <form id="blog-form" class="admin-form">
+                <input type="hidden" name="id" />
+                <label class="field-label">Fecha</label>
+                <input class="field" type="date" name="date" />
+
+                <label class="field-label">Título</label>
+                <input class="field" type="text" name="title" required />
+
+                <label class="field-label">Resumen</label>
+                <textarea class="field" name="excerpt" rows="3" required></textarea>
+
+                <label class="field-label">Contenido</label>
+                <div class="editor" data-editor="blog-content">
+                  <div class="editor-toolbar">
+                    <button type="button" data-cmd="bold"><i class="bi bi-type-bold"></i></button>
+                    <button type="button" data-cmd="italic"><i class="bi bi-type-italic"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList"><i class="bi bi-list-ul"></i></button>
+                    <button type="button" data-cmd="insertOrderedList"><i class="bi bi-list-ol"></i></button>
+                    <button type="button" data-cmd="createLink"><i class="bi bi-link-45deg"></i></button>
+                    <button type="button" data-cmd="removeFormat"><i class="bi bi-eraser"></i></button>
+                  </div>
+                  <div class="editor-body" contenteditable="true" data-placeholder="Contenido del blog..."></div>
+                  <textarea name="content" class="editor-value" hidden></textarea>
+                </div>
+
+                <label class="field-label">Imagen principal</label>
+                <div class="image-input">
+                  <input type="file" accept="image/*" id="blog-image-file" />
+                  <input type="hidden" name="image_base64" />
+                  <div class="image-preview" id="blog-image-preview"></div>
+                </div>
+
+                <label class="field-label">Galería</label>
+                <input class="field" type="file" id="blog-gallery-files" accept="image/*" multiple />
+                <div class="gallery-preview" id="blog-gallery-preview"></div>
+
+                <div class="field-row">
+                  <label><input type="checkbox" name="publish" /> Publicar</label>
+                  <label><input type="checkbox" name="featured" /> Destacado</label>
+                </div>
+
+                <div class="form-actions">
+                  <button class="btn-ghost" type="button" id="blog-form-reset">Limpiar</button>
+                  <button class="btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-categories">
+          <div class="section-header">
+            <div>
+              <h3>Categorías</h3>
+              <p>Organizá el catálogo en categorías coherentes.</p>
+            </div>
+          </div>
+          <div class="panel-grid">
+            <div class="panel">
+              <h4>Listado</h4>
+              <div class="table-wrapper">
+                <table class="admin-table" id="categories-table">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>ID</th>
+                      <th>Descripción</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h4 id="category-form-title">Crear categoría</h4>
+              <form id="category-form" class="admin-form">
+                <input type="hidden" name="id" />
+                <label class="field-label">Nombre</label>
+                <input class="field" type="text" name="category_name" required />
+                <label class="field-label">ID</label>
+                <input class="field" type="text" name="category_id" required />
+                <label class="field-label">Descripción</label>
+                <textarea class="field" name="category_description" rows="3"></textarea>
+                <div class="form-actions">
+                  <button class="btn-ghost" type="button" id="category-form-reset">Limpiar</button>
+                  <button class="btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-ratings">
+          <div class="section-header">
+            <div>
+              <h3>Comentarios de productos</h3>
+              <p>Moderá y revisá opiniones.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="table-wrapper">
+              <table class="admin-table" id="ratings-table">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Puntaje</th>
+                    <th>Comentario</th>
+                    <th>Autor</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-images">
+          <div class="section-header">
+            <div>
+              <h3>Images Metadata</h3>
+              <p>Reservado para futuros usos. Hoy solo lectura.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="table-wrapper">
+              <table class="admin-table" id="images-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Actualizado</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-orders">
+          <div class="section-header">
+            <div>
+              <h3>Pedidos</h3>
+              <p>Pedidos realizados desde la web.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="table-wrapper">
+              <table class="admin-table" id="orders-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Teléfono</th>
+                    <th>Entrega</th>
+                    <th>Detalle</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Modal detalle completo del pedido -->
+      <div class="admin-modal-overlay" id="order-detail-modal" style="display: none;" aria-hidden="true">
+        <div class="admin-modal" role="dialog" aria-labelledby="order-detail-title">
+          <div class="admin-modal-header">
+            <h4 id="order-detail-title">Pedido</h4>
+            <button type="button" class="admin-modal-close" id="order-detail-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <div class="admin-modal-body" id="order-detail-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, sendPasswordResetEmail, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+    import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, query, where, orderBy, getDocs, serverTimestamp, deleteDoc, limit, startAfter, startAt, endBefore, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+    window.firebase = {
+      initializeApp,
+      auth: {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        signInWithPopup,
+        signInWithRedirect,
+        signOut,
+        onAuthStateChanged,
+        sendPasswordResetEmail,
+        signInAnonymously
+      },
+      firestore: {
+        getFirestore,
+        collection,
+        addDoc,
+        doc,
+        getDoc,
+        setDoc,
+        updateDoc,
+        query,
+        where,
+        orderBy,
+        getDocs,
+        serverTimestamp,
+        deleteDoc,
+        limit,
+        startAfter,
+        startAt,
+        endBefore,
+        limitToLast
+      }
+    };
+  </script>
+</body>
+</html>

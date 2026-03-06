@@ -5,8 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-const CompressionPlugin = require('compression-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const gaMeasurementId = process.env.GA_MEASUREMENT_ID || '';
@@ -14,10 +12,8 @@ const gaMeasurementId = process.env.GA_MEASUREMENT_ID || '';
 module.exports = {
   mode: 'production',
   entry: {
-    main: './src/index.js',
+    admin: './src/js/admin.js',
     login: './src/js/auth/login.js',
-    register: './src/js/auth/register.js',
-    dashboard: './src/js/dashboard.js',
   },
   externals: {
     'firebase/app': 'firebase',
@@ -27,7 +23,7 @@ module.exports = {
   },
   output: {
     filename: 'bundle.[contenthash].js',
-    path: path.resolve(__dirname, 'public'),
+    path: path.resolve(__dirname, 'admin'),
     clean: true,
     assetModuleFilename: 'asset/[name].[hash][ext]'
   },
@@ -72,7 +68,6 @@ module.exports = {
           priority: -10,
         },
         firebase: {
-          // Agrupar tanto 'firebase' como paquetes bajo '@firebase' en un chunk independiente
           test: /[\\/](?:node_modules|~)[\\/](?:firebase|@firebase)[\\/]/,
           name: 'firebase',
           priority: 15,
@@ -97,27 +92,10 @@ module.exports = {
       new CssMinimizerPlugin(),
     ],
   },
-  performance: {
-    hints: 'warning',
-    maxEntrypointSize: 300000,
-    maxAssetSize: 300000,
-  },
   plugins: [
     new Dotenv(),
     new MiniCssExtractPlugin({
       filename: 'styles/[name].[contenthash].css',
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
-      filename: 'index.html',
-      chunks: ['main'],
-      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
-      favicon: './src/img/favicon-32x32.png',
-      minify: {
-        removeAttributeQuotes: false,
-        collapseWhitespace: true,
-        removeComments: true
-      }
     }),
     new HtmlWebpackPlugin({
       template: './src/login.html',
@@ -126,31 +104,19 @@ module.exports = {
       templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
-        removeAttributeQuotes: false,
+        removeAttributeQuotes: true,
         collapseWhitespace: true,
         removeComments: true
       }
     }),
     new HtmlWebpackPlugin({
-      template: './src/register.html',
-      filename: 'register.html',
-      chunks: ['register'],
+      template: './src/admin.html',
+      filename: 'admin.html',
+      chunks: ['admin'],
       templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
-        removeAttributeQuotes: false,
-        collapseWhitespace: true,
-        removeComments: true
-      }
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/dashboard.html',
-      filename: 'dashboard.html',
-      chunks: ['dashboard'],
-      templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
-      favicon: './src/img/favicon-32x32.png',
-      minify: {
-        removeAttributeQuotes: false,
+        removeAttributeQuotes: true,
         collapseWhitespace: true,
         removeComments: true
       }
@@ -162,28 +128,8 @@ module.exports = {
           to: 'asset/img'
         },
         {
-          from: './src/uploads/images',
-          to: 'uploads/images'
-        },
-        {
-          from: './src/uploads/blogs',
-          to: 'uploads/blogs'
-        },
-        {
-          from: './src/uploads/products',
-          to: 'uploads/products'
-        },
-        {
-          from: './src/uploads/index.html',
-          to: 'uploads'
-        },
-        {
           from: "./src/site.webmanifest",
           to: "manifest.json",
-        },
-        {
-          from: "./src/offline.html",
-          to: "offline.html",
         },
         {
           from: "./src/forbidden.html",
@@ -191,14 +137,5 @@ module.exports = {
         }
       ],
     }),
-    // Genera .gz para servir desde servidor en producción
-    new CompressionPlugin({
-      algorithm: 'gzip',
-      test: /\.(js|css|html|svg)$/,
-      threshold: 10240,
-      minRatio: 0.8,
-    }),
-    // Report estático para analizar el bundle (opcional)
-    new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false, reportFilename: 'bundle-report.html' }),
   ],
 };
