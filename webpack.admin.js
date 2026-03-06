@@ -130,6 +130,10 @@ module.exports = {
         {
           from: "./src/site.webmanifest",
           to: "manifest.json",
+        },
+        {
+          from: "./src/forbidden.html",
+          to: "forbidden.html",
         }
       ],
     }),

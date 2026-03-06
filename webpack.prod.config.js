@@ -184,6 +184,10 @@ module.exports = {
         {
           from: "./src/offline.html",
           to: "offline.html",
+        },
+        {
+          from: "./src/forbidden.html",
+          to: "forbidden.html",
         }
       ],
     }),

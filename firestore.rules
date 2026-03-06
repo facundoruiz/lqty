@@ -49,6 +49,11 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    match /orders/{orderId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if true;
+    }
+
     match /{document=**} {
       allow read, write: if isAdmin();
     }

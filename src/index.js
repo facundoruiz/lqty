@@ -2,6 +2,7 @@ import { getDb } from './firebase-config';
 import { renderProducts, renderHerbsCarousel } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
+import { getCart, subscribe as subscribeCart, clearCart, removeFromCart, updateQuantity } from './js/cart.js';
 
 import './scss/main.scss';
 
@@ -108,6 +109,194 @@ document.addEventListener('DOMContentLoaded', function() {
             closeMenu();
         }
     });
+});
+
+// Canasto (carrito) y checkout
+document.addEventListener('DOMContentLoaded', () => {
+  const cartModal = document.getElementById('cart-modal');
+  const cartModalBody = document.getElementById('cart-modal-body');
+  const cartModalFooter = document.getElementById('cart-modal-footer');
+  const closeCartBtn = document.getElementById('close-cart-modal');
+  const cartToggle = document.getElementById('cart-toggle');
+  const cartBadge = document.getElementById('cart-badge');
+
+  const cartFloat = document.getElementById('cart-float');
+  function updateBadge() {
+    const count = getCart().reduce((s, i) => s + i.quantity, 0);
+    if (cartBadge) cartBadge.textContent = count;
+    if (cartFloat) {
+      cartFloat.style.display = count > 0 ? '' : 'none';
+      cartFloat.setAttribute('aria-hidden', count > 0 ? 'false' : 'true');
+    }
+  }
+  subscribeCart(updateBadge);
+  updateBadge();
+
+  function openCartModal() {
+    if (!cartModal || !cartModalBody || !cartModalFooter) return;
+    renderCartListView();
+    cartModal.style.display = 'flex';
+    cartModal.classList.add('visible');
+  }
+
+  function closeCartModal() {
+    if (cartModal) {
+      cartModal.classList.remove('visible');
+      cartModal.style.display = 'none';
+    }
+  }
+
+  function renderCartListView() {
+    const items = getCart();
+    if (items.length === 0) {
+      cartModalBody.innerHTML = '<p class="cart-empty">El canasto está vacío. Agregá productos desde la sección Productos.</p>';
+      cartModalFooter.innerHTML = '<button type="button" class="btn" id="cart-close-btn">Cerrar</button>';
+      cartModalFooter.querySelector('#cart-close-btn')?.addEventListener('click', closeCartModal);
+      return;
+    }
+    cartModalBody.innerHTML = `
+      <h3 class="cart-modal-title"><i class="bi bi-basket"></i> Tu canasto</h3>
+      <ul class="cart-list">
+        ${items.map(item => {
+          const gramos = item.gramos ?? '';
+          const label = item.gramos ? `${item.title} - ${item.gramos}gr` : item.title;
+          return `
+          <li class="cart-item" data-id="${item.productId}" data-gramos="${gramos}">
+            <img src="${item.image_path || 'asset/img/logo_gris.jpeg'}" alt="" class="cart-item-img" />
+            <div class="cart-item-info">
+              <span class="cart-item-title">${label}</span>
+              <div class="cart-item-qty">
+                <button type="button" class="cart-qty-btn" data-id="${item.productId}" data-gramos="${gramos}" data-delta="-1" aria-label="Menos"><i class="bi bi-dash"></i></button>
+                <span>× ${item.quantity}</span>
+                <button type="button" class="cart-qty-btn" data-id="${item.productId}" data-gramos="${gramos}" data-delta="1" aria-label="Más"><i class="bi bi-plus"></i></button>
+              </div>
+            </div>
+            <button type="button" class="cart-remove-btn" data-id="${item.productId}" data-gramos="${gramos}" aria-label="Quitar"><i class="bi bi-trash"></i></button>
+          </li>
+        `;
+        }).join('')}
+      </ul>
+    `;
+    cartModalFooter.innerHTML = '<button type="button" class="btn btn-primary" id="cart-checkout-btn"><i class="bi bi-arrow-right-circle"></i> Continuar al checkout</button>';
+    const parseGramos = (v) => (v !== '' && v != null ? parseInt(v, 10) : null);
+    cartModalBody.querySelectorAll('.cart-remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        removeFromCart(btn.dataset.id, parseGramos(btn.dataset.gramos));
+        renderCartListView();
+      });
+    });
+    cartModalBody.querySelectorAll('.cart-qty-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const gramos = parseGramos(btn.dataset.gramos);
+        const delta = parseInt(btn.dataset.delta, 10);
+        const item = items.find(i => i.productId === id && (i.gramos ?? null) === gramos);
+        if (item) updateQuantity(id, gramos, item.quantity + delta);
+        renderCartListView();
+      });
+    });
+    cartModalFooter.querySelector('#cart-checkout-btn')?.addEventListener('click', () => renderCheckoutView());
+  }
+
+  function renderCheckoutView() {
+    const items = getCart();
+    cartModalBody.innerHTML = `
+      <h3 class="cart-modal-title">Completar pedido</h3>
+      <form id="checkout-form" class="checkout-form">
+        <div class="form-row">
+          <label>Nombre y Apellido</label>
+          <input type="text" name="nombre" required placeholder="Nombre" />
+        </div>
+        
+        <div class="form-row">
+          <label>Teléfono</label>
+          <input type="tel" name="telefono" required placeholder="Ej: 11 1234-5678" />
+        </div>
+        <div class="form-row">
+          <label>Tipo de entrega</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="tipo_entrega" value="retirar" checked /> Retirar en el local</label>
+            <label class="radio-label"><input type="radio" name="tipo_entrega" value="domicilio" /> Enviar a domicilio</label>
+          </div>
+        </div>
+        <div class="form-row checkout-domicilio-row" style="display: none;">
+          <label>Domicilio</label>
+          <input type="text" name="domicilio" placeholder="Calle, número, localidad, CP" />
+        </div>
+        <div class="form-row">
+          <label>Notas</label>
+          <textarea name="notas" rows="2" placeholder="Indicaciones o comentarios del pedido"></textarea>
+        </div>
+      </form>
+      <div class="checkout-detalle">
+        <h4><i class="bi bi-list-ul"></i> Detalle del pedido</h4>
+        <ul class="cart-list">
+          ${items.map(item => {
+            const label = item.gramos ? `${item.title} - ${item.gramos}gr` : item.title;
+            return `
+            <li class="cart-item cart-item-readonly">
+              <img src="${item.image_path || 'asset/img/logo_gris.jpeg'}" alt="" class="cart-item-img" />
+              <div class="cart-item-info">
+                <span class="cart-item-title">${label}</span>
+                <span class="cart-item-qty-readonly">× ${item.quantity}</span>
+              </div>
+            </li>
+          `;
+          }).join('')}
+        </ul>
+      </div>
+    `;
+    cartModalFooter.innerHTML = '<button type="button" class="btn" id="checkout-back-btn"><i class="bi bi-arrow-left"></i> Volver</button><button type="submit" form="checkout-form" class="btn btn-primary" id="checkout-submit-btn"><i class="bi bi-send"></i> Enviar pedido</button>';
+
+    const form = cartModalBody.querySelector('#checkout-form');
+    const domicilioRow = cartModalBody.querySelector('.checkout-domicilio-row');
+    const radios = cartModalBody.querySelectorAll('input[name="tipo_entrega"]');
+    radios.forEach(r => {
+      r.addEventListener('change', () => {
+        if (domicilioRow) domicilioRow.style.display = r.value === 'domicilio' ? '' : 'none';
+      });
+    });
+
+    cartModalFooter.querySelector('#checkout-back-btn')?.addEventListener('click', () => renderCartListView());
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const tipo = formData.get('tipo_entrega');
+      if (tipo === 'domicilio' && !formData.get('domicilio')?.trim()) {
+        alert('Por favor indicá el domicilio de entrega.');
+        return;
+      }
+      const pedido = {
+        nombre: formData.get('nombre'),
+        //apellido: formData.get('apellido'),
+        telefono: formData.get('telefono'),
+        tipo_entrega: tipo,
+        domicilio: tipo === 'domicilio' ? formData.get('domicilio') : '',
+        notas: formData.get('notas') || '',
+        items: getCart(),
+        fecha: new Date().toISOString(),
+      };
+      try {
+        const db = await getDb();
+        const { collection, addDoc } = window.firebase.firestore;
+        await addDoc(collection(db, 'orders'), pedido);
+      } catch (err) {
+        console.error('Error al guardar pedido:', err);
+        alert('No se pudo enviar el pedido. Intentá de nuevo.');
+        return;
+      }
+      clearCart();
+      updateBadge();
+      closeCartModal();
+      alert('Pedido enviado. Te contactaremos a la brevedad.');
+    });
+  }
+
+  if (cartToggle) cartToggle.addEventListener('click', openCartModal);
+  if (closeCartBtn) closeCartBtn.addEventListener('click', closeCartModal);
+  if (cartModal) {
+    cartModal.addEventListener('click', (e) => { if (e.target === cartModal) closeCartModal(); });
+  }
 });
 
 // Función para verificar parámetros de URL al cargar la página

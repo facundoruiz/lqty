@@ -1,4 +1,38 @@
 import { getDb } from "./firebase-config";
+import { addToCart } from "./js/cart.js";
+
+function isMezcla(product) {
+  const cat = (product.category_name || product.category || '').toLowerCase();
+  const tags = (product.tags || []).map(t => String(t).toLowerCase());
+  return cat.includes('mezcla') || tags.some(t => t.includes('mezcla'));
+}
+
+function openGramosModal(product, onChoose) {
+  const modal = document.getElementById('gramos-modal');
+  const titleEl = document.getElementById('gramos-product-title');
+  if (!modal || !titleEl) return;
+  if (titleEl) titleEl.textContent = product.title || product.name || 'este producto';
+  modal.style.display = 'flex';
+  modal.classList.add('visible');
+  const close = () => {
+    modal.style.display = 'none';
+    modal.classList.remove('visible');
+    modal.querySelectorAll('.gramos-btn').forEach(btn => btn.removeEventListener('click', handler));
+    modal.removeEventListener('click', backdrop);
+  };
+  function handler(e) {
+    const btn = e.target.closest('.gramos-btn');
+    if (!btn) return;
+    const gramos = parseInt(btn.dataset.gramos, 10);
+    onChoose(gramos);
+    close();
+  }
+  function backdrop(e) {
+    if (e.target === modal) close();
+  }
+  modal.querySelectorAll('.gramos-btn').forEach(btn => btn.addEventListener('click', handler));
+  modal.addEventListener('click', backdrop);
+}
 
 // Helper functions to get Firebase functions from CDN
 const getFirebaseFirestore = () => window.firebase.firestore;
@@ -46,12 +80,15 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
             <div class="product-card" data-id="${product.id}" data-category="${category}">
               <div class="product-image">
                 <img src="${product.image_path || 'asset/img/logo_gris.jpeg'}" alt="${product.title}" />
-                <div class="product-tag">${category}</div> 
+                <div class="product-tag">${category}</div>
+                <button type="button" class="product-pedir-btn" data-id="${product.id}" aria-label="Agregar al canasto" title="Pedir">
+                  <i class="bi bi-basket"></i> Pedir
+                </button>
               </div>
               <div class="product-info">
-                <h3>${product.title}</h3>
-                <!-- <p class="product-price">$${product.price ? product.price.toFixed(2) : 'N/A'}</p>-->
-          
+                             <h3>${product.title}</h3>
+             <!--    <p class="product-price">$${product.price ? product.price.toFixed(2) : 'N/A'}</p> -->
+                 
                 <div class="product-tags">
                   ${product.tags?.map(tag => `<span class="tag">${tag}</span>`).join('') || ''}
                 </div>
@@ -65,15 +102,25 @@ export function renderProducts(products, blogs) { // Aceptar blogs como argument
     
     // Agregar event listeners a los productos
     container.querySelectorAll('.product-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const productId = card.dataset.id;
-        const product = products.find(p => p.id === productId);
-        if (product) {
-          // Pasar la lista de blogs a showProductDetail
-          showProductDetail(product, blogs); 
-        } else {
-          console.error("Producto no encontrado con ID:", productId);
-        }
+      const productId = card.dataset.id;
+      const product = products.find(p => p.id === productId);
+      const pedirBtn = card.querySelector('.product-pedir-btn');
+      if (pedirBtn) {
+        pedirBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!product) return;
+          if (isMezcla(product)) {
+            openGramosModal(product, (gramos) => addToCart(product, 1, gramos));
+          } else {
+            addToCart(product);
+          }
+        });
+      }
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.product-pedir-btn')) return;
+        if (product) showProductDetail(product, blogs);
+        else if (productId) console.error("Producto no encontrado con ID:", productId);
       });
     });
 
