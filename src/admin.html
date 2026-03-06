@@ -381,6 +381,7 @@
                     <th>Teléfono</th>
                     <th>Entrega</th>
                     <th>Detalle</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -389,6 +390,17 @@
           </div>
         </section>
       </main>
+
+      <!-- Modal detalle completo del pedido -->
+      <div class="admin-modal-overlay" id="order-detail-modal" style="display: none;" aria-hidden="true">
+        <div class="admin-modal" role="dialog" aria-labelledby="order-detail-title">
+          <div class="admin-modal-header">
+            <h4 id="order-detail-title">Pedido</h4>
+            <button type="button" class="admin-modal-close" id="order-detail-close" aria-label="Cerrar">&times;</button>
+          </div>
+          <div class="admin-modal-body" id="order-detail-body"></div>
+        </div>
+      </div>
     </div>
   </div>
 
