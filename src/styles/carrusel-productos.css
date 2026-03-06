@@ -115,8 +115,8 @@
     position: absolute;
     top: 15px;
     right: 15px;
-    background: var(--primary-color);
-    color: white;
+    background: white;
+    color: var(--text-color);
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.8rem;

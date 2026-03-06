@@ -304,6 +304,13 @@ body.admin-body {
   letter-spacing: 0.08em;
 }
 
+.orders-detalle-cell {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .admin-form {
   display: flex;
   flex-direction: column;

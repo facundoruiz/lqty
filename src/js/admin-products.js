@@ -132,6 +132,8 @@ const populateForm = (product) => {
 
   form.querySelector('[name="id"]').value = product.id;
   form.querySelector('[name="name"]').value = product.title || product.name || '';
+  const priceEl = form.querySelector('[name="price"]');
+  if (priceEl) priceEl.value = product.price != null && product.price !== '' ? Number(product.price) : '';
   form.querySelector('[name="bajada"]').value = product.bajada || '';
   form.querySelector('[name="active"]').checked = Boolean(product.active);
   form.querySelector('[name="featured"]').checked = Boolean(product.featured);
@@ -238,6 +240,8 @@ const handleSubmit = async (event) => {
   const form = event.target;
   const id = form.querySelector('[name="id"]').value;
   const name = form.querySelector('[name="name"]').value.trim();
+  const priceRaw = form.querySelector('[name="price"]')?.value?.trim();
+  const price = priceRaw !== '' && priceRaw != null ? parseFloat(priceRaw) : undefined;
   const bajada = form.querySelector('[name="bajada"]').value.trim();
   const description = form.querySelector('[name="description"]').value.trim();
   const imageBase64 = form.querySelector('[name="image_base64"]').value;
@@ -274,6 +278,7 @@ const handleSubmit = async (event) => {
     related_blogs,
     updated_at: serverTimestamp()
   };
+  if (price !== undefined) payload.price = price;
 
   if (!id) {
     payload.created_at = serverTimestamp();
