@@ -1,7 +1,3 @@
-Basándome en la información del repositorio y los archivos relevantes, aquí tienes un borrador para el archivo `README.md`:
-
----
-
 # La que tomo Yo!
 
 **La que tomo Yo!** es una plataforma web que ofrece un catálogo de hierbas y mezclas naturales, diseñada para brindar información educativa y mejorar el bienestar natural.
