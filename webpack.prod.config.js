@@ -114,7 +114,7 @@ module.exports = {
       templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
-        removeAttributeQuotes: true,
+        removeAttributeQuotes: false,
         collapseWhitespace: true,
         removeComments: true
       }
@@ -126,7 +126,7 @@ module.exports = {
       templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
-        removeAttributeQuotes: true,
+        removeAttributeQuotes: false,
         collapseWhitespace: true,
         removeComments: true
       }
@@ -138,7 +138,7 @@ module.exports = {
       templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
-        removeAttributeQuotes: true,
+        removeAttributeQuotes: false,
         collapseWhitespace: true,
         removeComments: true
       }
@@ -150,7 +150,7 @@ module.exports = {
       templateParameters: { GA_MEASUREMENT_ID: gaMeasurementId },
       favicon: './src/img/favicon-32x32.png',
       minify: {
-        removeAttributeQuotes: true,
+        removeAttributeQuotes: false,
         collapseWhitespace: true,
         removeComments: true
       }
