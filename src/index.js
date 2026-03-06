@@ -206,11 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="form-row">
           <label>Nombre y Apellido</label>
           <input type="text" name="nombre" required placeholder="Nombre" />
+          <small>El nombre es obligatorio para la entrega. (Nombre y Apellido)</small>
         </div>
         
         <div class="form-row">
           <label>Teléfono</label>
-          <input type="tel" name="telefono" required placeholder="Ej: 11 1234-5678" />
+          <input type="tel" name="telefono" required placeholder="Ej: 381 1234-5678" />
+          <small>El teléfono es obligatorio para la entrega. (Ej: 381 1234-5678)</small>
         </div>
         <div class="form-row">
           <label>Tipo de entrega</label>
@@ -222,10 +224,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="form-row checkout-domicilio-row" style="display: none;">
           <label>Domicilio</label>
           <input type="text" name="domicilio" placeholder="Calle, número, localidad, CP" />
+          <small>El domicilio es obligatorio para la entrega. (Calle, número, localidad, CP)</small>
         </div>
         <div class="form-row">
           <label>Notas</label>
           <textarea name="notas" rows="2" placeholder="Indicaciones o comentarios del pedido"></textarea>
+          <small>Las notas son opcionales.</small>
         </div>
       </form>
       <div class="checkout-detalle">
@@ -268,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const pedido = {
         nombre: formData.get('nombre'),
-        //apellido: formData.get('apellido'),
         telefono: formData.get('telefono'),
         tipo_entrega: tipo,
         domicilio: tipo === 'domicilio' ? formData.get('domicilio') : '',
@@ -276,19 +279,61 @@ document.addEventListener('DOMContentLoaded', () => {
         items: getCart(),
         fecha: new Date().toISOString(),
       };
+
+      function showSendingState() {
+        cartModalBody.innerHTML = `
+          <div class="order-state order-sending-state">
+            <div class="order-sending-leaves" aria-hidden="true">
+              <span class="leaf leaf-1">🌿</span>
+              <span class="leaf leaf-2">🍃</span>
+              <span class="leaf leaf-3">🌼</span>
+              <span class="leaf leaf-4">🌾</span>
+              <span class="leaf leaf-5">🍃</span>
+            </div>
+            <p class="order-state-title">Enviando tu pedido...</p>
+            <p class="order-state-sub">Un momento por favor</p>
+          </div>
+        `;
+        cartModalFooter.innerHTML = '';
+      }
+      function showSuccessState() {
+        cartModalBody.innerHTML = `
+          <div class="order-state order-success-state">
+            <div class="order-state-icon"><i class="bi bi-check-circle-fill"></i></div>
+            <p class="order-state-title">¡Pedido enviado!</p>
+            <p class="order-state-sub">Te contactaremos a la brevedad.</p>
+          </div>
+        `;
+        cartModalFooter.innerHTML = '<button type="button" class="btn btn-primary" id="order-close-btn">Cerrar</button>';
+        cartModalFooter.querySelector('#order-close-btn')?.addEventListener('click', () => {
+          closeCartModal();
+        });
+      }
+      function showErrorState(message) {
+        cartModalBody.innerHTML = `
+          <div class="order-state order-error-state">
+            <div class="order-state-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <p class="order-state-title">No se pudo enviar</p>
+            <p class="order-state-sub">${message}</p>
+          </div>
+        `;
+        cartModalFooter.innerHTML = '<button type="button" class="btn" id="order-back-btn">Volver</button><button type="button" class="btn btn-primary" id="order-retry-btn">Reintentar</button>';
+        cartModalFooter.querySelector('#order-back-btn')?.addEventListener('click', () => renderCheckoutView());
+        cartModalFooter.querySelector('#order-retry-btn')?.addEventListener('click', () => form?.requestSubmit());
+      }
+
+      showSendingState();
       try {
         const db = await getDb();
         const { collection, addDoc } = window.firebase.firestore;
         await addDoc(collection(db, 'orders'), pedido);
+        showSuccessState();
+        clearCart();
+        updateBadge();
       } catch (err) {
         console.error('Error al guardar pedido:', err);
-        alert('No se pudo enviar el pedido. Intentá de nuevo.');
-        return;
+        showErrorState(err?.message || 'Intentá de nuevo más tarde.');
       }
-      clearCart();
-      updateBadge();
-      closeCartModal();
-      alert('Pedido enviado. Te contactaremos a la brevedad.');
     });
   }
 
