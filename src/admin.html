@@ -14,6 +14,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="manifest" href="manifest.json">
+  <style>
+    body.admin-body.admin-auth-loading {
+      overflow: hidden;
+    }
+
+    body.admin-body.admin-auth-loading .admin-app {
+      visibility: hidden;
+    }
+  </style>
 
   <% if (GA_MEASUREMENT_ID) { %>
   <!-- Google Analytics (GA4) -->
@@ -26,7 +35,16 @@
   </script>
   <% } %>
 </head>
-<body class="admin-body">
+<body class="admin-body admin-auth-loading" aria-busy="true">
+  <div class="admin-auth-loader" id="admin-auth-loader" role="status" aria-live="polite">
+    <div class="admin-auth-loader-card">
+      <img src="./asset/img/logo.png" alt="La que tomo Yo!" class="admin-auth-loader-logo" />
+      <p class="admin-auth-loader-kicker">Panel privado</p>
+      <h1>Verificando acceso</h1>
+      <p class="admin-auth-loader-text" id="admin-auth-loader-text">Cargando administracion...</p>
+      <div class="admin-auth-loader-spinner" aria-hidden="true"></div>
+    </div>
+  </div>
   <div class="admin-app">
     <aside class="admin-sidebar">
       <div class="brand">
@@ -414,7 +432,7 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
     import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, sendPasswordResetEmail, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-    import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, query, where, orderBy, getDocs, serverTimestamp, deleteDoc, limit, startAfter, startAt, endBefore, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+    import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, query, where, orderBy, getDocs, onSnapshot, serverTimestamp, deleteDoc, limit, startAfter, startAt, endBefore, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
     window.firebase = {
       initializeApp,
       auth: {
@@ -441,6 +459,7 @@
         where,
         orderBy,
         getDocs,
+        onSnapshot,
         serverTimestamp,
         deleteDoc,
         limit,
