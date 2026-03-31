@@ -13,6 +13,8 @@ const resetForm = () => {
   if (!form) return;
   form.reset();
   form.querySelector('[name="id"]').value = '';
+  const layoutSelect = form.querySelector('[name="landing_layout"]');
+  if (layoutSelect) layoutSelect.value = 'carousel';
   if (formTitle()) formTitle().textContent = 'Crear categoría';
 };
 
@@ -21,12 +23,15 @@ const renderTable = () => {
   if (!tbody) return;
   tbody.innerHTML = '';
 
+  const layoutLabel = (layout) => (layout === 'grid' ? 'Grilla' : 'Carrusel');
+
   cachedCategories.forEach((category) => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${category.category_name || '-'}</td>
       <td>${category.category_id || '-'}</td>
       <td>${category.category_description || '-'}</td>
+      <td>${layoutLabel(category.landing_layout)}</td>
       <td>
         <div class="action-buttons">
           <button class="btn-small" data-action="edit" data-id="${category.id}">Editar</button>
@@ -50,6 +55,10 @@ const populateForm = (category) => {
   form.querySelector('[name="category_name"]').value = category.category_name || '';
   form.querySelector('[name="category_id"]').value = category.category_id || '';
   form.querySelector('[name="category_description"]').value = category.category_description || '';
+  const layoutSelect = form.querySelector('[name="landing_layout"]');
+  if (layoutSelect) {
+    layoutSelect.value = category.landing_layout === 'grid' ? 'grid' : 'carousel';
+  }
   if (formTitle()) formTitle().textContent = 'Editar categoría';
 };
 
@@ -68,6 +77,7 @@ const handleSubmit = async (event) => {
   const category_name = form.querySelector('[name="category_name"]').value.trim();
   let category_id = form.querySelector('[name="category_id"]').value.trim();
   const category_description = form.querySelector('[name="category_description"]').value.trim();
+  const landing_layout = form.querySelector('[name="landing_layout"]')?.value === 'grid' ? 'grid' : 'carousel';
 
   if (!category_name) {
     showErrorNotification('El nombre es obligatorio.');
@@ -82,6 +92,7 @@ const handleSubmit = async (event) => {
     category_name,
     category_id,
     category_description,
+    landing_layout,
     updated_at: serverTimestamp()
   };
 

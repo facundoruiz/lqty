@@ -1,5 +1,5 @@
 import { getDb } from './firebase-config';
-import { renderProducts, renderHerbsCarousel } from './products';
+import { renderLandingCategorySections } from './products';
 import { renderBlogs } from './blogs';
 import { showProductDetail } from './products';
 import { getCart, subscribe as subscribeCart, clearCart, removeFromCart, updateQuantity } from './js/cart.js';
@@ -14,6 +14,9 @@ window.applyTheme = applyTheme;
 
 // Variable global para almacenar blogs (o pasarla a través de funciones)
 window.allBlogs = [];
+
+/** Categorías de Firestore (para re-render al filtrar búsqueda) */
+let landingCategoriesCache = [];
 
 // Función para crear el texto circular animado en los elementos de carga
 function createCircularText() {
@@ -401,9 +404,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.allBlogs = blogsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));      // Renderizar inicialmente pasando ambos arrays
-    renderProducts(products, window.allBlogs); 
-    renderHerbsCarousel(products).catch(console.error); // Renderizar el carrusel con manejo de errores
+    }));
+    const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+    landingCategoriesCache = categoriesSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderLandingCategorySections(products, landingCategoriesCache, window.allBlogs);
     renderBlogs(window.allBlogs);
     
     // Configurar filtrado pasando ambos arrays
@@ -456,7 +463,7 @@ function filterProducts(products, blogs, category, searchTerm) { // Aceptar blog
   let filtered = [...products];
   
   if (category && category !== 'all') {
-    filtered = filtered.filter(product => product.category === category);
+    filtered = filtered.filter((product) => (product.category || '') === category);
   }
   
   if (searchTerm) {
@@ -467,8 +474,7 @@ function filterProducts(products, blogs, category, searchTerm) { // Aceptar blog
       (product.description?.toLowerCase() || '').includes(term)
     );
   }
-    renderProducts(filtered, blogs); // Pasar blogs al renderizar filtrados
-  renderHerbsCarousel(filtered).catch(console.error); // También actualizar el carrusel con manejo de errores
+    renderLandingCategorySections(filtered, landingCategoriesCache, blogs);
 }
 
 // Función auxiliar para regenerar el texto circular cuando se actualizan los elementos DOM

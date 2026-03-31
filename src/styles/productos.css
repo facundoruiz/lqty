@@ -16,8 +16,18 @@
 
 
 
-/* Products Section - ajustes para products y blogs containers */
-#products-container.products .container,
+/* Landing: grillas (fondo blanco) y carruseles (gradiente en .products-carousel) */
+.landing-category-sections-root {
+  min-height: 120px;
+}
+
+.landing-category-grid.section.products {
+  background: #fff;
+  padding: 4rem 0;
+}
+
+/* Products Section - ajustes para blogs container */
+#productos .section .container,
 #blogs-container.blog-grid .container {
     padding-top: 0;
 }

@@ -288,6 +288,7 @@
                       <th>Nombre</th>
                       <th>ID</th>
                       <th>Descripción</th>
+                      <th>Landing</th>
                       <th>Acciones</th>
                     </tr>
                   </thead>
@@ -306,6 +307,12 @@
                 <input class="field" type="text" name="category_id" required />
                 <label class="field-label">Descripción</label>
                 <textarea class="field" name="category_description" rows="3"></textarea>
+                <label class="field-label">Vista en la landing</label>
+                <select class="field" name="landing_layout">
+                  <option value="carousel">Carrusel</option>
+                  <option value="grid">Grilla</option>
+                </select>
+                <p class="field-hint">Define si los productos de esta categoría se muestran en carrusel o en grilla en la página principal.</p>
                 <div class="form-actions">
                   <button class="btn-ghost" type="button" id="category-form-reset">Limpiar</button>
                   <button class="btn-primary" type="submit">Guardar</button>
