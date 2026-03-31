@@ -702,7 +702,7 @@ nav ul li a.active::after {
 }
 
 /* Products Section - Mejora para responsividad */
-#products-container.products .container,
+#productos .section .container,
 #blogs-container.blog-grid .container {
     padding-top: 0;
 }

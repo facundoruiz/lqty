@@ -61,7 +61,7 @@
                 <ul>
                     <li><a href="#inicio" class="active">Inicio</a></li>
                     <li><a href="#productos">Productos</a></li>
-                    <li><a href="#hierbas-carousel">Mezclas/Hierbas</a></li>
+                    <li><a href="#mezclas">Mezclas/Hierbas</a></li>
                     <li><a href="#fichas">Fichas</a></li>
                     <!-- <li><a href="#" id="logout-link" style="display: none;">Cerrar Sesión</a></li> -->
                 </ul>
@@ -167,49 +167,10 @@
     
     <main>
 
-        <!-- Products Section -->
-        <section class="section products" id="productos">
-            <div class="container">
-                <h2 class="section-title">Productos</h2>
-                <div class="underline"></div>
-                <div id="products-container" class="product-grid">
-                    <!-- Los productos se cargarán desde Firebase -->
-                    <div class="loading"></div>
-                </div>
-            </div>
-        </section>        <!-- Nueva sección de carrusel para hierbas -->
-        <!-- Esta sección presenta las hierbas en formato carrusel con: -->
-        <!-- - Navegación con botones izquierda/derecha -->
-        <!-- - Indicadores de posición -->
-        <!-- - Autoplay automático con pausa al hover -->
-        <!-- - Soporte táctil para dispositivos móviles -->
-        <!-- - Navegación con teclado (flechas) -->
-        <!-- - Responsive design -->
-        <section class="section products-carousel" id="hierbas-carousel">
-            <div class="container">
-                <h2 class="section-title">Descubre Nuestras Mezclas</h2>
-                <div class="underline"></div>
-                <div class="carousel-wrapper">
-                    <div class="carousel-nav">
-                        <button class="carousel-btn carousel-prev" aria-label="Anterior">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-                        <button class="carousel-btn carousel-next" aria-label="Siguiente">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
-                    </div>
-                    <div id="herbs-carousel-container" class="carousel-container">
-                        <div class="carousel-track">
-                            <!-- Los productos se cargarán aquí como carrusel -->
-                            <div class="loading carousel-loading"></div>
-                        </div>
-                    </div>
-                    <div class="carousel-indicators">
-                        <!-- Los indicadores se generarán dinámicamente -->
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Categorías: grillas y carruseles según configuración en admin (Firestore) -->
+        <div id="productos" class="landing-category-sections-root">
+            <div class="loading"></div>
+        </div>
 
         <section class="section blogs" id="fichas">
             <div class="container">
