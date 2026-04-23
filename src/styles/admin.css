@@ -532,6 +532,63 @@ body.admin-body:not(.admin-auth-loading) .admin-auth-loader {
   margin-top: 8px;
 }
 
+/* Estilos para fieldset de stock */
+.field-group {
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 14px;
+  background: #fafaf8;
+  margin: 12px 0;
+}
+
+.field-group legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--admin-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 8px;
+  margin-left: -8px;
+}
+
+.field-group .field-row {
+  margin-bottom: 12px;
+}
+
+.field-group .field-row:last-child {
+  margin-bottom: 0;
+}
+
+.field-group .field-row > div {
+  flex: 1;
+  min-width: 140px;
+}
+
+.field-group label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Alerta de stock bajo en tabla */
+.stock-alert-critical {
+  background-color: #ffe6e6;
+  color: #d32f2f;
+}
+
+.stock-alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-disabled:hover {
+  background: #f5f5f5;
+}
+
 .tag-pill {
   padding: 4px 8px;
   border-radius: 999px;
@@ -557,6 +614,41 @@ body.admin-body:not(.admin-auth-loading) .admin-auth-loader {
 .btn-danger {
   border-color: #d38a7c;
   color: #a94442;
+}
+
+/* Tabla de receta de productos */
+#recipe-items-list table {
+  font-size: 13px;
+}
+
+#recipe-items-list thead {
+  background-color: #f5f0eb;
+}
+
+#recipe-items-list th {
+  font-weight: 600;
+  color: var(--admin-muted);
+}
+
+#recipe-items-list td {
+  padding: 10px 8px;
+}
+
+#recipe-items-list input[type="number"],
+#recipe-items-list select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+#recipe-items-list input[type="number"]:focus,
+#recipe-items-list select:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 2px rgba(179, 106, 46, 0.1);
 }
 
 .admin-cropper-modal {

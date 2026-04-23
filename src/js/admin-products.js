@@ -6,6 +6,7 @@ import { setEditorContent } from './admin-wysiwyg.js';
 let cachedCategories = [];
 let cachedBlogs = [];
 let cachedProducts = [];
+let recipeState = []; // Estado para la receta seleccionada: { articulo_id, cantidad, unidad }
 
 const productTableBody = () => document.querySelector('#products-table tbody');
 const categorySelect = () => document.getElementById('product-category-select');
@@ -27,6 +28,8 @@ const resetForm = () => {
     imagePreview().style.backgroundImage = '';
     imagePreview().textContent = 'Sin imagen seleccionada';
   }
+  recipeState = [];
+  renderRecipeItems();
 };
 
 const fillCategorySelects = () => {
@@ -61,11 +64,108 @@ const renderRelatedBlogs = (selected = []) => {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = blog.id;
-    checkbox.checked = selected.some((item) => item.id === blog.id || item === blog.id);
+    checkbox.checked = selected.some((item) => item.articulo_id === blog.id);
+    checkbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        // Agregar a la receta si no existe
+        if (!recipeState.find(r => r.articulo_id === blog.id)) {
+          recipeState.push({
+            articulo_id: blog.id,
+            articulo_nombre: blog.title || 'Sin título',
+            cantidad: 100,
+            unidad: 'gramos',
+            stock_unit_original: blog.stock_unit || 'gramos'
+          });
+        }
+      } else {
+        // Quitar de la receta
+        recipeState = recipeState.filter(r => r.articulo_id !== blog.id);
+      }
+      renderRecipeItems();
+    });
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(blog.title || 'Sin título'));
     container.appendChild(label);
   });
+};
+
+// Renderiza los items de la receta con campos para cantidad y unidad
+const renderRecipeItems = () => {
+  const itemsList = document.getElementById('recipe-items-list');
+  if (!itemsList) return;
+  itemsList.innerHTML = '';
+
+  if (recipeState.length === 0) {
+    itemsList.innerHTML = '<p style="color: #999; font-size: 0.9em;">No hay artículos seleccionados</p>';
+    return;
+  }
+
+  const table = document.createElement('table');
+  table.style.cssText = 'width: 100%; border-collapse: collapse; margin-top: 1rem;';
+  table.innerHTML = `
+    <thead>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <th style="text-align: left; padding: 0.5rem;">Artículo</th>
+        <th style="text-align: left; padding: 0.5rem; width: 120px;">Cantidad</th>
+        <th style="text-align: left; padding: 0.5rem; width: 120px;">Unidad</th>
+        <th style="text-align: left; padding: 0.5rem; width: 80px;">Acción</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+
+  const tbody = table.querySelector('tbody');
+  recipeState.forEach((item, index) => {
+    const row = document.createElement('tr');
+    row.style.cssText = 'border-bottom: 1px solid #eee;';
+    row.innerHTML = `
+      <td style="padding: 0.5rem;">${item.articulo_nombre}</td>
+      <td style="padding: 0.5rem;">
+        <input type="number" class="field" value="${item.cantidad}" min="1" style="width: 100%; padding: 0.25rem; box-sizing: border-box;" />
+      </td>
+      <td style="padding: 0.5rem;">
+        <select class="field" style="width: 100%; padding: 0.25rem; box-sizing: border-box;">
+          <option value="gramos" ${item.unidad === 'gramos' ? 'selected' : ''}>Gramos</option>
+          <option value="unidades" ${item.unidad === 'unidades' ? 'selected' : ''}>Unidades</option>
+        </select>
+      </td>
+      <td style="padding: 0.5rem;">
+        <button type="button" class="btn-small btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8em;">
+          Quitar
+        </button>
+      </td>
+    `;
+
+    const cantInput = row.querySelector('input[type="number"]');
+    const unitSelect = row.querySelector('select');
+    const quitarBtn = row.querySelector('button.btn-danger');
+
+    cantInput.addEventListener('change', (e) => {
+      const newCant = parseInt(e.target.value, 10);
+      if (newCant > 0) {
+        recipeState[index].cantidad = newCant;
+      } else {
+        e.target.value = recipeState[index].cantidad;
+      }
+    });
+
+    unitSelect.addEventListener('change', (e) => {
+      recipeState[index].unidad = e.target.value;
+    });
+
+    quitarBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      recipeState.splice(index, 1);
+      // Desmarcar el checkbox correspondiente
+      const checkbox = relatedBlogsContainer()?.querySelector(`input[value="${item.articulo_id}"]`);
+      if (checkbox) checkbox.checked = false;
+      renderRecipeItems();
+    });
+
+    tbody.appendChild(row);
+  });
+
+  itemsList.appendChild(table);
 };
 
 const renderProductsTable = () => {
@@ -148,7 +248,23 @@ const populateForm = (product) => {
   form.querySelector('[name="category_id"]').value = categoryId;
 
   setEditorContent('[data-editor="product-description"]', product.description || '');
-  renderRelatedBlogs(product.related_blogs || []);
+  
+  // Cargar la receta (puede ser related_blogs antiguo o receta nuevo)
+  const recetaOld = product.related_blogs || [];
+  const recetaNew = product.receta || [];
+  const recetaToLoad = recetaNew.length > 0 ? recetaNew : recetaOld;
+  
+  // Convertir old format a new format si es necesario
+  recipeState = recetaToLoad.map((item) => ({
+    articulo_id: item.articulo_id || item.id,
+    articulo_nombre: item.articulo_nombre || item.title || 'Sin título',
+    cantidad: item.cantidad || 100,
+    unidad: item.unidad || 'gramos',
+    stock_unit_original: item.stock_unit_original || 'gramos'
+  }));
+  
+  renderRelatedBlogs(recipeState);
+  renderRecipeItems();
 
   const imageBase64 = product.image_path || '';
   const preview = imagePreview();
@@ -257,8 +373,11 @@ const handleSubmit = async (event) => {
     return;
   }
 
-  const relatedIds = Array.from(relatedBlogsContainer().querySelectorAll('input:checked')).map((input) => input.value);
-  const related_blogs = mapRelatedBlogs(relatedIds);
+  // Validar receta
+  if (recipeState.some(item => item.cantidad <= 0)) {
+    showErrorNotification('Todos los artículos en la receta deben tener cantidad > 0.');
+    return;
+  }
 
   const payload = {
     title: name,
@@ -275,7 +394,7 @@ const handleSubmit = async (event) => {
     es_insumo,
     es_vendible,
     publish_web: active ? '1' : '0',
-    related_blogs,
+    receta: recipeState, // Nueva estructura con cantidades
     updated_at: serverTimestamp()
   };
   if (price !== undefined) payload.price = price;
@@ -298,6 +417,7 @@ export const initProductsSection = async () => {
   await loadBlogs();
   await loadProducts();
   setupImageInput();
+  renderRecipeItems(); // Inicializar vista de receta vacía
 
   const form = formEl();
   const table = productTableBody()?.closest('table');
@@ -305,7 +425,23 @@ export const initProductsSection = async () => {
   const newBtn = document.getElementById('btn-new-product');
   const filter = categoryFilter();
 
-  if (form) form.addEventListener('submit', handleSubmit);
+  if (form) {
+    form.addEventListener('submit', handleSubmit);
+
+    // Validación en tiempo real para precio
+    const priceInput = form.querySelector('[name="price"]');
+    if (priceInput) {
+      priceInput.addEventListener('blur', (e) => {
+        let value = parseFloat(e.target.value);
+        if (isNaN(value) || value < 0) {
+          e.target.value = '';
+        } else if (value > 0) {
+          e.target.value = value.toFixed(2);
+        }
+      });
+    }
+  }
+
   if (table) table.addEventListener('click', handleTableClick);
   if (resetBtn) resetBtn.addEventListener('click', resetForm);
   if (newBtn) newBtn.addEventListener('click', resetForm);

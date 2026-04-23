@@ -1,4 +1,4 @@
-import { getCollectionDocs } from './admin-data.js';
+import { getCollectionDocs, updateCollectionDoc, serverTimestamp, getDb } from './admin-data.js';
 import { showErrorNotification, showSuccessNotification, showWarningNotification } from './utils/notifications.js';
 import {
   ensureOrderNotificationPermission,
@@ -9,6 +9,7 @@ import {
   showBrowserOrderNotification,
   subscribeToOrdersRealtime,
 } from './services/orderNotifications.js';
+import { deductStockFromRecipe, validateStockAvailable, revertStockDeduction, getLowStockArticles, isStockBelowMinimum } from './services/stockService.js';
 
 let cachedOrders = [];
 let unsubscribeOrders = null;
@@ -65,6 +66,10 @@ function openOrderDetail(index) {
           .join('')
       : '<li>Sin items</li>';
 
+  const isConfirmed = order.status === 'confirmed' || order.stock_deducted;
+  const buttonText = isConfirmed ? 'Stock ya descontado' : 'Confirmar y descontar stock';
+  const buttonClass = isConfirmed ? 'btn-disabled' : 'btn-primary';
+
   body.innerHTML = `
     <dl class="order-detail-dl">
       <dt>Fecha</dt>
@@ -79,8 +84,20 @@ function openOrderDetail(index) {
       ${order.notas ? `<dt>Notas</dt><dd>${order.notas}</dd>` : ''}
       <dt>Detalle del pedido</dt>
       <dd><ul class="order-detail-items">${itemsHtml}</ul></dd>
+      <dt>Estado</dt>
+      <dd>${order.status || 'Pendiente'}</dd>
     </dl>
+    <div class="form-actions">
+      <button type="button" class="${buttonClass}" id="confirm-order-btn" ${isConfirmed ? 'disabled' : ''}>
+        ${buttonText}
+      </button>
+    </div>
   `;
+
+  const confirmBtn = body.querySelector('#confirm-order-btn');
+  if (confirmBtn && !isConfirmed) {
+    confirmBtn.addEventListener('click', () => handleConfirmOrder(order.id, index));
+  }
 
   modal.style.display = 'flex';
   modal.setAttribute('aria-hidden', 'false');
@@ -92,6 +109,105 @@ function closeOrderDetail() {
 
   modal.style.display = 'none';
   modal.setAttribute('aria-hidden', 'true');
+}
+
+/**
+ * Maneja la confirmación de una orden y el descuento de stock
+ */
+async function handleConfirmOrder(orderId, orderIndex) {
+  try {
+    const confirmBtn = document.querySelector('#confirm-order-btn');
+    if (!confirmBtn) return;
+    
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Procesando...';
+
+    const order = cachedOrders[orderIndex];
+    if (!order || !order.items || order.items.length === 0) {
+      showErrorNotification('La orden no tiene items válidos.');
+      return;
+    }
+
+    const db = await getDb();
+
+    // Procesar cada item de la orden
+    let successCount = 0;
+    let errorMessages = [];
+
+    for (const item of order.items) {
+      if (!item.product_id) {
+        errorMessages.push(`Item "${item.title}" sin ID de producto`);
+        continue;
+      }
+
+      try {
+        // Obtener el producto
+        const firestore = window.firebase.firestore;
+        const getDoc = firestore.getDoc;
+        const doc = firestore.doc;
+        const collection = firestore.collection;
+
+        const productRef = doc(collection(db, 'products'), item.product_id);
+        const productSnap = await getDoc(productRef);
+
+        if (!productSnap.exists()) {
+          errorMessages.push(`Producto "${item.title}" no encontrado`);
+          continue;
+        }
+
+        const product = productSnap.data();
+        const quantity = item.quantity || 1;
+
+        // Validar y descontar stock
+        const result = await deductStockFromRecipe(db, item.product_id, quantity);
+
+        if (result.success) {
+          successCount++;
+          // Notificar si hay alertas de stock bajo
+          if (result.deducted && result.deducted.length > 0) {
+            const lowStockItems = result.deducted.filter(d => isStockBelowMinimum(d));
+            if (lowStockItems.length > 0) {
+              const names = lowStockItems.map(d => d.articulo_nombre).join(', ');
+              showWarningNotification(`Atención: Stock bajo en: ${names}`);
+            }
+          }
+        } else {
+          errorMessages.push(`${item.title}: ${result.message}`);
+        }
+      } catch (error) {
+        errorMessages.push(`Error procesando "${item.title}": ${error.message}`);
+      }
+    }
+
+    // Actualizar estado de la orden en Firestore
+    if (successCount > 0) {
+      await updateCollectionDoc('orders', orderId, {
+        status: 'confirmed',
+        stock_deducted: true,
+        confirmed_at: serverTimestamp()
+      });
+    }
+
+    // Mostrar resultados
+    if (errorMessages.length === 0) {
+      showSuccessNotification(`Orden confirmada. Stock descontado para ${successCount} producto(s).`);
+      loadOrders(); // Recargar para actualizar UI
+      closeOrderDetail();
+    } else {
+      const message = errorMessages.join('\n');
+      showErrorNotification(`Errores: ${message}`);
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirmar y descontar stock';
+    }
+  } catch (error) {
+    console.error('Error confirmando orden:', error);
+    showErrorNotification(`Error al procesar la orden: ${error.message}`);
+    const confirmBtn = document.querySelector('#confirm-order-btn');
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirmar y descontar stock';
+    }
+  }
 }
 
 const renderTable = () => {
@@ -187,6 +303,20 @@ export const initOrdersSection = async () => {
   if (closeBtn) {
     closeBtn.addEventListener('click', closeOrderDetail);
   }
+
+  // Monitorear alertas de stock bajo cada 30 segundos
+  setInterval(async () => {
+    try {
+      const db = await getDb();
+      const lowStockArticles = await getLowStockArticles(db);
+      if (lowStockArticles.length > 0) {
+        // Solo mostrar si hay alertas nuevas (opcional)
+        console.log(`Alertas de stock bajo: ${lowStockArticles.map(a => a.title).join(', ')}`);
+      }
+    } catch (error) {
+      console.error('Error verificando stock bajo:', error);
+    }
+  }, 30000);
 
   window.addEventListener(
     'beforeunload',

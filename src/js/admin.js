@@ -10,6 +10,7 @@ import { initCategoriesSection } from './admin-categories.js';
 import { initRatingsSection } from './admin-ratings.js';
 import { initImagesSection } from './admin-images.js';
 import { initOrdersSection } from './admin-orders.js';
+import { initStockAlertsSection } from './admin-stock-alerts.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   initNavigation();
@@ -21,4 +22,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initRatingsSection();
   await initImagesSection();
   await initOrdersSection();
+  await initStockAlertsSection();
 });

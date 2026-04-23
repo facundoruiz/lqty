@@ -68,6 +68,13 @@ const populateForm = (blog) => {
   form.querySelector('[name="excerpt"]').value = blog.excerpt || '';
   form.querySelector('[name="publish"]').checked = blog.status === 'published';
   form.querySelector('[name="featured"]').checked = Boolean(blog.featured);
+  
+  // Campos de stock
+  form.querySelector('[name="stock"]').value = blog.stock || 0;
+  form.querySelector('[name="stock_unit"]').value = blog.stock_unit || 'gramos';
+  form.querySelector('[name="cantidad_minima"]').value = blog.cantidad_minima || 0;
+  form.querySelector('[name="disponible"]').checked = blog.disponible !== false;
+
   setEditorContent('[data-editor="blog-content"]', blog.content || '');
 
   const imageBase64 = blog.image_path || '';
@@ -198,8 +205,21 @@ const handleSubmit = async (event) => {
   const featured = form.querySelector('[name="featured"]').checked;
   const imageBase64 = form.querySelector('[name="image_base64"]').value;
 
+  // Nuevos campos de stock
+  const stockRaw = form.querySelector('[name="stock"]')?.value?.trim();
+  const stock = stockRaw !== '' && stockRaw != null ? parseInt(stockRaw, 10) : 0;
+  const stock_unit = form.querySelector('[name="stock_unit"]')?.value || 'gramos';
+  const cantidadMinimaRaw = form.querySelector('[name="cantidad_minima"]')?.value?.trim();
+  const cantidad_minima = cantidadMinimaRaw !== '' && cantidadMinimaRaw != null ? parseInt(cantidadMinimaRaw, 10) : 0;
+  const disponible = form.querySelector('[name="disponible"]')?.checked ?? true;
+
   if (!title || !excerpt || !content) {
     showErrorNotification('Completá título, resumen y contenido.');
+    return;
+  }
+
+  if (stock < 0 || cantidad_minima < 0) {
+    showErrorNotification('El stock y cantidad mínima no pueden ser negativos.');
     return;
   }
 
@@ -213,6 +233,11 @@ const handleSubmit = async (event) => {
     status: publish ? 'published' : 'draft',
     featured,
     slug: slugify(title),
+    stock,
+    stock_unit,
+    cantidad_minima,
+    disponible,
+    es_articulo: true,
     updated_at: serverTimestamp(),
     deleted_at: null,
     deleted_by: '0'
@@ -246,7 +271,32 @@ export const initBlogsSection = async () => {
   const resetBtn = document.getElementById('blog-form-reset');
   const newBtn = document.getElementById('btn-new-blog');
 
-  if (form) form.addEventListener('submit', handleSubmit);
+  if (form) {
+    form.addEventListener('submit', handleSubmit);
+    
+    // Validación en tiempo real para campos numéricos
+    const stockInput = form.querySelector('[name="stock"]');
+    const cantidadMinimaInput = form.querySelector('[name="cantidad_minima"]');
+
+    if (stockInput) {
+      stockInput.addEventListener('blur', (e) => {
+        let value = parseInt(e.target.value, 10);
+        if (isNaN(value) || value < 0) {
+          e.target.value = 0;
+        }
+      });
+    }
+
+    if (cantidadMinimaInput) {
+      cantidadMinimaInput.addEventListener('blur', (e) => {
+        let value = parseInt(e.target.value, 10);
+        if (isNaN(value) || value < 0) {
+          e.target.value = 0;
+        }
+      });
+    }
+  }
+
   if (table) table.addEventListener('click', handleTableClick);
   if (resetBtn) resetBtn.addEventListener('click', resetForm);
   if (newBtn) newBtn.addEventListener('click', resetForm);

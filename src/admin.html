@@ -79,6 +79,10 @@
           <i class="bi bi-basket"></i>
           <span>Pedidos</span>
         </button>
+        <button class="nav-item" data-section="section-stock-alerts">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>Alertas Stock</span>
+        </button>
       </nav>
       <div class="sidebar-footer">
         <div class="user-card">
@@ -192,8 +196,11 @@
                   <label><input type="checkbox" name="es_vendible" /> Es vendible</label>
                 </div>
 
-                <label class="field-label">Blogs relacionados</label>
-                <div class="checklist" id="product-related-blogs"></div>
+                <label class="field-label">Receta (Artículos que conforman este producto)</label>
+                <div id="product-recipe-container">
+                  <div class="checklist" id="product-related-blogs"></div>
+                  <div id="recipe-items-list" style="margin-top: 1rem;"></div>
+                </div>
 
                 <div class="form-actions">
                   <button class="btn-ghost" type="button" id="product-form-reset">Limpiar</button>
@@ -274,6 +281,34 @@
                 <label class="field-label">Galería</label>
                 <input class="field" type="file" id="blog-gallery-files" accept="image/*" multiple />
                 <div class="gallery-preview" id="blog-gallery-preview"></div>
+
+                <!-- Campos de Artículo: Stock y Disponibilidad -->
+                <fieldset class="field-group">
+                  <legend>Gestión de Stock (Como Artículo)</legend>
+                  
+                  <div class="field-row">
+                    <div>
+                      <label class="field-label">Stock</label>
+                      <input class="field" type="number" name="stock" min="0" placeholder="0" />
+                    </div>
+                    <div>
+                      <label class="field-label">Unidad</label>
+                      <select class="field" name="stock_unit">
+                        <option value="gramos">Gramos</option>
+                        <option value="unidades">Unidades</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="field-row">
+                    <div>
+                      <label class="field-label">Cantidad Mínima</label>
+                      <input class="field" type="number" name="cantidad_minima" min="0" placeholder="0" />
+                    </div>
+                  </div>
+
+                  <label><input type="checkbox" name="disponible" checked /> Disponible</label>
+                </fieldset>
 
                 <div class="field-row">
                   <label><input type="checkbox" name="publish" /> Publicar</label>
@@ -411,6 +446,26 @@
                 </thead>
                 <tbody></tbody>
               </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-section" id="section-stock-alerts">
+          <div class="section-header">
+            <div>
+              <h3>Alertas de Stock Bajo</h3>
+              <p>Artículos con stock por debajo de la cantidad mínima.</p>
+            </div>
+            <div class="section-actions">
+              <button class="btn-primary" id="btn-refresh-stock-alerts">
+                <i class="bi bi-arrow-clockwise"></i>
+                Actualizar
+              </button>
+            </div>
+          </div>
+          <div class="panel">
+            <div id="stock-alerts-container">
+              <p style="color: #999; text-align: center;">Cargando alertas de stock...</p>
             </div>
           </div>
         </section>
