@@ -14,6 +14,21 @@ const imageInput = () => document.getElementById('blog-image-file');
 const galleryInput = () => document.getElementById('blog-gallery-files');
 const galleryPreview = () => document.getElementById('blog-gallery-preview');
 
+// Función para eliminar la imagen principal
+const clearMainImage = () => {
+  const preview = imagePreview();
+  const form = formEl();
+  const hiddenField = form?.querySelector('[name="image_base64"]');
+  const input = imageInput();
+  
+  if (preview) {
+    preview.style.backgroundImage = '';
+    preview.textContent = 'Sin imagen seleccionada';
+  }
+  if (hiddenField) hiddenField.value = '';
+  if (input) input.value = '';
+};
+
 const resetForm = () => {
   const form = formEl();
   if (!form) return;
@@ -26,6 +41,9 @@ const resetForm = () => {
     imagePreview().style.backgroundImage = '';
     imagePreview().textContent = 'Sin imagen seleccionada';
   }
+  // Limpiar campo oculto de imagen
+  const hiddenField = form.querySelector('[name="image_base64"]');
+  if (hiddenField) hiddenField.value = '';
   if (formTitle()) formTitle().textContent = 'Crear blog';
 };
 
@@ -129,6 +147,26 @@ const setupImageInput = () => {
   if (!input || !preview) return;
 
   preview.textContent = 'Sin imagen seleccionada';
+  
+  // Agregar botón para eliminar imagen principal
+  let clearBtn = preview.parentElement?.querySelector('.image-clear-btn');
+  if (!clearBtn) {
+    clearBtn = document.createElement('button');
+    clearBtn.className = 'image-clear-btn';
+    clearBtn.type = 'button';
+    clearBtn.textContent = '×';
+    clearBtn.title = 'Eliminar imagen';
+    clearBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      clearMainImage();
+    });
+    // Insertar después del preview
+    if (preview.parentElement) {
+      preview.parentElement.appendChild(clearBtn);
+    }
+  }
+  
   input.addEventListener('change', async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -170,10 +208,25 @@ const renderGallery = () => {
   const preview = galleryPreview();
   if (!preview) return;
   preview.innerHTML = '';
-  galleryState.forEach((item) => {
+  galleryState.forEach((item, index) => {
     const div = document.createElement('div');
     div.className = 'gallery-item';
     div.style.backgroundImage = `url(${item.image})`;
+    
+    // Botón para eliminar imagen de galería
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'gallery-delete-btn';
+    deleteBtn.type = 'button';
+    deleteBtn.textContent = '×';
+    deleteBtn.title = 'Eliminar imagen';
+    deleteBtn.dataset.index = index;
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      galleryState = galleryState.filter((_, i) => i !== index);
+      renderGallery();
+    });
+    
+    div.appendChild(deleteBtn);
     preview.appendChild(div);
   });
 };

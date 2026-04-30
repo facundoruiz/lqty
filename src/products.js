@@ -301,10 +301,10 @@ export function showProductDetail(product, blogs) {
 
       modalBody.innerHTML = `
         <div class="modal-product-header">
+        <h2>${product.title}</h2>
   <div class="product-image">
   <img src="${product.image_path || './asset/img/logo_gris.jpeg'}" alt="${product.title}" loading="lazy" decoding="async" width="324" height="200" />
   </div> 
-          <h2>${product.title}</h2>
           <div class="modal-average-rating">
             <div class="average-stars-inline">${averageStarsInline}</div>
             <div class="average-text-inline">
@@ -316,6 +316,9 @@ export function showProductDetail(product, blogs) {
             <button class="btn-share" data-product-id="${product.id}">
               <i class="bi bi-share"></i> Compartir
             </button>
+            <button type="button" class="product-pedir-btn" data-id="${product.id}" aria-label="Agregar al canasto" title="Pedir">
+                  <i class="bi bi-basket"></i> Pedir
+                </button>
           </div>
         </div> 
         <p>${product.description || 'Descripción no disponible.'}</p>

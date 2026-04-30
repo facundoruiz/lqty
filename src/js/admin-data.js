@@ -2,6 +2,9 @@ import { getDb } from '../firebase-config.js';
 
 const firestore = () => window.firebase.firestore;
 
+// Re-export getDb for convenience
+export { getDb };
+
 export const getCollectionDocs = async (collectionName, options = {}) => {
   const db = await getDb();
   const { orderByField, orderDirection = 'desc' } = options;
